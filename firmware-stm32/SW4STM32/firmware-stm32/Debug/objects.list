@@ -20,6 +20,7 @@
 "Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_tim.o"
 "Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_tim_ex.o"
 "Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_uart.o"
+"Src/imu_sensor.o"
 "TM/tm_stm32_ahrs_imu.o"
 "TM/tm_stm32_buffer.o"
 "TM/tm_stm32_delay.o"

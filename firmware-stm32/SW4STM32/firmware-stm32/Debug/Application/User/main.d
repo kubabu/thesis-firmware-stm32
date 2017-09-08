@@ -33,6 +33,14 @@ Application/User/main.o: \
  /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_rcc.h \
  /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_gpio.h \
+ /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/Src/imu_sensor.h \
+ /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_ahrs_imu.h \
+ /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_disco.h \
+ /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_mpu6050.h \
+ /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_i2c.h \
+ /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/attributes.h \
+ /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_usart.h \
+ /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_buffer.h \
  /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/Inc/main.h
 
 /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/defines.h:
@@ -100,5 +108,21 @@ Application/User/main.o: \
 /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_rcc.h:
 
 /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_gpio.h:
+
+/media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/Src/imu_sensor.h:
+
+/media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_ahrs_imu.h:
+
+/media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_disco.h:
+
+/media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_mpu6050.h:
+
+/media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_i2c.h:
+
+/media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/attributes.h:
+
+/media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_usart.h:
+
+/media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_buffer.h:
 
 /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/Inc/main.h:

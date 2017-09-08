@@ -37,6 +37,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "defines.h"
+#include "imu_sensor.h"
 #include "main.h"
 #include "stm32f4xx_hal.h"
 
@@ -50,6 +51,7 @@ I2C_HandleTypeDef hi2c1;
 
 UART_HandleTypeDef huart6;
 
+IMU_Sensor imu;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
@@ -66,7 +68,7 @@ static void MX_USART6_UART_Init(void);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	if (GPIO_Pin == MPU6050_INT_Pin) {
 		// I2C communication uses interrupts, ext interrupt handler can only set flag
-//		Sensor_Set_UpdateInterruptFlag();
+		IMU_Sensor_UpdateInterruptFlag(&imu, SENSOR_DATA_READY);
 	}
 }
 
