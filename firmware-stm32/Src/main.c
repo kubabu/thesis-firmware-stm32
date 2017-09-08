@@ -113,8 +113,6 @@ int main(void)
   TM_USART_Init(USART6, TM_USART_PinsPack_1, 115200);
 
   imu = &imu_instance;
-  imu->foo = 42;
-
   IMU_Sensor_Initialize(imu, USART6);
   /* USER CODE END 2 */
 
@@ -137,7 +135,7 @@ int main(void)
 
 	  if (now >= previous + update_interval) {
 		  previous = now;
-		  IMU_AHRS_Update(imu);
+		  IMU_Results angles = IMU_AHRS_Update(imu);
 
 		  uint32_t nn_start = HAL_GetTick();
 

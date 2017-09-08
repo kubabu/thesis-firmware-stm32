@@ -28,7 +28,6 @@ typedef struct IMU_Sensor_Data {
 	TM_MPU6050_Result_t init_result;
 	USART_TypeDef* USART;
 	TM_AHRSIMU_t ahrs;
-	int foo;
 } IMU_Sensor;
 
 
@@ -46,6 +45,7 @@ typedef struct IMU_Results {
 	EulerAngles raw_angles;			// only with accelerometer
 	EulerAngles filtered_angles;	// with Madgwick filter
 } IMU_Results;
+
 
 void IMU_Sensor_Initialize(IMU_Sensor* imu, USART_TypeDef* USARTx);
 
