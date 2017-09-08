@@ -51,7 +51,10 @@ I2C_HandleTypeDef hi2c1;
 
 UART_HandleTypeDef huart6;
 
-IMU_Sensor imu;
+IMU_Sensor imu_instance;
+
+IMU_Sensor* imu;
+
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
@@ -68,7 +71,7 @@ static void MX_USART6_UART_Init(void);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	if (GPIO_Pin == MPU6050_INT_Pin) {
 		// I2C communication uses interrupts, ext interrupt handler can only set flag
-		IMU_Sensor_UpdateInterruptFlag(&imu, SENSOR_DATA_READY);
+		IMU_Sensor_UpdateInterruptFlag(imu, SENSOR_DATA_READY);
 	}
 }
 
@@ -91,7 +94,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  TM_DISCO_LedInit();
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -107,17 +110,45 @@ int main(void)
   MX_USART6_UART_Init();
 
   /* USER CODE BEGIN 2 */
+  TM_USART_Init(USART6, TM_USART_PinsPack_1, 115200);
 
+  imu = &imu_instance;
+  imu->foo = 42;
+
+  IMU_Sensor_Initialize(imu, USART6);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  volatile uint32_t now, previous;
+  const uint32_t update_frequency = 100;	// Hz
+  const uint32_t update_interval = 1000 / update_frequency; // ms
+
+  previous = 0;
+
   while (1)
   {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+	  IMU_Sensor_Read_Update(imu);
 
+	  now = HAL_GetTick();
+
+	  if (now >= previous + update_interval) {
+		  previous = now;
+		  IMU_AHRS_Update(imu);
+
+		  uint32_t nn_start = HAL_GetTick();
+
+		  uint16_t result = 0; // run_nn_classifier();
+
+		  uint32_t nn_duration = HAL_GetTick() - nn_start;
+
+		  char msg[25];
+		  sprintf(msg, "%d, duration %ld [ms]\r\n", result, nn_duration);
+		  TM_USART_Puts(USART6, msg);
+	  }
   }
   /* USER CODE END 3 */
 

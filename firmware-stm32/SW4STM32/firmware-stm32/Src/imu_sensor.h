@@ -28,6 +28,7 @@ typedef struct IMU_Sensor_Data {
 	TM_MPU6050_Result_t init_result;
 	USART_TypeDef* USART;
 	TM_AHRSIMU_t ahrs;
+	int foo;
 } IMU_Sensor;
 
 
@@ -39,10 +40,11 @@ typedef struct EulerAngles {
 
 
 typedef struct IMU_Results {
-	float gx, gy, gz;	// gyroscope
-	float ax, ay, az;	// accelerometer
-	float mx, my, mz;	// magnetometer
-	EulerAngles angles;
+	float gx, gy, gz;	// gyroscope [deg/sec]
+	float ax, ay, az;	// acceleration [G]
+	float mx, my, mz;	// magnetometer [microTesla]
+	EulerAngles raw_angles;			// only with accelerometer
+	EulerAngles filtered_angles;	// with Madgwick filter
 } IMU_Results;
 
 void IMU_Sensor_Initialize(IMU_Sensor* imu, USART_TypeDef* USARTx);
@@ -50,6 +52,8 @@ void IMU_Sensor_Initialize(IMU_Sensor* imu, USART_TypeDef* USARTx);
 void IMU_Sensor_UpdateInterruptFlag(IMU_Sensor* imu, SENSOR_IRQ_STATE state);
 
 void IMU_Sensor_Read_Update(IMU_Sensor* imu);
+
+IMU_Results IMU_AHRS_Update(IMU_Sensor* imu);
 
 
 #endif /* IMU_SENSOR_H_ */

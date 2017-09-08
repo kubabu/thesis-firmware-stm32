@@ -11,7 +11,7 @@ void IMU_Sensor_Initialize(IMU_Sensor* imu, USART_TypeDef* USARTx) {
 	TM_MPU6050_t* MPU6050 = &(imu->reads);
 	imu->state_flag = SENSOR_NO_DATA;
 	imu->USART = USARTx;
-	imu->init_result =  TM_MPU6050_Init(MPU6050, TM_MPU6050_Device_0,
+	imu->init_result =  TM_MPU6050_Init(&imu->reads, TM_MPU6050_Device_0,
 				  TM_MPU6050_Accelerometer_2G, TM_MPU6050_Gyroscope_2000s);
 
 	if (imu->init_result == TM_MPU6050_Result_Ok) {
@@ -42,11 +42,10 @@ void IMU_Sensor_UpdateInterruptFlag(IMU_Sensor* imu, SENSOR_IRQ_STATE state) {
 
 
 uint8_t IMU_IsReadyToRead(IMU_Sensor* imu) {
-	if(imu->init_result == TM_MPU6050_Result_Ok && imu->state_flag == SENSOR_DATA_READY) {
-		return 1;
-	}
-	return 0;
+	return imu->init_result == TM_MPU6050_Result_Ok
+			&& imu->state_flag == SENSOR_DATA_READY;
 }
+
 
 void IMU_Sensor_Read_Update(IMU_Sensor* imu) {
 	if(IMU_IsReadyToRead(imu)) {
@@ -59,6 +58,7 @@ void IMU_Sensor_Read_Update(IMU_Sensor* imu) {
 	}
 }
 
+
 void AHRS_PrintSerial(USART_TypeDef* USARTx, float x, float y, float z) {
 	const int16_t buffer_size = 150;
 	char data[buffer_size];
@@ -70,6 +70,27 @@ void AHRS_PrintSerial(USART_TypeDef* USARTx, float x, float y, float z) {
 		TM_USART_Puts(USARTx, data);
 	}
 }
+
+
+void AHRS_PrintSerialEulers(USART_TypeDef* USARTx, EulerAngles angles) {
+	AHRS_PrintSerial(USARTx, angles.pitch, angles.roll, angles.yaw);
+}
+
+
+void AHRS_PrintSerialIMU_Results(USART_TypeDef* USARTx, IMU_Results result) {
+	AHRS_PrintSerial(USARTx, result.ax, result.ay, result.az);
+	TM_USART_Puts(USARTx, ", ");
+
+	AHRS_PrintSerial(USARTx, result.gx, result.gy, result.gz);
+	TM_USART_Puts(USARTx, ", ");
+
+	AHRS_PrintSerialEulers(USARTx, result.raw_angles);
+	TM_USART_Puts(USARTx, ", ");
+
+	AHRS_PrintSerialEulers(USARTx, result.filtered_angles);
+	TM_USART_Puts(USARTx, "\r\n");
+}
+
 
 float rotate180(float angle) {
 	if (angle > 0.0f) {
@@ -91,44 +112,37 @@ EulerAngles CalculateFromCalibratedAccelerometer(float ax, float ay, float az)
 	return result;
 }
 
-EulerAngles IMU_AHRS_Update(IMU_Sensor* imu, IMU_Results* results) {
-//    float gx, gy, gz, ax, ay, az, mx, my, mz;
-    EulerAngles result;
+
+IMU_Results IMU_AHRS_Update(IMU_Sensor* imu) {
+	IMU_Results result;
 
     const float dpsRangePerDigit = imu->reads.Gyro_Mult;
     const float accRangePerDigit = imu->reads.Acce_Mult;
 
     /* Convert data to gees, deg/sec and microTesla respectively */
-    results->gx = imu->reads.Gyroscope_X * dpsRangePerDigit;
-    results->gy = imu->reads.Gyroscope_Y * dpsRangePerDigit;
-    results->gz = imu->reads.Gyroscope_Z * dpsRangePerDigit;
+    result.gx = imu->reads.Gyroscope_X * dpsRangePerDigit;
+    result.gy = imu->reads.Gyroscope_Y * dpsRangePerDigit;
+    result.gz = imu->reads.Gyroscope_Z * dpsRangePerDigit;
 
-    results->ax = imu->reads.Accelerometer_X * accRangePerDigit;
-    results->ay = imu->reads.Accelerometer_Y * accRangePerDigit;
-    results->az = imu->reads.Accelerometer_Z * accRangePerDigit;
+    result.ax = imu->reads.Accelerometer_X * accRangePerDigit;
+    result.ay = imu->reads.Accelerometer_Y * accRangePerDigit;
+    result.az = imu->reads.Accelerometer_Z * accRangePerDigit;
 
-    results->mx = results->my = results->mz = 0; // no magnetometer on MPU6050
+    result.mx = result.my = result.mz = 0; // no magnetometer on MPU6050
 
-    result = CalculateFromCalibratedAccelerometer(results->ax, results->ay, results->az);
+    result.raw_angles = CalculateFromCalibratedAccelerometer(result.ax, result.ay, result.az); // will it blend?
     /* Call update function */
     /* This function must be called periodically in intervals set by sample rate on initialization process */
-    TM_AHRSIMU_UpdateAHRS(&imu->ahrs, AHRSIMU_DEG2RAD(results->gx), AHRSIMU_DEG2RAD(results->gy), AHRSIMU_DEG2RAD(results->gz),
-    		results->ax, results->ay, results->az, results->mx, results->my, results->mz);
+    TM_AHRSIMU_UpdateAHRS(&imu->ahrs, AHRSIMU_DEG2RAD(result.gx), AHRSIMU_DEG2RAD(result.gy), AHRSIMU_DEG2RAD(result.gz),
+    		result.ax, result.ay, result.az, result.mx, result.my, result.mz);
+
+    result.filtered_angles.pitch = imu->ahrs.Pitch;
+    result.filtered_angles.roll = rotate180(imu->ahrs.Roll); //for some reason roll is backwards on STM
+    result.filtered_angles.yaw = imu->ahrs.Yaw;
 
     if(imu->USART != NULL)
     {
-		AHRS_PrintSerial(imu->USART, results->ax, results->ay, results->az);
-		TM_USART_Puts(imu->USART, ", ");
-
-		AHRS_PrintSerial(imu->USART, results->gx, results->gy, results->gz);
-		TM_USART_Puts(imu->USART, ", ");
-
-		AHRS_PrintSerial(imu->USART, results->angles.pitch, results->angles.roll, results->angles.yaw);
-		TM_USART_Puts(imu->USART, ", ");
-
-		// roll of AHRSIMU
-		AHRS_PrintSerial(imu->USART, imu->ahrs.Pitch, rotate180(imu->ahrs.Roll), imu->ahrs.Yaw);
-		TM_USART_Puts(imu->USART, "\r\n");
+    	AHRS_PrintSerialIMU_Results(imu->USART, result);
     }
 
     return result;
