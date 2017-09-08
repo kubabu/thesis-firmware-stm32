@@ -1,0 +1,7 @@
+*.o
+*.bin
+*.elf
+*.d
+*.map
+*.mk
+SW4STM32/firmware-stm32/Debug/.gitignore
