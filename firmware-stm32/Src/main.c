@@ -52,7 +52,6 @@ I2C_HandleTypeDef hi2c1;
 UART_HandleTypeDef huart6;
 
 IMU_Sensor imu_instance;
-
 IMU_Sensor* imu;
 
 /* USER CODE BEGIN PV */
@@ -136,6 +135,11 @@ int main(void)
 	  if (now >= previous + update_interval) {
 		  previous = now;
 		  IMU_Results angles = IMU_AHRS_Update(imu);
+
+		  if(imu->USART != NULL)
+		  {
+			AHRS_PrintSerialIMU_Results(imu->USART, angles);
+		  }
 
 		  uint32_t nn_start = HAL_GetTick();
 

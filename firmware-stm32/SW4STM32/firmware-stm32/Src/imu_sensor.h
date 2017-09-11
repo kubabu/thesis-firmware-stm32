@@ -42,7 +42,7 @@ typedef struct IMU_Results {
 	float gx, gy, gz;	// gyroscope [deg/sec]
 	float ax, ay, az;	// acceleration [G]
 	float mx, my, mz;	// magnetometer [microTesla]
-	EulerAngles raw_angles;			// only with accelerometer
+	EulerAngles raw_angles;			// from accelerometer only
 	EulerAngles filtered_angles;	// with Madgwick filter
 } IMU_Results;
 
@@ -54,6 +54,8 @@ void IMU_Sensor_UpdateInterruptFlag(IMU_Sensor* imu, SENSOR_IRQ_STATE state);
 void IMU_Sensor_Read_Update(IMU_Sensor* imu);
 
 IMU_Results IMU_AHRS_Update(IMU_Sensor* imu);
+
+void AHRS_PrintSerialIMU_Results(USART_TypeDef* USARTx, IMU_Results result);
 
 
 #endif /* IMU_SENSOR_H_ */
