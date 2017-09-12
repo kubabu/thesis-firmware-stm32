@@ -4,4 +4,4 @@
 *.d
 *.map
 *.mk
-SW4STM32/firmware-stm32/Debug/.gitignore
+SW4STM32/firmware-stm32/Debug/

@@ -14,9 +14,7 @@
 #include <stdlib.h>
 
 #include "classifiers.h"
-
-
-const int SIZE = 50; // idk
+#include "tests.h"
 
 
 float min2(float x, float y) {
@@ -50,7 +48,7 @@ float sum(float **arr, int16_t size)
 }
 
 
-uint16_t cityblock(float* x, float* y, int16_t size) {
+float cityblock(float* x, float* y, int16_t size) {
 	float sum = 0;
 	for(int i = 0; i < size; ++i) {
 		sum += fabsf(x[i] - y[i]);
@@ -59,7 +57,7 @@ uint16_t cityblock(float* x, float* y, int16_t size) {
 }
 
 
-uint16_t fastdtw(float* x, float* y, int16_t size_p) {
+float fastdtw(float** x, float** y, int16_t size_p) {
 //	D0 = np.zeros(shape=(size + 1, size + 1))
 //	D0[0, 1:] = np.inf
 //	D0[1:, 0] = np.inf
@@ -70,10 +68,10 @@ uint16_t fastdtw(float* x, float* y, int16_t size_p) {
 //			D1[i, j] += min(D0[i, j], D0[i, j + 1], D0[i + 1, j])
 //	return D1[-1, -1] / sum(D1.shape)
 
-	float D0[SIZE + 1][SIZE + 1];
-	float D1[SIZE][SIZE];
+	float D0[DTW_SIZE + 1][DTW_SIZE + 1];
+	float D1[DTW_SIZE][DTW_SIZE];
 	float inf = 1.0 / 0.0; // xD totally correct carry on
-	int size = SIZE;
+	int size = DTW_SIZE;
 
 	for(int16_t i = 1; i <= size; ++i) {
 		D0[0][i] = inf;
@@ -82,7 +80,7 @@ uint16_t fastdtw(float* x, float* y, int16_t size_p) {
 
 	for(int16_t i = 1; i < size; ++i) {
 		for(uint16_t j = 1; j < size; ++j) {
-			D1[i][j] = cityblock(x, y, size);
+			D1[i][j] = cityblock(x[i], y[j], size);
 		}
 	}
 
@@ -96,3 +94,26 @@ uint16_t fastdtw(float* x, float* y, int16_t size_p) {
 	return D1[size][size] / sum((float**)D1, size);
 }
 
+
+uint8_t dtw_tests(USART_TypeDef *usart) {
+	float x[2] = {0.0, 0.0};
+	float y[2] = {0.0, 0.0};
+	float result = cityblock(x, y, 2);
+
+	if(result != 0.0) {
+		TM_USART_Puts(usart, "test1 failed");
+	}
+	float x2[2] = {1.0, 2.0};
+	float y2[2] = {1.0, 3.0};
+	result = cityblock(x2, y2, 2);
+	if(result != 1.0) {
+		TM_USART_Puts(usart, "test2 is failed");
+	}
+	float x3[2] = {1.0, 2.0};
+	float y3[2] = {2.0, 3.0};
+	result = cityblock(x3, y3, 2);
+	if(result != 2.0) {
+		TM_USART_Puts(usart, "test3 failed");
+	}
+	return 1;
+}

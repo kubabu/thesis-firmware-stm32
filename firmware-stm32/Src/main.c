@@ -36,6 +36,7 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
+#include "classifiers.h"
 #include "defines.h"
 #include "imu_sensor.h"
 #include "main.h"
@@ -143,7 +144,7 @@ int main(void)
 
 		  uint32_t nn_start = HAL_GetTick();
 
-		  uint16_t result = 0; // run_nn_classifier();
+		  uint8_t result = dtw_tests(USART6);
 
 		  uint32_t nn_duration = HAL_GetTick() - nn_start;
 

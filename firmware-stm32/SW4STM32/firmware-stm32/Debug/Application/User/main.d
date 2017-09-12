@@ -1,5 +1,6 @@
 Application/User/main.o: \
  /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/Src/main.c \
+ /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/Src/classifiers.h \
  /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/defines.h \
  /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/stm32fxxx_hal.h \
  /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/defines.h \
@@ -42,6 +43,8 @@ Application/User/main.o: \
  /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_usart.h \
  /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/tm_stm32_buffer.h \
  /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/Inc/main.h
+
+/media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/Src/classifiers.h:
 
 /media/kuba/Windows7/Users/Lenovo/VM_shared/Studia/INZ/Sources/firmware-current/firmware-stm32/SW4STM32/firmware-stm32/TM/defines.h:
 
