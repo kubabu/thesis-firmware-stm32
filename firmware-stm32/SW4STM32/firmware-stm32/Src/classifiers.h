@@ -12,21 +12,19 @@
 #include <stdint.h>
 
 
-// ile ficzeow maja dane (3xacc + 3xgyro + 3xyawpithroll + 3xyawpithrollkalman)
+// data features count (3xacc + 3xgyro + 3xyawpithroll + 3xyawpithrollkalman)
 #define FEATURES 12
-// jak dluga jest sekwejca (2s * 25HZ = 50)
+// length of reads window sequence (2s * 25HZ = 50)
 #define SEQUENCE_LEN 50
-
-//out
-#define DTW_SIZE 2 // idk
-
-
-uint16_t run_nn_classifier(float** data_series);
+#define PADDING 2
+#define PADDED_SEQ_LEN PADDING+SEQUENCE_LEN+PADDING
 
 
-float fastdtw(float x[][DTW_SIZE], float y[][DTW_SIZE]);
+extern float series[FEATURES][PADDED_SEQ_LEN];
 
-float cityblock(float* x, float* y, int16_t size);
+int16_t run_nn_classifier(float data_series[][PADDED_SEQ_LEN]);
+
+//int16_t run_dtw_classifier();
 
 
 #endif /* CLASSIFIERS_H_ */

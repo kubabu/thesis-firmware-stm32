@@ -141,10 +141,11 @@ int main(void)
 		  {
 			AHRS_PrintSerialIMU_Results(imu->USART, angles);
 		  }
+		  dtw_tests(USART6);
 
 		  uint32_t nn_start = HAL_GetTick();
 
-		  uint8_t result = dtw_tests(USART6);
+		  int16_t result = run_nn_classifier(series);
 
 		  uint32_t nn_duration = HAL_GetTick() - nn_start;
 

@@ -10,8 +10,6 @@
 #include "classifiers.h"
 
 #define OUT_CHANNELS 3
-#define PADDING 2
-#define PADDED_SEQ_LEN 54
 #define KERNEL_SIZE 5
 #define POOL_SIZE 5
 #define AFTER_POOL_LEN (SEQUENCE_LEN / POOL_SIZE)
@@ -116,7 +114,7 @@ float seq_max(float *seq, int size)
     return max;
 }
 
-uint16_t run_nn_classifier(float** data_series)
+int16_t run_nn_classifier(float data_series[][PADDED_SEQ_LEN])
 {
     for(int c_idx = 0; c_idx < OUT_CHANNELS; c_idx++)
 	{
