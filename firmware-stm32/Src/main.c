@@ -41,7 +41,7 @@
 #include "imu_sensor.h"
 #include "main.h"
 #include "stm32f4xx_hal.h"
-
+#include "tests.h"
 
 /* USER CODE BEGIN Includes */
 

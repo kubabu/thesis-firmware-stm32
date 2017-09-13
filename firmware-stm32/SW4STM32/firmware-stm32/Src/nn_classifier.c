@@ -10,16 +10,14 @@
 #include "classifiers.h"
 
 #define OUT_CHANNELS 3
-#define FEATURES 12
-#define SEQ_LEN 50
 #define PADDING 2
 #define PADDED_SEQ_LEN 54
 #define KERNEL_SIZE 5
 #define POOL_SIZE 5
-#define AFTER_POOL_LEN (SEQ_LEN / POOL_SIZE)
+#define AFTER_POOL_LEN (SEQUENCE_LEN / POOL_SIZE)
 
 
-const int seq_len = SEQ_LEN;
+const int seq_len = SEQUENCE_LEN;
 
 
 float series[FEATURES][PADDED_SEQ_LEN] = {
@@ -86,7 +84,7 @@ float bias[OUT_CHANNELS] = {
     0.00700f, 0.10914f, 0.06478f
 };
 
-float output[OUT_CHANNELS][SEQ_LEN] = {{0.0f}};
+float output[OUT_CHANNELS][SEQUENCE_LEN] = {{0.0f}};
 
 float pool_output[OUT_CHANNELS][AFTER_POOL_LEN] = {{0.0f}};
 
@@ -122,7 +120,7 @@ uint16_t run_nn_classifier(float** data_series)
 {
     for(int c_idx = 0; c_idx < OUT_CHANNELS; c_idx++)
 	{
-		for(int s_idx = 0; s_idx < SEQ_LEN; s_idx++)
+		for(int s_idx = 0; s_idx < SEQUENCE_LEN; s_idx++)
 		{
 			for(int f_idx = 0; f_idx < FEATURES; f_idx++)
 			{

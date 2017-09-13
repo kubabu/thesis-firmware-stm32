@@ -11,13 +11,20 @@
 #include <math.h>
 #include <stdint.h>
 
-#define DTW_SIZE 50 // idk
+
+// ile ficzeow maja dane (3xacc + 3xgyro + 3xyawpithroll + 3xyawpithrollkalman)
+#define FEATURES 12
+// jak dluga jest sekwejca (2s * 25HZ = 50)
+#define SEQUENCE_LEN 50
+
+//out
+#define DTW_SIZE 2 // idk
 
 
 uint16_t run_nn_classifier(float** data_series);
 
 
-float fastdtw(float** x, float** y, int16_t size_p);
+float fastdtw(float x[][DTW_SIZE], float y[][DTW_SIZE]);
 
 float cityblock(float* x, float* y, int16_t size);
 
