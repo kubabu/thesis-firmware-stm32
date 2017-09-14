@@ -25,7 +25,8 @@
 // ile jest zapamietanych probek. to samo co w metodze fit gdyby napisac X.shape[0]
 #define BATCH_SIZE 11
 
-#define DTW_SIZE 2
+#define DTW_SIZE 2 // sequence_len?
+#define DTW_YSIZE DTW_SIZE
 
 
 float min2(float x, float y) {
@@ -59,7 +60,7 @@ float sum(float arr[][DTW_SIZE], int16_t size)
 }
 
 
-float cityblock(float* x, float* y, int16_t size) {
+float cityblock(float x[DTW_SIZE], float y[DTW_SIZE], int16_t size) {
 	float sum = 0;
 	for(int i = 0; i < size; ++i) {
 		sum += fabsf(x[i] - y[i]);
@@ -70,41 +71,33 @@ float cityblock(float* x, float* y, int16_t size) {
 
 float fastdtw(float x[][DTW_SIZE], float y[][DTW_SIZE]) {
 	//	D0 = np.zeros(shape=(size + 1, size + 1))
-	volatile float D0[DTW_SIZE + 1][DTW_SIZE + 1] = {0};
+	volatile float D0[DTW_SIZE + 1][DTW_YSIZE + 1] = {0};
 	//	D1 = D0[1:, 1:]  CHECK
-	volatile float D1[DTW_SIZE][DTW_SIZE] = {0};
+	volatile float D1[DTW_SIZE][DTW_YSIZE] = {0};
 	float pos_inf = 1.0 / 0.0; // xD totally correct carry on
-	int16_t size = DTW_SIZE;
+	const int16_t size = DTW_SIZE;
+	const int16_t ysize = DTW_YSIZE;
 
 	for(int16_t i = 1; i <= size; ++i) {
 		// D0[0, 1:] = np.inf
 		D0[0][i] = pos_inf;
 		// D0[1:, 0] = np.inf
 		D0[i][0] = pos_inf;
-//		foo += size;
 	}
-//
-//	return foo;
-//
-//	D0[0][0] = 0;
-//	for(int16_t i = 0; i < size; ++i) {
-//		for(int16_t j = 0; j < size; ++j) {
-//			D0[i+1][j+1] = 0;
-//			D1[i][j] = 0;
-//		}
-//	}
 
 	//	D0[1:, 1:] = cdist(x, y, dist)
-	for(int16_t i = 1; i <= size; ++i) {
-		for(uint16_t j = 1; j <= size; ++j) {
-			D0[i][j] = cityblock(x[i], y[j], size);
+	for(int16_t i = 0; i < size; ++i) {
+		for(uint16_t j = 0; j < ysize; ++j) {
+			float cbvalue = cityblock(x[i], y[j], size);
+			D0[i + 1][j + 1] = cbvalue;
+			D1[i][j] = cbvalue;
 		}
 	}
 
 	// for i in range(size):
 	for(uint16_t i = 0; i < size; ++i) {
 		// for j in range(size):
-		for(uint16_t j = 0; j < size; ++j) {
+		for(uint16_t j = 0; j < ysize; ++j) {
 			// D1[i, j] += min(D0[i, j], D0[i, j + 1], D0[i + 1, j])
 			D1[i][j] += min3(D0[i][j], D0[i][j + 1], D0[i + 1][j]);
 		}
@@ -112,7 +105,7 @@ float fastdtw(float x[][DTW_SIZE], float y[][DTW_SIZE]) {
 
 	// return D1[-1, -1] / sum(D1.shape)
 	float D1_shape_sum = size * 2;
-	float result = D1[size - 1][size - 1] / D1_shape_sum;
+	float result = D1[size - 1][ysize - 1] / D1_shape_sum;
 
 	return result;
 }
@@ -147,18 +140,9 @@ uint8_t fastdtw_tests(USART_TypeDef *usart) {
 					{0.0, 0.0}};
 	float y0[2][2] = {{0.0, 0.0},
 					{0.0, 0.0}};
-	float result = fastdtw(x0, y0);
+	volatile float result = fastdtw(x0, y0);
 	if(result != 0.0) {
 		TM_USART_Puts(usart, "fastdtw test failed");
-	}
-
-	float x1[2][2] = {{1.0, 2.0},
-				      {1.0, 2.0}};
-	float y1[2][2] = {{2.0, 3.0},
-					  {3.0, 4.0}};
-	result = fastdtw(x1, y1);
-	if(result != 1.5) {
-		TM_USART_Puts(usart, "fastdtw test2 failed");
 	}
 
 	float x2[2][2] = {{0.0, 0.0},
@@ -168,6 +152,15 @@ uint8_t fastdtw_tests(USART_TypeDef *usart) {
 	result = fastdtw(x2, y2);
 	if(result != 1.0) {
 		TM_USART_Puts(usart, "fastdtw test2 failed");
+	}
+
+	float x3[2][2] = {{1.0, 2.0},
+				      {1.0, 2.0}};
+	float y3[2][2] = {{2.0, 3.0},
+					  {3.0, 4.0}};
+	result = fastdtw(x3, y3);
+	if(result != 1.5) {
+		TM_USART_Puts(usart, "fastdtw test3 failed");
 	}
 
 	return 0;
