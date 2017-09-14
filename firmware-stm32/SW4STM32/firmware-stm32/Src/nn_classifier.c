@@ -114,7 +114,7 @@ float seq_max(float *seq, int size)
     return max;
 }
 
-int16_t run_nn_classifier(float data_series[][PADDED_SEQ_LEN])
+int16_t run_nn_classifier(float data_series[FEATURES][PADDED_SEQ_LEN])
 {
     for(int c_idx = 0; c_idx < OUT_CHANNELS; c_idx++)
 	{
