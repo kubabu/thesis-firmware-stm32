@@ -26,7 +26,8 @@
 // ile jest zapamietanych probek. to samo co w metodze fit gdyby napisac X.shape[0]
 #define BATCH_SIZE 11
 
-#define DTW_SIZE 2 // sequence_len?
+#define DTW_SIZE 2 // SEQUENCE_LEN
+#define DTW_SIZE2 2 //FEATURES
 
 
 float min2(float x, float y) {
@@ -52,7 +53,7 @@ float sum(float arr[][DTW_SIZE], int16_t size)
 	float_t sum = 0;
 
 	for(uint16_t i = 0; i < size; ++i) {
-		for(uint16_t j = 0; j < size; ++j) {
+		for(uint16_t j = 0; j < DTW_SIZE; ++j) {
 			sum += arr[i][j];
 		}
 	}
@@ -67,9 +68,6 @@ float cityblock(float x[DTW_SIZE], float y[DTW_SIZE], int16_t size) {
 	}
 	return sum;
 }
-
-
-#define DTW_SIZE2 2 //FEATURES
 
 
 float fastdtw(float x[DTW_SIZE2][DTW_SIZE], float y[DTW_SIZE2][DTW_SIZE]) {
@@ -115,15 +113,15 @@ float fastdtw(float x[DTW_SIZE2][DTW_SIZE], float y[DTW_SIZE2][DTW_SIZE]) {
 
 
 uint8_t cityblock_tests(USART_TypeDef *usart) {
-	float x[2] = {0.0, 0.0};
-	float y[2] = {0.0, 0.0};
+	float x[DTW_SIZE] = {0.0};
+	float y[DTW_SIZE] = {0.0};
 	float result = cityblock(x, y, 2);
 
 	if(result != 0.0) {
 		TM_USART_Puts(usart, "test1 failed");
 	}
-	float x2[2] = {1.0, 2.0};
-	float y2[2] = {1.0, 3.0};
+	float x2[DTW_SIZE] = {1.0, 2.0};
+	float y2[DTW_SIZE] = {1.0, 3.0};
 	result = cityblock(x2, y2, 2);
 	if(result != 1.0) {
 		TM_USART_Puts(usart, "test2 is failed");
@@ -139,27 +137,27 @@ uint8_t cityblock_tests(USART_TypeDef *usart) {
 
 
 uint8_t fastdtw_tests(USART_TypeDef *usart) {
-	float x0[2][2] = {{0.0, 0.0},
+	float x0[DTW_SIZE2][DTW_SIZE] = {{0.0, 0.0},
 					{0.0, 0.0}};
-	float y0[2][2] = {{0.0, 0.0},
+	float y0[DTW_SIZE2][DTW_SIZE] = {{0.0, 0.0},
 					{0.0, 0.0}};
 	volatile float result = fastdtw(x0, y0);
 	if(result != 0.0) {
 		TM_USART_Puts(usart, "fastdtw test failed");
 	}
 
-	float x2[2][2] = {{0.0, 0.0},
+	float x2[DTW_SIZE2][DTW_SIZE] = {{0.0, 0.0},
 					  {0.0, 0.0}};
-	float y2[2][2] = {{1.0, 1.0},
+	float y2[DTW_SIZE2][DTW_SIZE] = {{1.0, 1.0},
 					  {1.0, 1.0}};
 	result = fastdtw(x2, y2);
 	if(result != 1.0) {
 		TM_USART_Puts(usart, "fastdtw test2 failed");
 	}
 
-	float x3[2][2] = {{1.0, 2.0},
+	float x3[DTW_SIZE2][DTW_SIZE] = {{1.0, 2.0},
 				      {1.0, 2.0}};
-	float y3[2][2] = {{2.0, 3.0},
+	float y3[DTW_SIZE2][DTW_SIZE] = {{2.0, 3.0},
 					  {3.0, 4.0}};
 	result = fastdtw(x3, y3);
 	if(result != 1.5) {
@@ -182,6 +180,7 @@ float distance(float x1[FEATURES][SEQUENCE_LEN], float x[FEATURES][SEQUENCE_LEN]
     return fastdtw(x1, x);
 }
 
+
 // koszty nowej probki w porownaniu z istniejacymi (distances w predict_cost)
 float costs[BATCH_SIZE] = {0};
 
@@ -194,18 +193,6 @@ int stored_y[BATCH_SIZE] = {2,1,1,2,2,4,3,4,4,2,2};
 //dane do sprawdzemia parametr X w predict cost
 float X[FEATURES][SEQUENCE_LEN] = {0};
 
-// printuje liste floatow
-// //printuje liste intow
-//void iprint_seq(const char *name, int *seq, int len)
-//{
-//    puts(name);
-//    for(int i = 0; i < len; i++)
-//    {
-//        printf("%d ", seq[i]);
-//    }
-//
-//    putchar('\n');
-//}
 
 // implementacja https://docs.scipy.org/doc/numpy/reference/generated/numpy.argsort.html
 // jako ze na potrzeba K indkesow najmniejszych elkementow i tylko K wiec zatrzymuje sie wczesniej
@@ -272,8 +259,7 @@ int get_most_frequent_in_array(int *indices)
 int16_t run_dtw_classifier()
 {
     //oblicz odlegosc do kazdego zapamietanego elementu
-    for(int idx = 0; idx < BATCH_SIZE; idx++)
-    {
+    for(int idx = 0; idx < BATCH_SIZE; idx++) {
         costs[idx] = distance(stored_x[idx], X);
     }
     //            0    1  2 3  4 5 6 7  8  9 10
@@ -288,20 +274,17 @@ int16_t run_dtw_classifier()
     // cost = np.sum(distances[neighbours])
     float sum_of_cost = 0.0f;
 
-    for(int i = 0; i < K; i++)
-    {
+    for(int i = 0; i < K; i++) {
         sum_of_cost += costs[indices[i]];
     }
     //sprawdz czy kost dopasowania nie jest za duzy
     // if cost >= self.threshsold:
     //                 predictions[idx] = 'none'
 
-    if(sum_of_cost > THRESHOLD)
-    {
+    if(sum_of_cost > THRESHOLD) {
     	return -1;
     }
-    else
-    {
+     else {
         int gesture = get_most_frequent_in_array(indices);
         return gesture;
     }
