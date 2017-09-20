@@ -26,7 +26,7 @@
 // ile jest zapamietanych probek. to samo co w metodze fit gdyby napisac X.shape[0]
 #define BATCH_SIZE 11
 
-#define DTW_SIZE 2 // SEQUENCE_LEN
+#define DTW_SIZE SEQUENCE_LEN
 #define DTW_SIZE2 2 //FEATURES
 
 
@@ -89,7 +89,7 @@ float fastdtw(float x[DTW_SIZE2][DTW_SIZE], float y[DTW_SIZE2][DTW_SIZE]) {
 	//	D0[1:, 1:] = cdist(x, y, dist)
 	for(int16_t i = 0; i < size; ++i) {
 		for(uint16_t j = 0; j < size; ++j) {
-			float cbvalue = cityblock(x[i], y[j], size);
+			float cbvalue = cityblock(x[i], y[j], DTW_SIZE);
 			D0[i + 1][j + 1] = cbvalue;
 			D1[i][j] = cbvalue;
 		}
@@ -115,57 +115,75 @@ float fastdtw(float x[DTW_SIZE2][DTW_SIZE], float y[DTW_SIZE2][DTW_SIZE]) {
 uint8_t cityblock_tests(USART_TypeDef *usart) {
 	float x[DTW_SIZE] = {0.0};
 	float y[DTW_SIZE] = {0.0};
-	float result = cityblock(x, y, 2);
+	int16_t size = DTW_SIZE;
+	volatile float result = cityblock(x, y, size);
 
 	if(result != 0.0) {
 		TM_USART_Puts(usart, "test1 failed");
 	}
-	float x2[DTW_SIZE] = {1.0, 2.0};
-	float y2[DTW_SIZE] = {1.0, 3.0};
-	result = cityblock(x2, y2, 2);
-	if(result != 1.0) {
+	float x2[DTW_SIZE] = {0.0};
+	float y2[DTW_SIZE] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+	result = cityblock(x2, y2, size);
+	if(result != 50.0) {
 		TM_USART_Puts(usart, "test2 is failed");
 	}
-	float x3[2] = {1.0, 2.0};
-	float y3[2] = {2.0, 3.0};
-	result = cityblock(x3, y3, 2);
-	if(result != 2.0) {
-		TM_USART_Puts(usart, "test3 failed");
-	}
+//	float x3[2] = {1.0, 2.0};
+//	float y3[2] = {2.0, 3.0};
+//	result = cityblock(x3, y3, 2);
+//	if(result != 2.0) {
+//		TM_USART_Puts(usart, "test3 failed");
+//	}
 	return 0;
 }
 
 
 uint8_t fastdtw_tests(USART_TypeDef *usart) {
-	float x0[DTW_SIZE2][DTW_SIZE] = {{0.0, 0.0},
-					{0.0, 0.0}};
-	float y0[DTW_SIZE2][DTW_SIZE] = {{0.0, 0.0},
-					{0.0, 0.0}};
+	float x0[DTW_SIZE2][DTW_SIZE] = {{0.0}, {0.0}};
+	float y0[DTW_SIZE2][DTW_SIZE] = {{0.0}, {0.0}};
 	volatile float result = fastdtw(x0, y0);
 	if(result != 0.0) {
 		TM_USART_Puts(usart, "fastdtw test failed");
 	}
 
-	float x2[DTW_SIZE2][DTW_SIZE] = {{0.0, 0.0},
-					  {0.0, 0.0}};
-	float y2[DTW_SIZE2][DTW_SIZE] = {{1.0, 1.0},
-					  {1.0, 1.0}};
+	float x2[DTW_SIZE2][DTW_SIZE] = {{0.0}, {0.0}};
+	float y2[DTW_SIZE2][DTW_SIZE] = {
+			{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+			{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+	};
 	result = fastdtw(x2, y2);
-	if(result != 1.0) {
+	if(result != 25.0) {
 		TM_USART_Puts(usart, "fastdtw test2 failed");
 	}
 
-	float x3[DTW_SIZE2][DTW_SIZE] = {{1.0, 2.0},
-				      {1.0, 2.0}};
-	float y3[DTW_SIZE2][DTW_SIZE] = {{2.0, 3.0},
-					  {3.0, 4.0}};
-	result = fastdtw(x3, y3);
-	if(result != 1.5) {
+	float x3[DTW_SIZE2][DTW_SIZE] = {{0.0}, {0.0}};
+	float y3[DTW_SIZE2][DTW_SIZE] = {
+			{0},
+			{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
+	};
+		result = fastdtw(x3, y3);
+	if(result != 12.5) {
 		TM_USART_Puts(usart, "fastdtw test3 failed");
 	}
 
 	return 0;
 }
+
 
 uint8_t dtw_tests(USART_TypeDef *usart) {
 	cityblock_tests(usart);
