@@ -2,3 +2,5 @@
 /Drivers/
 /Src/
 /TM/
+/makefile
+/objects.list
