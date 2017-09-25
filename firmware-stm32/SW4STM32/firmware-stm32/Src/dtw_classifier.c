@@ -67,13 +67,12 @@ float cityblock(float x[DTW_SIZE], float y[DTW_SIZE], int16_t size) {
 
 
 float fastdtw(float x[DTW_SIZE2][DTW_SIZE], float y[DTW_SIZE2][DTW_SIZE]) {
-	const float pos_inf = 1.0 / 0.0; // xD totally correct carry on
+	const float pos_inf = 1.0 / 0.0; // srsrly this is correct
 	const int16_t size = DTW_SIZE2;
 
 	//	D0 = np.zeros(shape=(size + 1, size + 1))
 	volatile float D0[DTW_SIZE2 + 1][DTW_SIZE2 + 1] = {0};
-	//	D1 = D0[1:, 1:]  CHECK
-	volatile float D1[DTW_SIZE2][DTW_SIZE2] = {0};
+	//	D1 = D0[1:, 1:]
 
 	for(int16_t i = 1; i <= size; ++i) {
 		// D0[0, 1:] = np.inf
@@ -87,7 +86,6 @@ float fastdtw(float x[DTW_SIZE2][DTW_SIZE], float y[DTW_SIZE2][DTW_SIZE]) {
 		for(uint16_t j = 0; j < size; ++j) {
 			float cbvalue = cityblock(x[i], y[j], DTW_SIZE);
 			D0[i + 1][j + 1] = cbvalue;
-			D1[i][j] = cbvalue;
 		}
 	}
 
@@ -96,15 +94,13 @@ float fastdtw(float x[DTW_SIZE2][DTW_SIZE], float y[DTW_SIZE2][DTW_SIZE]) {
 		// for j in range(size):
 		for(uint16_t j = 0; j < size; ++j) {
 			// D1[i, j] += min(D0[i, j], D0[i, j + 1], D0[i + 1, j])
-			D1[i][j] += min3(D0[i][j], D0[i][j + 1], D0[i + 1][j]);
+			D0[i + 1][j + 1] += min3(D0[i][j], D0[i][j + 1], D0[i + 1][j]);
 		}
 	}
 
 	// return D1[-1, -1] / sum(D1.shape)
 	float D1_shape_sum = size * 2;
-	float result = D1[size - 1][size - 1] / D1_shape_sum;
-
-	return result;
+	return D0[size][size] / D1_shape_sum;
 }
 
 
