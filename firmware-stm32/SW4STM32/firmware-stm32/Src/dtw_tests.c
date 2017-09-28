@@ -11,16 +11,16 @@ char msg[64];
 
 
 uint8_t cityblock_tests(USART_TypeDef *usart) {
-	float x[DTW_SIZE] = {0.0};
-	float y[DTW_SIZE] = {0.0};
-	int16_t size = DTW_SIZE;
+	float x[DTW_SEQUENCE_LEN] = {0.0};
+	float y[DTW_SEQUENCE_LEN] = {0.0};
+	int16_t size = DTW_SEQUENCE_LEN;
 	volatile float result = cityblock(x, y, size);
 
 	if(result != 0.0) {
 		TM_USART_Puts(usart, "test1 failed");
 	}
-	float x2[DTW_SIZE] = {0.0};
-	float y2[DTW_SIZE] = {
+	float x2[DTW_SEQUENCE_LEN] = {0.0};
+	float y2[DTW_SEQUENCE_LEN] = {
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -36,11 +36,11 @@ uint8_t cityblock_tests(USART_TypeDef *usart) {
 
 
 uint8_t fastdtw_tests(USART_TypeDef *usart) {
-	float x[DTW_SIZE2][DTW_SIZE] = {
+	float x[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
-	float y0[DTW_SIZE2][DTW_SIZE] = {
+	float y0[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
@@ -52,7 +52,7 @@ uint8_t fastdtw_tests(USART_TypeDef *usart) {
 	}
 
 
-	float y1[DTW_SIZE2][DTW_SIZE] = {
+	float y1[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -121,7 +121,7 @@ uint8_t fastdtw_tests(USART_TypeDef *usart) {
 		TM_USART_Puts(usart, msg);
 	}
 
-	float y2[DTW_SIZE2][DTW_SIZE] = {
+	float y2[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -138,7 +138,7 @@ uint8_t fastdtw_tests(USART_TypeDef *usart) {
 		TM_USART_Puts(usart, msg);
 	}
 
-	float y3[DTW_SIZE2][DTW_SIZE] = {
+	float y3[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,

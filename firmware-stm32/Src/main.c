@@ -135,13 +135,12 @@ int main(void)
 
 	  if (now >= previous + update_interval) {
 		  previous = now;
-		  IMU_Results angles = IMU_AHRS_Update(imu);
-
-		  if(imu->USART != NULL)
-		  {
-			AHRS_PrintSerialIMU_Results(imu->USART, angles);
-		  }
-		  dtw_tests(USART6);
+//		  IMU_Results angles = IMU_AHRS_Update(imu);
+//
+//		  if(imu->USART != NULL)
+//		  {
+//			AHRS_PrintSerialIMU_Results(imu->USART, angles);
+//		  }
 
 		  uint32_t nn_start = HAL_GetTick();
 
@@ -150,8 +149,17 @@ int main(void)
 		  uint32_t nn_duration = HAL_GetTick() - nn_start;
 
 		  char msg[25];
-		  sprintf(msg, "%d, duration %ld [ms]\r\n", result, nn_duration);
+		  sprintf(msg, "nn=%d duration %ld [ms]\r\n", result, nn_duration);
 		  TM_USART_Puts(USART6, msg);
+		  float X[DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};
+		  nn_start = HAL_GetTick();
+
+		  result = run_dtw_classifier(X);
+
+		  nn_duration = HAL_GetTick() - nn_start;
+		  sprintf(msg, "dtw=%d duration %ld [ms]\r\n", result, nn_duration);
+		  TM_USART_Puts(USART6, msg);
+
 	  }
   }
   /* USER CODE END 3 */

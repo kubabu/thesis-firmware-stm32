@@ -25,6 +25,7 @@
 "Src/dtw_tests.o"
 "Src/imu_sensor.o"
 "Src/nn_classifier.o"
+"Src/ringbuf.o"
 "TM/tm_stm32_ahrs_imu.o"
 "TM/tm_stm32_buffer.o"
 "TM/tm_stm32_delay.o"

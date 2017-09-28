@@ -20,17 +20,17 @@
 #define PADDED_SEQ_LEN PADDING+SEQUENCE_LEN+PADDING
 
 // for fastdtw
-#define DTW_SIZE SEQUENCE_LEN
-#define DTW_SIZE2 FEATURES
+#define DTW_SEQUENCE_LEN SEQUENCE_LEN
+#define DTW_FEATURES FEATURES
 
 
 extern float series[FEATURES][PADDED_SEQ_LEN];
 
 int16_t run_nn_classifier(float data_series[][PADDED_SEQ_LEN]);
 
-//int16_t run_dtw_classifier();
+int16_t run_dtw_classifier(float X[DTW_FEATURES][DTW_SEQUENCE_LEN]);
 
-float cityblock(float x[DTW_SIZE], float y[DTW_SIZE], int16_t size);
-float fastdtw(float x[DTW_SIZE2][DTW_SIZE], float y[DTW_SIZE2][DTW_SIZE]);
+float cityblock(float x[DTW_SEQUENCE_LEN], float y[DTW_SEQUENCE_LEN], int16_t size);
+float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], float y[DTW_FEATURES][DTW_SEQUENCE_LEN]);
 
 #endif /* CLASSIFIERS_H_ */

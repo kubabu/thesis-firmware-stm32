@@ -44,12 +44,12 @@ float min3(float x, float y, float z) {
 }
 
 
-float sum(float arr[][DTW_SIZE], int16_t size)
+float sum(float arr[][DTW_SEQUENCE_LEN], int16_t size)
 {
 	float_t sum = 0;
 
 	for(uint16_t i = 0; i < size; ++i) {
-		for(uint16_t j = 0; j < DTW_SIZE; ++j) {
+		for(uint16_t j = 0; j < DTW_SEQUENCE_LEN; ++j) {
 			sum += arr[i][j];
 		}
 	}
@@ -57,7 +57,7 @@ float sum(float arr[][DTW_SIZE], int16_t size)
 }
 
 
-float cityblock(float x[DTW_SIZE], float y[DTW_SIZE], int16_t size) {
+float cityblock(float x[DTW_SEQUENCE_LEN], float y[DTW_SEQUENCE_LEN], int16_t size) {
 	float sum = 0;
 	for(int i = 0; i < size; ++i) {
 		sum += fabsf(x[i] - y[i]);
@@ -66,12 +66,12 @@ float cityblock(float x[DTW_SIZE], float y[DTW_SIZE], int16_t size) {
 }
 
 
-float fastdtw(float x[DTW_SIZE2][DTW_SIZE], float y[DTW_SIZE2][DTW_SIZE]) {
+float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], float y[DTW_FEATURES][DTW_SEQUENCE_LEN]) {
 	const float pos_inf = 1.0 / 0.0; // srsrly this is correct
-	const int16_t size = DTW_SIZE2;
+	const int16_t size = DTW_FEATURES;
 
 	//	D0 = np.zeros(shape=(size + 1, size + 1))
-	volatile float D0[DTW_SIZE2 + 1][DTW_SIZE2 + 1] = {0};
+	volatile float D0[DTW_FEATURES + 1][DTW_FEATURES + 1] = {0};
 	//	D1 = D0[1:, 1:]
 
 	for(int16_t i = 1; i <= size; ++i) {
@@ -84,7 +84,7 @@ float fastdtw(float x[DTW_SIZE2][DTW_SIZE], float y[DTW_SIZE2][DTW_SIZE]) {
 	//	D0[1:, 1:] = cdist(x, y, dist)
 	for(int16_t i = 0; i < size; ++i) {
 		for(uint16_t j = 0; j < size; ++j) {
-			float cbvalue = cityblock(x[i], y[j], DTW_SIZE);
+			float cbvalue = cityblock(x[i], y[j], DTW_SEQUENCE_LEN);
 			D0[i + 1][j + 1] = cbvalue;
 		}
 	}
@@ -105,7 +105,7 @@ float fastdtw(float x[DTW_SIZE2][DTW_SIZE], float y[DTW_SIZE2][DTW_SIZE]) {
 
 
 //fja oblcizajaca koszt dopasowania odpowiednik ffastdtw
-float distance(float x1[FEATURES][SEQUENCE_LEN], float x[FEATURES][SEQUENCE_LEN])
+float distance(float x1[DTW_FEATURES][DTW_SEQUENCE_LEN], float x[DTW_FEATURES][DTW_SEQUENCE_LEN])
 {
     return fastdtw(x1, x);
 }
@@ -115,13 +115,10 @@ float distance(float x1[FEATURES][SEQUENCE_LEN], float x[FEATURES][SEQUENCE_LEN]
 float costs[BATCH_SIZE] = {0};
 
 //zapamietane probki (self.X)
-float stored_x[BATCH_SIZE][FEATURES][SEQUENCE_LEN] = {0};
+float stored_x[BATCH_SIZE][DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};
 
 //zapamietane etykiety problek (self.y)
 int stored_y[BATCH_SIZE] = {2,1,1,2,2,4,3,4,4,2,2};
-
-//dane do sprawdzemia parametr X w predict cost
-float X[FEATURES][SEQUENCE_LEN] = {0};
 
 
 // implementacja https://docs.scipy.org/doc/numpy/reference/generated/numpy.argsort.html
@@ -131,7 +128,7 @@ float X[FEATURES][SEQUENCE_LEN] = {0};
 // to jest odpowiednik
 // indices = np.argsort(array)
 // indices = indices[:K]
-void part_argsort(float* array, int *indices)
+void part_argsort(float array[BATCH_SIZE], int indices[K])
 {
     int used[BATCH_SIZE] = {0};
 
@@ -140,7 +137,8 @@ void part_argsort(float* array, int *indices)
         int idx = -1;
         float val = +100000;
 
-        for(int j = idx; j < BATCH_SIZE; j++)
+        for(int j = idx; j < BATCH_SIZE; j++) // TODO sprawdzić
+		for(int j = 0; j < BATCH_SIZE; j++)
         {
             if(array[j] < val && used[j] == 0)
             {
@@ -161,13 +159,14 @@ void part_argsort(float* array, int *indices)
 // (values, counts) = np.unique(labels, return_counts=True)
 // ind = np.argmax(counts)
 // pred = values[ind]  # prints the most frequent element
-int get_most_frequent_in_array(int *indices)
+int get_most_frequent_in_array(int indices[K])
 {
     int buckets[NUMBER_OF_GESTURES] = {0};
 
     for(int i = 0; i < K; i++)
     {
-        int bucket_id = stored_y[indices[i]];
+    	int ind_i = indices[i];
+        int bucket_id = stored_y[ind_i];
         buckets[bucket_id] = buckets[bucket_id] + 1;
     }
 
@@ -186,7 +185,7 @@ int get_most_frequent_in_array(int *indices)
 }
 
 
-int16_t run_dtw_classifier()
+int16_t run_dtw_classifier(float X[DTW_FEATURES][DTW_SEQUENCE_LEN])
 {
     //oblicz odlegosc do kazdego zapamietanego elementu
     for(int idx = 0; idx < BATCH_SIZE; idx++) {
@@ -194,8 +193,8 @@ int16_t run_dtw_classifier()
     }
     //            0    1  2 3  4 5 6 7  8  9 10
     // to symuluje jakies wyniki
-    float costs[] = {1,13,4,5,1,0,8,1,2,5,8};
-    //BATCH_SIZE] = {2, 1,1,2,2,4,3,4,4,2,2};
+    float costs[BATCH_SIZE] = {1,13,4,5,1,0,8,1,2,5,8};
+    		  //BATCH_SIZE] = {2, 1,1,2,2,4,3,4,4,2,2};
     int indices[K]  = {0};
     part_argsort(costs,  indices);
 
