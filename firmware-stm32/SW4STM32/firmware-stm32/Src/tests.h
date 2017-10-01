@@ -14,12 +14,17 @@
 
 #include "defines.h"
 
+typedef enum tests_result_t {
+	TEST_FAILED = 0,
+	TEST_PASSED = 1
+} tests_result_t;
+
 
 uint16_t run_all_tests(USART_TypeDef *usart);
 
 // test is failed if testval is not true
-void check_value(int testval, float result, float expected_value, char *msg);
-void check_exact_value(float result, float expected_value, char *msg);
+tests_result_t check_value(int testval, float result, float expected_value, char *msg);
+tests_result_t check_exact_value(float result, float expected_value, char *msg);
 
 
 void _run_dtw_tests(void);

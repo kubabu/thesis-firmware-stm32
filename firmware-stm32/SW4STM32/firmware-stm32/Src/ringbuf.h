@@ -33,15 +33,35 @@
 
 typedef struct ringbuf_t {
 	float *buffer;
-	size_t head_index;
+	int16_t head_index;
     size_t capacity;
     uint8_t is_filled;
 } ringbuf_t;
 
 
-ringbuf_t init(size_t capacity, float buffer[]);
 
-void push(ringbuf_t *buf, float val);
+// structure allowing to iterate over last n elements in cyclic buffer
+typedef struct rbuf_iterator_t {
+	ringbuf_t *buf;
+	size_t size;
+} rbuf_iterator_t;
+
+
+ringbuf_t ringbuf_init(size_t capacity, float buffer[]);
+
+void ringbuf_push(ringbuf_t *buf, float val);
+
+// check last added element to buffer
+float ringbuf_peek(ringbuf_t *buf);
+
+// only negative indices are valid!
+// i = -1 is previous, -2 previous from previous and so on
+float ringbuf_get_prev(ringbuf_t *buf, int16_t i);
+
+
+rbuf_iterator_t get_iterator(ringbuf_t *buf, size_t size);
+
+float iterate(rbuf_iterator_t iter, size_t i);
 
 ///*
 // * Create a new ring buffer with the given capacity (usable
