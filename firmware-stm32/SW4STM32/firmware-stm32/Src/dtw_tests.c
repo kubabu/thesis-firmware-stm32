@@ -7,18 +7,14 @@
 #include "classifiers.h"
 #include "tests.h"
 
-char msg[64];
 
-
-uint8_t cityblock_tests(USART_TypeDef *usart) {
+void cityblock_tests(void) {
 	float x[DTW_SEQUENCE_LEN] = {0.0};
 	float y[DTW_SEQUENCE_LEN] = {0.0};
 	int16_t size = DTW_SEQUENCE_LEN;
-	volatile float result = cityblock(x, y, size);
 
-	if(result != 0.0) {
-		TM_USART_Puts(usart, "test1 failed");
-	}
+	check_value(cityblock(x, y, size), 0.0, "test1 failed");
+
 	float x2[DTW_SEQUENCE_LEN] = {0.0};
 	float y2[DTW_SEQUENCE_LEN] = {
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -26,16 +22,12 @@ uint8_t cityblock_tests(USART_TypeDef *usart) {
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-	result = cityblock(x2, y2, size);
-	if(result != 50.0) {
-		TM_USART_Puts(usart, "test2 is failed");
-	}
 
-	return 0;
+	check_value(cityblock(x2, y2, size), 50.0, "cityblock test2");
 }
 
 
-uint8_t fastdtw_tests(USART_TypeDef *usart) {
+void fastdtw_tests(void) {
 	float x[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
@@ -44,13 +36,8 @@ uint8_t fastdtw_tests(USART_TypeDef *usart) {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
-	volatile float result = fastdtw(x, y0);
-	volatile float exp_val = 0.0;
-	if(result != exp_val) {
-		sprintf(msg, "fastdtw test failed: expected %f got %f\r\n", exp_val, result);
-		TM_USART_Puts(usart, msg);
-	}
 
+	check_value(fastdtw(x, y0), 0.0, "fastdtw test0");
 
 	float y1[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -114,12 +101,7 @@ uint8_t fastdtw_tests(USART_TypeDef *usart) {
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
 	};
-	result = fastdtw(x, y1);
-	exp_val = 25.0;
-	if(result != exp_val) {
-		sprintf(msg, "fastdtw test y1 failed: expected %f got %f\r\n", exp_val, result);
-		TM_USART_Puts(usart, msg);
-	}
+	check_value(fastdtw(x, y1), 25.0, "fastdtw test y1");
 
 	float y2[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -131,12 +113,8 @@ uint8_t fastdtw_tests(USART_TypeDef *usart) {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}
 	};
-	result = fastdtw(x, y2);
-	exp_val = 2.08333325;
-	if(result != exp_val) {
-		sprintf(msg, "fastdtw test y2 failed: expected %f got %f\r\n", exp_val, result);
-		TM_USART_Puts(usart, msg);
-	}
+
+	check_value(fastdtw(x, y2), 2.08333325, "fastdtw test y2");
 
 	float y3[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -148,21 +126,13 @@ uint8_t fastdtw_tests(USART_TypeDef *usart) {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0}
 	};
-	result = fastdtw(x, y3);
-	exp_val = 0.416666657;
-	if(result != exp_val) {
-		sprintf(msg, "fastdtw test y2 failed: expected %f got %f\r\n", exp_val, result);
-		TM_USART_Puts(usart, msg);
-		TM_USART_Puts(usart, "fastdtw test on y3 failed");
-	}
 
-	return 0;
+	check_value(fastdtw(x, y3), 0.416666657, "fastdtw test y3");
 }
 
 
-uint8_t dtw_tests(USART_TypeDef *usart) {
-	cityblock_tests(usart);
-	fastdtw_tests(usart);
-	return 0;
+void _run_dtw_tests(void) {
+	cityblock_tests();
+	fastdtw_tests();
 }
 

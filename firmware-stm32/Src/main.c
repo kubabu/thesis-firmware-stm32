@@ -112,18 +112,21 @@ int main(void)
   /* USER CODE BEGIN 2 */
   TM_USART_Init(USART6, TM_USART_PinsPack_1, 115200);
 
+  run_all_tests(USART6);
+
   imu = &imu_instance;
   IMU_Sensor_Initialize(imu, USART6);
-  /* USER CODE END 2 */
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
   volatile uint32_t now, previous;
   const uint32_t update_frequency = 100;	// Hz
   const uint32_t update_interval = 1000 / update_frequency; // ms
 
   previous = 0;
 
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
   while (1)
   {
   /* USER CODE END WHILE */
