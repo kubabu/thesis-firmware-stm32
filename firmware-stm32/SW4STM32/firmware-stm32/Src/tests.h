@@ -17,7 +17,10 @@
 
 uint16_t run_all_tests(USART_TypeDef *usart);
 
-void check_value(float result, float expected_value, char *msg);
+// test is failed if testval is not true
+void check_value(int testval, float result, float expected_value, char *msg);
+void check_exact_value(float result, float expected_value, char *msg);
+
 
 void _run_dtw_tests(void);
 void _run_rbuf_tests(void);

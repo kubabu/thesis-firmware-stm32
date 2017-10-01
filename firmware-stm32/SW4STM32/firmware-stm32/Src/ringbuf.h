@@ -35,7 +35,13 @@ typedef struct ringbuf_t {
 	float *buffer;
 	size_t head_index;
     size_t capacity;
+    uint8_t is_filled;
 } ringbuf_t;
+
+
+ringbuf_t init(size_t capacity, float buffer[]);
+
+void push(ringbuf_t *buf, float val);
 
 ///*
 // * Create a new ring buffer with the given capacity (usable

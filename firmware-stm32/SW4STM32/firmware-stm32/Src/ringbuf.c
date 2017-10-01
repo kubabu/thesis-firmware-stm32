@@ -10,6 +10,28 @@
 
 
 
+ringbuf_t init(size_t capacity, float buffer[]) {
+	ringbuf_t result;
+
+	result.capacity = capacity;
+	result.buffer = buffer;
+	result.head_index = 0;
+	result.is_filled = 0;
+
+	return result;
+}
+
+
+void push(ringbuf_t *buf, float val) {
+	buf->buffer[buf->head_index] = val;
+	buf->head_index++;
+	if(buf->head_index >= buf->capacity) {
+		buf->head_index = 0;
+		buf->is_filled = 1;
+	}
+}
+
+
 //
 //ringbuf_t ringbuf_new(size_t capacity)
 //{

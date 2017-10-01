@@ -111,6 +111,7 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
   TM_USART_Init(USART6, TM_USART_PinsPack_1, 115200);
+  TM_USART_Puts(USART6, "\r\n");
 
   run_all_tests(USART6);
 
@@ -144,24 +145,6 @@ int main(void)
 //		  {
 //			AHRS_PrintSerialIMU_Results(imu->USART, angles);
 //		  }
-
-		  uint32_t nn_start = HAL_GetTick();
-
-		  int16_t result = run_nn_classifier(series);
-
-		  uint32_t nn_duration = HAL_GetTick() - nn_start;
-
-		  char msg[25];
-		  sprintf(msg, "nn=%d duration %ld [ms]\r\n", result, nn_duration);
-		  TM_USART_Puts(USART6, msg);
-		  float X[DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};
-		  nn_start = HAL_GetTick();
-
-		  result = run_dtw_classifier(X);
-
-		  nn_duration = HAL_GetTick() - nn_start;
-		  sprintf(msg, "dtw=%d duration %ld [ms]\r\n", result, nn_duration);
-		  TM_USART_Puts(USART6, msg);
 
 	  }
   }

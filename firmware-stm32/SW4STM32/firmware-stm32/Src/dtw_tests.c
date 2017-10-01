@@ -13,7 +13,7 @@ void cityblock_tests(void) {
 	float y[DTW_SEQUENCE_LEN] = {0.0};
 	int16_t size = DTW_SEQUENCE_LEN;
 
-	check_value(cityblock(x, y, size), 0.0, "test1 failed");
+	check_exact_value(cityblock(x, y, size), 0.0, "test1 failed");
 
 	float x2[DTW_SEQUENCE_LEN] = {0.0};
 	float y2[DTW_SEQUENCE_LEN] = {
@@ -23,7 +23,7 @@ void cityblock_tests(void) {
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
-	check_value(cityblock(x2, y2, size), 50.0, "cityblock test2");
+	check_exact_value(cityblock(x2, y2, size), 50.0, "cityblock test2");
 }
 
 
@@ -37,7 +37,7 @@ void fastdtw_tests(void) {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
 
-	check_value(fastdtw(x, y0), 0.0, "fastdtw test0");
+	check_exact_value(fastdtw(x, y0), 0.0, "fastdtw test0");
 
 	float y1[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -101,7 +101,7 @@ void fastdtw_tests(void) {
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
 	};
-	check_value(fastdtw(x, y1), 25.0, "fastdtw test y1");
+	check_exact_value(fastdtw(x, y1), 25.0, "fastdtw test y1");
 
 	float y2[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -114,7 +114,7 @@ void fastdtw_tests(void) {
 			{0.0}
 	};
 
-	check_value(fastdtw(x, y2), 2.08333325, "fastdtw test y2");
+	check_exact_value(fastdtw(x, y2), 2.08333325, "fastdtw test y2");
 
 	float y3[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -127,12 +127,41 @@ void fastdtw_tests(void) {
 			{0}
 	};
 
-	check_value(fastdtw(x, y3), 0.416666657, "fastdtw test y3");
+	check_exact_value(fastdtw(x, y3), 0.416666657, "fastdtw test y3");
 }
+
+
+
+
+
+void benchmark_runtimes() {
+	char msg[50];
+	float X[DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};
+	uint32_t start, duration;
+	int16_t result;
+
+	start = HAL_GetTick();
+	result = run_nn_classifier(series);
+	duration = HAL_GetTick() - start;
+
+	sprintf(msg, "Benchmarking NN classifier: result=%d in %ld [ms]\r\n", result, duration);
+	TM_USART_Puts(USART6, msg);
+
+
+	start = HAL_GetTick();
+	result = run_dtw_classifier(X);
+	duration = HAL_GetTick() - start;
+
+	sprintf(msg, "Benchmarking DTW classifier: result=%d in %ld [ms]\r\n", result, duration);
+	TM_USART_Puts(USART6, msg);
+}
+
 
 
 void _run_dtw_tests(void) {
 	cityblock_tests();
 	fastdtw_tests();
+
+	benchmark_runtimes();
 }
 
