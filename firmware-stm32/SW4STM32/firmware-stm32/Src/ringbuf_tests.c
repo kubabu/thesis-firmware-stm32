@@ -72,7 +72,7 @@ void ringbuf_iterate_tests(void) {
 	// iterate over last added 4 elements
 	do {
 		for (int i = 0; i < iter.size; ++i) {
-			check_exact_value(iterate(iter, i), buf.capacity - iter_size + i, "checking first iteration");
+			check_exact_value(iterate(&iter, i), buf.capacity - iter_size + i, "checking first iteration");
 		}
 		repeats++;
 		// should be idempotent
@@ -81,7 +81,7 @@ void ringbuf_iterate_tests(void) {
 	// check with another iterator on the same buffer
 	rbuf_iterator_t iter2 = get_iterator(&buf, iter_size2);
 	for (int i = 0; i < iter2.size; ++i) {
-		check_exact_value(iterate(iter2, i), buf.capacity - iter_size2 + i, "iterator size set");
+		check_exact_value(iterate(&iter2, i), buf.capacity - iter_size2 + i, "iterator size set");
 	}
 
 	// push one more element
@@ -90,7 +90,7 @@ void ringbuf_iterate_tests(void) {
 
 	// check if it still works
 	for (int i = 0; i < iter.size; ++i) {
-		check_exact_value(iterate(iter, i), iter_size + i + 1, "checking iteration after push");
+		check_exact_value(iterate(&iter, i), iter_size + i + 1, "checking iteration after push");
 	}
 }
 
@@ -112,7 +112,7 @@ void get_iterator3_tests(void) {
 	// iterate over last added 4 elements
 	do {
 		for (int i = 0; i < iter.size; ++i) {
-			check_exact_value(iterate(iter, i), iter.buf->capacity - iter_size + i,
+			check_exact_value(iterate(&iter, i), iter.buf->capacity - iter_size + i,
 					"checking iterator with auto generated buffer");
 		}
 		repeats++;
@@ -138,7 +138,7 @@ void iterator_on_entire_buffer_tests(void) {
 	// iterate over last added 4 elements
 	do {
 		for (int i = 0; i < iter.size; ++i) {
-			check_exact_value(iterate(iter, i), iter.buf->capacity - iter_size + i,
+			check_exact_value(iterate(&iter, i), iter.buf->capacity - iter_size + i,
 					"checking iterator on entire buffer");
 		}
 		repeats++;

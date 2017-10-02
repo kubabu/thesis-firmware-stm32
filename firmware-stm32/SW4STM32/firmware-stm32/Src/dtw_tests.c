@@ -5,6 +5,7 @@
  *      Author: kuba
  */
 #include "classifiers.h"
+#include "ringbuf.h"
 #include "tests.h"
 
 

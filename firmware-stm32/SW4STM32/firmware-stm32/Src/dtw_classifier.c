@@ -14,6 +14,7 @@
 #include <stdlib.h>
 
 #include "classifiers.h"
+#include "ringbuf.h"
 
 
 // ile sasiadow brac, to samo co self.k
@@ -107,7 +108,7 @@ float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], float y[DTW_FEATURES][DTW
 //fja oblcizajaca koszt dopasowania odpowiednik ffastdtw
 float distance(float x1[DTW_FEATURES][DTW_SEQUENCE_LEN], float x[DTW_FEATURES][DTW_SEQUENCE_LEN])
 {
-    return fastdtw(x1, x);
+    return 0.0; // fastdtw(x1, x); // TODO
 }
 
 

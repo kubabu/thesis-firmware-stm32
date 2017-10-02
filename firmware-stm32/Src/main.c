@@ -145,7 +145,6 @@ int main(void)
 //		  {
 //			AHRS_PrintSerialIMU_Results(imu->USART, angles);
 //		  }
-
 	  }
   }
   /* USER CODE END 3 */

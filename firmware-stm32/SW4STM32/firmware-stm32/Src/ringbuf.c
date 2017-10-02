@@ -57,12 +57,14 @@ rbuf_iterator_t get_iterator(ringbuf_t *buf, size_t size) {
 
 rbuf_iterator_t get_iterator3(float *array, size_t buf_capacity, size_t iter_size) {
 	ringbuf_t buf = ringbuf_init(buf_capacity, array);
+
 	return get_iterator(&buf, iter_size);
 }
 
 
-float iterate(rbuf_iterator_t iter, size_t i) {
-	int16_t index = 1 - iter.size + i;
-	return ringbuf_get_prev(iter.buf, index);
+float iterate(rbuf_iterator_t *iter, size_t i) {
+	int16_t index = 1 - iter->size + i;
+
+	return ringbuf_get_prev(iter->buf, index);
 }
 
