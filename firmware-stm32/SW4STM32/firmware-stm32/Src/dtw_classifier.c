@@ -58,16 +58,16 @@ float sum(float arr[][DTW_SEQUENCE_LEN], int16_t size)
 }
 
 
-float cityblock(float x[DTW_SEQUENCE_LEN], float y[DTW_SEQUENCE_LEN], int16_t size) {
+float cityblock(float x[DTW_SEQUENCE_LEN], rbuf_iterator_t y) {
 	float sum = 0;
-	for(int i = 0; i < size; ++i) {
-		sum += fabsf(x[i] - y[i]);
+	for(int i = 0; i < y.size; ++i) {
+		sum += fabsf(x[i] - iterate(&y, i));
 	}
 	return sum;
 }
 
 
-float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], float y[DTW_FEATURES][DTW_SEQUENCE_LEN]) {
+float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t y[DTW_FEATURES]) {
 	const float pos_inf = 1.0 / 0.0; // srsrly this is correct
 	const int16_t size = DTW_FEATURES;
 
@@ -85,7 +85,7 @@ float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], float y[DTW_FEATURES][DTW
 	//	D0[1:, 1:] = cdist(x, y, dist)
 	for(int16_t i = 0; i < size; ++i) {
 		for(uint16_t j = 0; j < size; ++j) {
-			float cbvalue = cityblock(x[i], y[j], DTW_SEQUENCE_LEN);
+			float cbvalue = cityblock(x[i], y[j]);
 			D0[i + 1][j + 1] = cbvalue;
 		}
 	}

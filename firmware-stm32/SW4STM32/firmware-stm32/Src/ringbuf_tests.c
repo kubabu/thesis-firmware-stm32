@@ -102,6 +102,8 @@ void get_iterator3_tests(void) {
 	float buffer[TEST_BUF_SIZE];
 	rbuf_iterator_t iter = get_iterator3(buffer, TEST_BUF_SIZE, iter_size);
 
+	check_exact_value(iter.buf->head_index, -1, "buf head index set in get_iterator3");
+
 	for (int i = 0; i < iter.buf->capacity; ++i) {
 		ringbuf_push(iter.buf, i);
 	}
@@ -119,6 +121,36 @@ void get_iterator3_tests(void) {
 		// should be idempotent
 	} while(repeats < 2);
 }
+
+
+void get_iterator4_tests(void) {
+	const int16_t iter_size = 8;
+	int repeats = 0;
+
+	float buffer[TEST_BUF_SIZE];
+	rbuf_iterator_t iter = get_iterator4(buffer, iter_size, iter_size, iter_size);
+
+	check_exact_value(iter.buf->head_index, 7, "buf head index set in get_iterator4");
+
+	for (int i = 0; i < iter.buf->capacity; ++i) {
+		ringbuf_push(iter.buf, i);
+	}
+
+	check_value(iter.buf->buffer == buffer, 0, 0, "Buffer assign  in get_iterator4");
+	check_exact_value(iter.size, iter_size, "iterator size set in get_iterator4");
+
+	// iterate over last added 4 elements
+	do {
+		for (int i = 0; i < iter.size; ++i) {
+			int16_t exval = 0 - iter_size + iter.buf->capacity + i;
+			check_exact_value(iterate(&iter, i), exval,
+					"checking iterator with auto generated 4 buffer");
+		}
+		repeats++;
+		// should be idempotent
+	} while(repeats < 2);
+}
+
 
 
 void iterator_on_entire_buffer_tests(void) {
@@ -147,10 +179,32 @@ void iterator_on_entire_buffer_tests(void) {
 }
 
 
+void get_iterator4_nopush_tests(void) {
+	const int16_t iter_size = TEST_BUF_SIZE;
+	float buffer[TEST_BUF_SIZE] = {0, 1, 2, 4, 5, 6, 7};
+
+	rbuf_iterator_t iter = get_iterator4(buffer, iter_size, iter_size, iter_size);
+	rbuf_iterator_t *iterptr = &iter;
+	// nothing pushed
+
+	check_exact_value(iter.buf->head_index, TEST_BUF_SIZE - 1, "buf head index set in get_iterator3");
+
+	check_value(iter.buf->buffer == buffer, 0, 0, "Buffer assign  in get_iterator3");
+	check_exact_value(iter.size, iter_size, "iterator size set in get_iterator3");
+
+	// iterate over last added 4 elements
+	for (int i = 0; i < iter.size; ++i) {
+		check_exact_value(iterate(iterptr, i), buffer[i], "checking iteration from getiterator4 without push");
+	}
+}
+
+
 void _run_rbuf_tests(void) {
 	ringbuf_push_tests();
 	ringbuf_get_prev_tests();
 	ringbuf_iterate_tests();
 	get_iterator3_tests();
+	get_iterator4_tests();
+	get_iterator4_nopush_tests();
 	iterator_on_entire_buffer_tests();
 }

@@ -19,6 +19,13 @@ void reset_failed_test_count() {
 }
 
 
+void fill_array(float *array, float value, size_t size) {
+	for (int16_t i = 0; i < size; ++i) {
+		array[i] = value;
+	}
+}
+
+
 // test is failed if test value is not true
 tests_result_t check_value(int testval, float result, float expected_value, char *msg) {
 	if(!testval) {
@@ -42,10 +49,10 @@ uint16_t run_all_tests(USART_TypeDef *usart) {
 	_results_usart = usart;
 	reset_failed_test_count();
 
-	_run_dtw_tests();
 	_run_rbuf_tests();
+	_run_dtw_tests();
 
-	if(check_exact_value(_failed_tests, 0, "All tests, some") == TEST_PASSED) {
+	if(check_exact_value(_failed_tests, 0, "Running all tests done, some") == TEST_PASSED) {
 		TM_USART_Puts(_results_usart, "All tests passed\r\n");
 	}
 	reset_failed_test_count();

@@ -11,6 +11,8 @@
 #include <math.h>
 #include <stdint.h>
 
+#include "ringbuf.h"
+
 
 // data features count (3xacc + 3xgyro + 3xyawpithroll + 3xyawpithrollkalman)
 #define FEATURES 12
@@ -30,7 +32,7 @@ int16_t run_nn_classifier(float data_series[][PADDED_SEQ_LEN]);
 
 int16_t run_dtw_classifier(float X[DTW_FEATURES][DTW_SEQUENCE_LEN]);
 
-float cityblock(float x[DTW_SEQUENCE_LEN], float y[DTW_SEQUENCE_LEN], int16_t size);
-float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], float y[DTW_FEATURES][DTW_SEQUENCE_LEN]);
+float cityblock(float x[DTW_SEQUENCE_LEN], rbuf_iterator_t y);
+//float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t *y[DTW_FEATURES]);
 
 #endif /* CLASSIFIERS_H_ */

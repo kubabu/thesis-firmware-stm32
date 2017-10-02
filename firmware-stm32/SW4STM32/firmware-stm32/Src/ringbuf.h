@@ -42,6 +42,7 @@ float ringbuf_get_prev(ringbuf_t *buf, int16_t i);
 rbuf_iterator_t get_iterator(ringbuf_t *buf, size_t size);
 
 rbuf_iterator_t get_iterator3(float *array, size_t buffer_capacity, size_t iterator_size);
+rbuf_iterator_t get_iterator4(float *array, int16_t items_in_buf, size_t buffer_capacity, size_t iterator_size);
 
 float iterate(rbuf_iterator_t *iter, size_t i);
 
