@@ -18,7 +18,8 @@ void reset_failed_test_count() {
 	_failed_tests = 0;
 }
 
-// test is failed if test is not true
+
+// test is failed if test value is not true
 tests_result_t check_value(int testval, float result, float expected_value, char *msg) {
 	if(!testval) {
 		sprintf(err_msg, "%s failed: expected %f got %f\r\n", msg, expected_value, result);

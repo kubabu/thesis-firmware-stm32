@@ -131,14 +131,13 @@ void fastdtw_tests(void) {
 }
 
 
-
-
-
 void benchmark_runtimes() {
 	char msg[50];
 	float X[DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};
 	uint32_t start, duration;
 	int16_t result;
+	const uint16_t nn_expected_time = 3;
+	const uint16_t dtw_expected_time = 10;
 
 	start = HAL_GetTick();
 	result = run_nn_classifier(series);
@@ -146,6 +145,8 @@ void benchmark_runtimes() {
 
 	sprintf(msg, "Benchmarking NN classifier: result=%d in %ld [ms]\r\n", result, duration);
 	TM_USART_Puts(USART6, msg);
+	check_value(duration <= nn_expected_time, duration, nn_expected_time,
+				"Benchmarking NN classifier execution time");
 
 
 	start = HAL_GetTick();
@@ -154,6 +155,8 @@ void benchmark_runtimes() {
 
 	sprintf(msg, "Benchmarking DTW classifier: result=%d in %ld [ms]\r\n", result, duration);
 	TM_USART_Puts(USART6, msg);
+	check_value(duration <= dtw_expected_time, duration, dtw_expected_time,
+			"Benchmarking DTW classifier execution time");
 }
 
 

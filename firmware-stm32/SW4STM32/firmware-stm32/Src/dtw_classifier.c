@@ -137,7 +137,7 @@ void part_argsort(float array[BATCH_SIZE], int indices[K])
         int idx = -1;
         float val = +100000;
 
-        for(int j = idx; j < BATCH_SIZE; j++) // TODO sprawdzić
+//        for(int j = idx; j < BATCH_SIZE; j++) // TODO sprawdzić
 		for(int j = 0; j < BATCH_SIZE; j++)
         {
             if(array[j] < val && used[j] == 0)
