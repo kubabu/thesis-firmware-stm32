@@ -11,7 +11,6 @@
 #define TEST_BUF_SIZE 8
 
 
-
 void ringbuf_push_tests(void) {
 	float buffer[TEST_BUF_SIZE] = { 42.0 };
 	ringbuf_t buf = ringbuf_init(TEST_BUF_SIZE, buffer);
@@ -56,15 +55,15 @@ void ringbuf_get_prev_tests(void) {
 
 
 void ringbuf_iterate_tests(void) {
+	const int16_t iter_size = 4;
+	const int16_t iter_size2 = 6;
+	int repeats = 0;
+
 	float buffer[TEST_BUF_SIZE];
 	ringbuf_t buf = ringbuf_init(TEST_BUF_SIZE, buffer);
 	for (int i = 0; i < buf.capacity; ++i) {
 		ringbuf_push(&buf, i);
 	}
-	const int16_t iter_size = 4;
-	const int16_t iter_size2 = 6;
-	int repeats = 0;
-
 	rbuf_iterator_t iter = get_iterator(&buf, iter_size);
 
 	check_value(iter.buf->buffer == buffer, 0, 0, "Buffer assign at iterator init");
@@ -85,7 +84,6 @@ void ringbuf_iterate_tests(void) {
 		check_exact_value(iterate(iter2, i), buf.capacity - iter_size2 + i, "iterator size set");
 	}
 
-
 	// push one more element
 	float nextval = ringbuf_peek(&buf) + 1;
 	ringbuf_push(&buf, nextval);
@@ -94,8 +92,58 @@ void ringbuf_iterate_tests(void) {
 	for (int i = 0; i < iter.size; ++i) {
 		check_exact_value(iterate(iter, i), iter_size + i + 1, "checking iteration after push");
 	}
+}
 
 
+void get_iterator3_tests(void) {
+	const int16_t iter_size = 4;
+	int repeats = 0;
+
+	float buffer[TEST_BUF_SIZE];
+	rbuf_iterator_t iter = get_iterator3(buffer, TEST_BUF_SIZE, iter_size);
+
+	for (int i = 0; i < iter.buf->capacity; ++i) {
+		ringbuf_push(iter.buf, i);
+	}
+
+	check_value(iter.buf->buffer == buffer, 0, 0, "Buffer assign  in get_iterator3");
+	check_exact_value(iter.size, iter_size, "iterator size set in get_iterator3");
+
+	// iterate over last added 4 elements
+	do {
+		for (int i = 0; i < iter.size; ++i) {
+			check_exact_value(iterate(iter, i), iter.buf->capacity - iter_size + i,
+					"checking iterator with auto generated buffer");
+		}
+		repeats++;
+		// should be idempotent
+	} while(repeats < 2);
+}
+
+
+void iterator_on_entire_buffer_tests(void) {
+	const int16_t iter_size = TEST_BUF_SIZE;
+	int repeats = 0;
+
+	float buffer[TEST_BUF_SIZE];
+	rbuf_iterator_t iter = get_iterator3(buffer, TEST_BUF_SIZE, iter_size);
+
+	for (int i = 0; i < iter.buf->capacity; ++i) {
+		ringbuf_push(iter.buf, i);
+	}
+
+	check_value(iter.buf->buffer == buffer, 0, 0, "Buffer assign in iter on_entire_buffer");
+	check_exact_value(iter.size, iter_size, "iterator size set in iter on_entire_buffer");
+
+	// iterate over last added 4 elements
+	do {
+		for (int i = 0; i < iter.size; ++i) {
+			check_exact_value(iterate(iter, i), iter.buf->capacity - iter_size + i,
+					"checking iterator on entire buffer");
+		}
+		repeats++;
+		// should be idempotent
+	} while(repeats < 2);
 }
 
 
@@ -103,4 +151,6 @@ void _run_rbuf_tests(void) {
 	ringbuf_push_tests();
 	ringbuf_get_prev_tests();
 	ringbuf_iterate_tests();
+	get_iterator3_tests();
+	iterator_on_entire_buffer_tests();
 }

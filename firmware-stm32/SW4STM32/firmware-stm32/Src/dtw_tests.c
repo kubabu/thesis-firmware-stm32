@@ -160,7 +160,6 @@ void benchmark_runtimes() {
 }
 
 
-
 void _run_dtw_tests(void) {
 	cityblock_tests();
 	fastdtw_tests();
