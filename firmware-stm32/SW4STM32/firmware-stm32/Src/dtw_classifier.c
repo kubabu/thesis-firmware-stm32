@@ -67,7 +67,7 @@ float cityblock(float x[DTW_SEQUENCE_LEN], rbuf_iterator_t y) {
 }
 
 
-float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t y[DTW_FEATURES]) {
+float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t *y[DTW_FEATURES]) {
 	const float pos_inf = 1.0 / 0.0; // srsrly this is correct
 	const int16_t size = DTW_FEATURES;
 
@@ -85,7 +85,7 @@ float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t y[DTW_FEA
 	//	D0[1:, 1:] = cdist(x, y, dist)
 	for(int16_t i = 0; i < size; ++i) {
 		for(uint16_t j = 0; j < size; ++j) {
-			float cbvalue = cityblock(x[i], y[j]);
+			float cbvalue = cityblock(x[i], *y[j]);
 			D0[i + 1][j + 1] = cbvalue;
 		}
 	}

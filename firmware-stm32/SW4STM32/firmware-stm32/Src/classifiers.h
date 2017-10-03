@@ -33,6 +33,6 @@ int16_t run_nn_classifier(float data_series[][PADDED_SEQ_LEN]);
 int16_t run_dtw_classifier(float X[DTW_FEATURES][DTW_SEQUENCE_LEN]);
 
 float cityblock(float x[DTW_SEQUENCE_LEN], rbuf_iterator_t y);
-//float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t *y[DTW_FEATURES]);
+float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t *y[DTW_FEATURES]);
 
 #endif /* CLASSIFIERS_H_ */
