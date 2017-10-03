@@ -64,9 +64,9 @@ void ringbuf_iterate_tests(void) {
 	for (int i = 0; i < buf.capacity; ++i) {
 		ringbuf_push(&buf, i);
 	}
-	rbuf_iterator_t iter = get_iterator(buf, iter_size);
+	rbuf_iterator_t iter = get_iterator(&buf, iter_size);
 
-	check_value(iter.buf.buffer == buffer, 0, 0, "Buffer assign at iterator init");
+	check_value(iter.buf->buffer == buffer, 0, 0, "Buffer assign at iterator init");
 	check_exact_value(iter.size, iter_size, "iterator size set");
 
 	// iterate over last added 4 elements
@@ -79,16 +79,16 @@ void ringbuf_iterate_tests(void) {
 	} while(repeats < 2);
 
 	// check with another iterator on the same buffer
-	rbuf_iterator_t iter2 = get_iterator(buf, iter_size2);
+	rbuf_iterator_t iter2 = get_iterator(&buf, iter_size2);
 	for (int i = 0; i < iter2.size; ++i) {
 		check_exact_value(iterate(&iter2, i), buf.capacity - iter_size2 + i, "iterator size set");
 	}
 
 	// push one more element
-	float nextval = ringbuf_peek(&iter.buf) + 1;
-	ringbuf_push(&iter.buf, nextval);
+	float nextval = ringbuf_peek(iter.buf) + 1;
+	ringbuf_push(iter.buf, nextval);
 
-	check_exact_value(ringbuf_peek(&iter.buf), nextval, __FUNCTION__); //" checking iteration after push");
+	check_exact_value(ringbuf_peek(iter.buf), nextval, __FUNCTION__); //" checking iteration after push");
 
 	// check if it still works
 	for (int i = 0; i < iter.size; ++i) {
@@ -97,82 +97,25 @@ void ringbuf_iterate_tests(void) {
 }
 
 
-void get_iterator3_tests(void) {
-	const int16_t iter_size = 4;
-	int repeats = 0;
-
-	float buffer[TEST_BUF_SIZE];
-	rbuf_iterator_t iter = get_iterator3(buffer, TEST_BUF_SIZE, iter_size);
-
-	check_exact_value(iter.buf.head_index, -1, "buf head index set in get_iterator3");
-
-	for (int i = 0; i < iter.buf.capacity; ++i) {
-		ringbuf_push(&iter.buf, i);
-	}
-
-	check_value(iter.buf.buffer == buffer, 0, 0, "Buffer assign  in get_iterator3");
-	check_exact_value(iter.size, iter_size, "iterator size set in get_iterator3");
-
-	// iterate over last added 4 elements
-	do {
-		for (int i = 0; i < iter.size; ++i) {
-			check_exact_value(iterate(&iter, i), iter.buf.capacity - iter_size + i,
-					"checking iterator with auto generated buffer");
-		}
-		repeats++;
-		// should be idempotent
-	} while(repeats < 2);
-}
-
-
-void get_iterator4_tests(void) {
-	const int16_t iter_size = 8;
-	int repeats = 0;
-
-	float buffer[TEST_BUF_SIZE];
-	rbuf_iterator_t iter = get_iterator4(buffer, iter_size, iter_size, iter_size);
-
-	check_exact_value(iter.buf.head_index, 7, "buf head index set in get_iterator4");
-
-	for (int i = 0; i < iter.buf.capacity; ++i) {
-		ringbuf_push(&iter.buf, i);
-	}
-
-	check_value(iter.buf.buffer == buffer, 0, 0, "Buffer assign  in get_iterator4");
-	check_exact_value(iter.size, iter_size, "iterator size set in get_iterator4");
-
-	// iterate over last added 4 elements
-	do {
-		for (int i = 0; i < iter.size; ++i) {
-			int16_t exval = 0 - iter_size + iter.buf.capacity + i;
-			check_exact_value(iterate(&iter, i), exval,
-					"checking iterator with auto generated 4 buffer");
-		}
-		repeats++;
-		// should be idempotent
-	} while(repeats < 2);
-}
-
-
-
 void iterator_on_entire_buffer_tests(void) {
 	const int16_t iter_size = TEST_BUF_SIZE;
 	int repeats = 0;
 
 	float buffer[TEST_BUF_SIZE];
-	rbuf_iterator_t iter = get_iterator3(buffer, TEST_BUF_SIZE, iter_size);
+	ringbuf_t buf = ringbuf_init(TEST_BUF_SIZE, buffer);
+	rbuf_iterator_t iter = get_iterator(&buf, iter_size);
 
-	for (int i = 0; i < iter.buf.capacity; ++i) {
-		ringbuf_push(&iter.buf, i);
+	for (int i = 0; i < iter.buf->capacity; ++i) {
+		ringbuf_push(iter.buf, i);
 	}
 
-	check_value(iter.buf.buffer == buffer, 0, 0, "Buffer assign in iter on_entire_buffer");
+	check_value(iter.buf->buffer == buffer, 0, 0, "Buffer assign in iter on_entire_buffer");
 	check_exact_value(iter.size, iter_size, "iterator size set in iter on_entire_buffer");
 
 	// iterate over last added 4 elements
 	do {
 		for (int i = 0; i < iter.size; ++i) {
-			check_exact_value(iterate(&iter, i), iter.buf.capacity - iter_size + i,
+			check_exact_value(iterate(&iter, i), iter.buf->capacity - iter_size + i,
 					"checking iterator on entire buffer");
 		}
 		repeats++;
@@ -181,32 +124,9 @@ void iterator_on_entire_buffer_tests(void) {
 }
 
 
-void get_iterator4_nopush_tests(void) {
-	const int16_t iter_size = TEST_BUF_SIZE;
-	float buffer[TEST_BUF_SIZE] = {0, 1, 2, 4, 5, 6, 7};
-
-	rbuf_iterator_t iter = get_iterator4(buffer, iter_size, iter_size, iter_size);
-	rbuf_iterator_t *iterptr = &iter;
-	// nothing pushed
-
-	check_exact_value(iter.buf.head_index, TEST_BUF_SIZE - 1, "buf head index set in get_iterator3");
-
-	check_value(iter.buf.buffer == buffer, 0, 0, "Buffer assign  in get_iterator3");
-	check_exact_value(iter.size, iter_size, "iterator size set in get_iterator3");
-
-	// iterate over last added 4 elements
-	for (int i = 0; i < iter.size; ++i) {
-		check_exact_value(iterate(iterptr, i), buffer[i], "checking iteration from getiterator4 without push");
-	}
-}
-
-
 void _run_rbuf_tests(void) {
 	ringbuf_push_tests();
 	ringbuf_get_prev_tests();
 	ringbuf_iterate_tests();
-	get_iterator3_tests();
-	get_iterator4_tests();
-	get_iterator4_nopush_tests();
 	iterator_on_entire_buffer_tests();
 }

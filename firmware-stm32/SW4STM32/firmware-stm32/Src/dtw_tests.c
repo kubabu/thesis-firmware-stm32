@@ -11,7 +11,8 @@
 void cityblock_tests_1(void) {
 	float x[DTW_SEQUENCE_LEN] = {0.0};
 	float ybuf[DTW_SEQUENCE_LEN] = {0.0};
-	rbuf_iterator_t y = get_iterator4(ybuf, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN);
+	ringbuf_t buf = ringbuf_init3(DTW_SEQUENCE_LEN, ybuf, DTW_SEQUENCE_LEN);
+	rbuf_iterator_t y = get_iterator(&buf, DTW_SEQUENCE_LEN);
 
 	check_exact_value(cityblock(x, y), 0.0, __FUNCTION__);
 }
@@ -25,7 +26,9 @@ void cityblock_tests_2(void) {
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-	rbuf_iterator_t y2 = get_iterator4(ybuf2, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN);
+
+	ringbuf_t buf = ringbuf_init3(DTW_SEQUENCE_LEN, ybuf2, DTW_SEQUENCE_LEN);
+	rbuf_iterator_t y2 = get_iterator(&buf, DTW_SEQUENCE_LEN);
 
 	check_exact_value(cityblock(x, y2), 50.0, __FUNCTION__);
 }
@@ -38,7 +41,8 @@ void fastdtw_tests_0(void) {
 			{0.0}, {0.0}};
 
 	float *y0 = x[0];
-	rbuf_iterator_t it0 = get_iterator4(y0, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN);
+	ringbuf_t buf0 = ringbuf_init3(DTW_SEQUENCE_LEN, y0, DTW_SEQUENCE_LEN);
+	rbuf_iterator_t it0 = get_iterator(&buf0, DTW_SEQUENCE_LEN);
 
 	rbuf_iterator_t *y0s[DTW_FEATURES];
 	for(int i = 0; i < DTW_FEATURES; ++i) {
@@ -62,7 +66,8 @@ void fastdtw_tests_1(void) {
 		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
-	rbuf_iterator_t it1 = get_iterator4(y1, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN);
+	ringbuf_t buf1 = ringbuf_init3(DTW_SEQUENCE_LEN, y1, DTW_SEQUENCE_LEN);
+	rbuf_iterator_t it1 = get_iterator(&buf1, DTW_SEQUENCE_LEN);
 
 	rbuf_iterator_t *y1s[DTW_FEATURES];
 	for(int i = 0; i < DTW_FEATURES; ++i) {
@@ -87,8 +92,11 @@ void fastdtw_tests_2(void) {
 		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
-	rbuf_iterator_t it0 = get_iterator4(y0, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN);
-	rbuf_iterator_t it1 = get_iterator4(y1, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN);
+
+	ringbuf_t buf0 = ringbuf_init3(DTW_SEQUENCE_LEN, y0, DTW_SEQUENCE_LEN);
+	rbuf_iterator_t it0 = get_iterator(&buf0, DTW_SEQUENCE_LEN);
+	ringbuf_t buf1 = ringbuf_init3(DTW_SEQUENCE_LEN, y1, DTW_SEQUENCE_LEN);
+	rbuf_iterator_t it1 = get_iterator(&buf1, DTW_SEQUENCE_LEN);
 
 	rbuf_iterator_t *y1s[DTW_FEATURES];
 	y1s[0] = &it1;
@@ -114,8 +122,10 @@ void fastdtw_tests_3(void) {
 		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
-	rbuf_iterator_t it0 = get_iterator4(y0, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN);
-	rbuf_iterator_t it3 = get_iterator4(y3, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN, DTW_SEQUENCE_LEN);
+	ringbuf_t buf0 = ringbuf_init3(DTW_SEQUENCE_LEN, y0, DTW_SEQUENCE_LEN);
+	rbuf_iterator_t it0 = get_iterator(&buf0, DTW_SEQUENCE_LEN);
+	ringbuf_t buf3 = ringbuf_init3(DTW_SEQUENCE_LEN, y3, DTW_SEQUENCE_LEN);
+	rbuf_iterator_t it3 = get_iterator(&buf3, DTW_SEQUENCE_LEN);
 
 	rbuf_iterator_t *y1s[DTW_FEATURES];
 	y1s[0] = &it3;
