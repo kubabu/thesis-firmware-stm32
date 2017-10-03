@@ -63,7 +63,7 @@ float ringbuf_get_prev(ringbuf_t *buf, int16_t i) {
 }
 
 
-rbuf_iterator_t get_iterator(ringbuf_t *buf, size_t size) {
+rbuf_iterator_t get_iterator(ringbuf_t buf, size_t size) {
 	rbuf_iterator_t result;
 	result.buf = buf;
 	result.size = size;
@@ -75,19 +75,19 @@ rbuf_iterator_t get_iterator(ringbuf_t *buf, size_t size) {
 rbuf_iterator_t get_iterator4(float *array, int16_t items_in_buf, size_t buf_capacity, size_t iter_size) {
 	ringbuf_t buf = ringbuf_init3(buf_capacity, array, items_in_buf);
 
-	return get_iterator(&buf, iter_size);
+	return get_iterator(buf, iter_size);
 }
 
 
 rbuf_iterator_t get_iterator3(float *array, size_t buf_capacity, size_t iter_size) {
 	ringbuf_t buf = ringbuf_init(buf_capacity, array);
 
-	return get_iterator(&buf, iter_size);
+	return get_iterator(buf, iter_size);
 }
 
 float iterate(rbuf_iterator_t *iter, size_t i) {
 	int16_t index = 1 - iter->size + i;
-	float result = ringbuf_get_prev(iter->buf, index);
+	float result = ringbuf_get_prev(&iter->buf, index);
 
 	return result;
 }
