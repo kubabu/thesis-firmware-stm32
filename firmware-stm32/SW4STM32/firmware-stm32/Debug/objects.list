@@ -21,6 +21,7 @@
 "Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_tim_ex.o"
 "Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_uart.o"
 "Src/ahrs.o"
+"Src/classifiers_data.o"
 "Src/dtw_classifier.o"
 "Src/dtw_tests.o"
 "Src/imu_sensor.o"

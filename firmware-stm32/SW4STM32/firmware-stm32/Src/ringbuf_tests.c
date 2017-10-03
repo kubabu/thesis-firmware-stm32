@@ -13,7 +13,7 @@
 
 void ringbuf_push_tests(void) {
 	float buffer[TEST_BUF_SIZE] = { 42.0 };
-	ringbuf_t buf = ringbuf_init(TEST_BUF_SIZE, buffer);
+	ringbuf_t buf = ringbuf(TEST_BUF_SIZE, buffer);
 
 	check_value(buf.buffer == buffer, 0, 0, "Buffer assign at init");
 	check_exact_value(buf.capacity, TEST_BUF_SIZE, "Cap assign at init");
@@ -35,7 +35,7 @@ void ringbuf_push_tests(void) {
 
 void ringbuf_get_prev_tests(void) {
 	float buffer[TEST_BUF_SIZE] = { 42.0 };
-	ringbuf_t buf = ringbuf_init(TEST_BUF_SIZE, buffer);
+	ringbuf_t buf = ringbuf(TEST_BUF_SIZE, buffer);
 
 	check_exact_value(-9 % TEST_BUF_SIZE, -1, "yyy");
 
@@ -60,7 +60,7 @@ void ringbuf_iterate_tests(void) {
 	int repeats = 0;
 
 	float buffer[TEST_BUF_SIZE];
-	ringbuf_t buf = ringbuf_init(TEST_BUF_SIZE, buffer);
+	ringbuf_t buf = ringbuf(TEST_BUF_SIZE, buffer);
 	for (int i = 0; i < buf.capacity; ++i) {
 		ringbuf_push(&buf, i);
 	}
@@ -102,7 +102,7 @@ void iterator_on_entire_buffer_tests(void) {
 	int repeats = 0;
 
 	float buffer[TEST_BUF_SIZE];
-	ringbuf_t buf = ringbuf_init(TEST_BUF_SIZE, buffer);
+	ringbuf_t buf = ringbuf(TEST_BUF_SIZE, buffer);
 	rbuf_iterator_t iter = get_iterator(&buf, iter_size);
 
 	for (int i = 0; i < iter.buf->capacity; ++i) {
@@ -123,10 +123,10 @@ void iterator_on_entire_buffer_tests(void) {
 	} while(repeats < 2);
 }
 
-
 void _run_rbuf_tests(void) {
 	ringbuf_push_tests();
 	ringbuf_get_prev_tests();
 	ringbuf_iterate_tests();
 	iterator_on_entire_buffer_tests();
+//	ringbufs_init_tests();
 }

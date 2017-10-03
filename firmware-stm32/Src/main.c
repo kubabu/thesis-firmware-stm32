@@ -37,6 +37,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "classifiers.h"
+#include "classifiers_data.h"
 #include "defines.h"
 #include "imu_sensor.h"
 #include "main.h"
@@ -114,6 +115,7 @@ int main(void)
   TM_USART_Puts(USART6, "\r\n");
 
   run_all_tests(USART6);
+  classifiers_dataset_init();
 
   imu = &imu_instance;
   IMU_Sensor_Initialize(imu, USART6);
@@ -139,7 +141,8 @@ int main(void)
 
 	  if (now >= previous + update_interval) {
 		  previous = now;
-//		  IMU_Results angles = IMU_AHRS_Update(imu);
+		  IMU_Results angles = IMU_AHRS_Update(imu);
+		  classifiers_dataset_push(&angles);
 //
 //		  if(imu->USART != NULL)
 //		  {

@@ -26,8 +26,8 @@ typedef struct rbuf_iterator_t {
 } rbuf_iterator_t;
 
 
-ringbuf_t ringbuf_init(size_t capacity, float array[]);
-ringbuf_t ringbuf_init3(size_t capacity, float array[], int items_count);
+ringbuf_t ringbuf(size_t capacity, float array[]);
+ringbuf_t ringbuf3(size_t capacity, float array[], int items_count);
 
 void ringbuf_push(ringbuf_t *buf, float val);
 
@@ -42,10 +42,12 @@ float ringbuf_get_prev(ringbuf_t *buf, int16_t i);
 // iterator size < buf->capacity
 rbuf_iterator_t get_iterator(ringbuf_t *buf, size_t size);
 
-//rbuf_iterator_t get_iterator3(float *array, size_t buffer_capacity, size_t iterator_size);
-//rbuf_iterator_t get_iterator4(float *array, int16_t items_in_buf, size_t buffer_capacity, size_t iterator_size);
-
 float iterate(rbuf_iterator_t *iter, size_t i);
+
+
+//void ringbufs_init(float **array, ringbuf_t *buffs, size_t buf_capacity, size_t buf_count);
+//
+//void iterators_init(ringbuf_t *buffs, size_t buf_count, size_t iter_size);
 
 
 #endif /* INCLUDED_RINGBUF_H */

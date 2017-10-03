@@ -1,5 +1,3 @@
-#include "ringbuf.h"
-
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,8 +6,10 @@
 #include <sys/param.h>
 #include <assert.h>
 
+#include "ringbuf.h"
 
-ringbuf_t ringbuf_init(size_t capacity, float array[]) {
+
+ringbuf_t ringbuf(size_t capacity, float array[]) {
 	ringbuf_t result;
 
 	result.capacity = capacity;
@@ -20,8 +20,8 @@ ringbuf_t ringbuf_init(size_t capacity, float array[]) {
 	return result;
 }
 
-ringbuf_t ringbuf_init3(size_t capacity, float array[], int items_count) {
-	ringbuf_t buf = ringbuf_init(capacity, array);
+ringbuf_t ringbuf3(size_t capacity, float array[], int items_count) {
+	ringbuf_t buf = ringbuf(capacity, array);
 
 	if(items_count > 0) {
 		buf.head_index = (items_count - 1) % capacity;
@@ -78,3 +78,15 @@ float iterate(rbuf_iterator_t *iter, size_t i) {
 
 	return result;
 }
+
+
+//void ringbufs_init(float **array, ringbuf_t *buffs, size_t buf_capacity, size_t buf_count) {
+//	for (int i = 0; i < buf_count; ++i) {
+//		buffs[i] = ringbuf(buf_capacity, array[i]);
+//	}
+//}
+//
+//
+//void iterators_init(ringbuf_t *buffs, size_t buf_count, size_t iter_size) {
+//	;
+//}

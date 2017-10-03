@@ -11,7 +11,7 @@
 void cityblock_tests_1(void) {
 	float x[DTW_SEQUENCE_LEN] = {0.0};
 	float ybuf[DTW_SEQUENCE_LEN] = {0.0};
-	ringbuf_t buf = ringbuf_init3(DTW_SEQUENCE_LEN, ybuf, DTW_SEQUENCE_LEN);
+	ringbuf_t buf = ringbuf3(DTW_SEQUENCE_LEN, ybuf, DTW_SEQUENCE_LEN);
 	rbuf_iterator_t y = get_iterator(&buf, DTW_SEQUENCE_LEN);
 
 	check_exact_value(cityblock(x, y), 0.0, __FUNCTION__);
@@ -27,7 +27,7 @@ void cityblock_tests_2(void) {
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
-	ringbuf_t buf = ringbuf_init3(DTW_SEQUENCE_LEN, ybuf2, DTW_SEQUENCE_LEN);
+	ringbuf_t buf = ringbuf3(DTW_SEQUENCE_LEN, ybuf2, DTW_SEQUENCE_LEN);
 	rbuf_iterator_t y2 = get_iterator(&buf, DTW_SEQUENCE_LEN);
 
 	check_exact_value(cityblock(x, y2), 50.0, __FUNCTION__);
@@ -41,7 +41,7 @@ void fastdtw_tests_0(void) {
 			{0.0}, {0.0}};
 
 	float *y0 = x[0];
-	ringbuf_t buf0 = ringbuf_init3(DTW_SEQUENCE_LEN, y0, DTW_SEQUENCE_LEN);
+	ringbuf_t buf0 = ringbuf3(DTW_SEQUENCE_LEN, y0, DTW_SEQUENCE_LEN);
 	rbuf_iterator_t it0 = get_iterator(&buf0, DTW_SEQUENCE_LEN);
 
 	rbuf_iterator_t *y0s[DTW_FEATURES];
@@ -66,7 +66,7 @@ void fastdtw_tests_1(void) {
 		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
-	ringbuf_t buf1 = ringbuf_init3(DTW_SEQUENCE_LEN, y1, DTW_SEQUENCE_LEN);
+	ringbuf_t buf1 = ringbuf3(DTW_SEQUENCE_LEN, y1, DTW_SEQUENCE_LEN);
 	rbuf_iterator_t it1 = get_iterator(&buf1, DTW_SEQUENCE_LEN);
 
 	rbuf_iterator_t *y1s[DTW_FEATURES];
@@ -93,9 +93,9 @@ void fastdtw_tests_2(void) {
 		1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
 
-	ringbuf_t buf0 = ringbuf_init3(DTW_SEQUENCE_LEN, y0, DTW_SEQUENCE_LEN);
+	ringbuf_t buf0 = ringbuf3(DTW_SEQUENCE_LEN, y0, DTW_SEQUENCE_LEN);
 	rbuf_iterator_t it0 = get_iterator(&buf0, DTW_SEQUENCE_LEN);
-	ringbuf_t buf1 = ringbuf_init3(DTW_SEQUENCE_LEN, y1, DTW_SEQUENCE_LEN);
+	ringbuf_t buf1 = ringbuf3(DTW_SEQUENCE_LEN, y1, DTW_SEQUENCE_LEN);
 	rbuf_iterator_t it1 = get_iterator(&buf1, DTW_SEQUENCE_LEN);
 
 	rbuf_iterator_t *y1s[DTW_FEATURES];
@@ -122,9 +122,9 @@ void fastdtw_tests_3(void) {
 		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
-	ringbuf_t buf0 = ringbuf_init3(DTW_SEQUENCE_LEN, y0, DTW_SEQUENCE_LEN);
+	ringbuf_t buf0 = ringbuf3(DTW_SEQUENCE_LEN, y0, DTW_SEQUENCE_LEN);
 	rbuf_iterator_t it0 = get_iterator(&buf0, DTW_SEQUENCE_LEN);
-	ringbuf_t buf3 = ringbuf_init3(DTW_SEQUENCE_LEN, y3, DTW_SEQUENCE_LEN);
+	ringbuf_t buf3 = ringbuf3(DTW_SEQUENCE_LEN, y3, DTW_SEQUENCE_LEN);
 	rbuf_iterator_t it3 = get_iterator(&buf3, DTW_SEQUENCE_LEN);
 
 	rbuf_iterator_t *y1s[DTW_FEATURES];
@@ -139,13 +139,14 @@ void fastdtw_tests_3(void) {
 void benchmark_runtimes() {
 	char msg[50];
 	float X[DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};
+	float nnX[DTW_FEATURES][DTW_SEQUENCE_LEN+ 4] = {0};
 	uint32_t start, duration;
 	int16_t result;
 	const uint16_t nn_expected_time = 3;
 	const uint16_t dtw_expected_time = 10;
 
 	start = HAL_GetTick();
-	result = run_nn_classifier(series);
+	result = run_nn_classifier(nnX);
 	duration = HAL_GetTick() - start;
 
 	sprintf(msg, "Benchmarking NN classifier: result=%d in %ld [ms]\r\n", result, duration);
