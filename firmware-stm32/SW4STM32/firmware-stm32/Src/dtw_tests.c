@@ -126,10 +126,6 @@ void fastdtw_tests_3(void) {
 	check_exact_value(fastdtw(x, y1s), 0.416666657, __FUNCTION__);
 }
 
-//	check_exact_value(fastdtw(x, y3), 0.416666657, "fastdtw test y3");
-
-
-
 void benchmark_runtimes() {
 	char msg[50];
 	float X[DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};

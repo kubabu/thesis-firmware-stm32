@@ -58,7 +58,7 @@ float sum(float arr[][DTW_SEQUENCE_LEN], int16_t size)
 }
 
 
-float cityblock(float x[DTW_SEQUENCE_LEN], rbuf_iterator_t y) {
+float cityblock(const float x[DTW_SEQUENCE_LEN], rbuf_iterator_t y) {
 	float sum = 0;
 	for(int i = 0; i < y.size; ++i) {
 		sum += fabsf(x[i] - iterate(&y, i));
@@ -67,7 +67,7 @@ float cityblock(float x[DTW_SEQUENCE_LEN], rbuf_iterator_t y) {
 }
 
 
-float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t *y[DTW_FEATURES]) {
+float fastdtw(const float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t *y[DTW_FEATURES]) {
 	const float pos_inf = 1.0 / 0.0; // srsrly this is correct
 	const int16_t size = DTW_FEATURES;
 
@@ -106,7 +106,7 @@ float fastdtw(float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t *y[DTW_FE
 
 
 //fja oblcizajaca koszt dopasowania odpowiednik ffastdtw
-float distance(float x1[DTW_FEATURES][DTW_SEQUENCE_LEN], float x[DTW_FEATURES][DTW_SEQUENCE_LEN])
+float distance(const float x1[DTW_FEATURES][DTW_SEQUENCE_LEN], float x[DTW_FEATURES][DTW_SEQUENCE_LEN])
 {
     return 0.0; // fastdtw(x1, x); // TODO
 }
@@ -116,7 +116,7 @@ float distance(float x1[DTW_FEATURES][DTW_SEQUENCE_LEN], float x[DTW_FEATURES][D
 float costs[BATCH_SIZE] = {0};
 
 //zapamietane probki (self.X)
-float stored_x[BATCH_SIZE][DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};
+const float stored_x[BATCH_SIZE][DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};
 
 //zapamietane etykiety problek (self.y)
 int stored_y[BATCH_SIZE] = {2,1,1,2,2,4,3,4,4,2,2};
