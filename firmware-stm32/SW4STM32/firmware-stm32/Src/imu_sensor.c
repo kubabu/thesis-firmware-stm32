@@ -19,7 +19,7 @@ void IMU_Sensor_Initialize(IMU_Sensor* imu, USART_TypeDef* USARTx) {
 	} else {
 	  while(1){
 		  if(USARTx != NULL) {
-			  TM_USART_Puts(USARTx, "MPU6050 not initialized properly, will not start");
+			  TM_USART_Puts(USARTx, "MPU6050 not initialized properly, will not start\r\n");
 		  }
 
 		  TM_DISCO_LedToggle(LED_RED);

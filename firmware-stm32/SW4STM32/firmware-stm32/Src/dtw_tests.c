@@ -44,9 +44,9 @@ void fastdtw_tests_0(void) {
 	ringbuf_t buf0 = ringbuf3(DTW_SEQUENCE_LEN, y0, DTW_SEQUENCE_LEN);
 	rbuf_iterator_t it0 = get_iterator(&buf0, DTW_SEQUENCE_LEN);
 
-	rbuf_iterator_t *y0s[DTW_FEATURES];
+	rbuf_iterator_t y0s[DTW_FEATURES];
 	for(int i = 0; i < DTW_FEATURES; ++i) {
-		y0s[i] = &it0;
+		y0s[i] = it0;
 	}
 
 	check_exact_value(fastdtw(x, y0s), 0.0, __FUNCTION__);
@@ -69,9 +69,9 @@ void fastdtw_tests_1(void) {
 	ringbuf_t buf1 = ringbuf3(DTW_SEQUENCE_LEN, y1, DTW_SEQUENCE_LEN);
 	rbuf_iterator_t it1 = get_iterator(&buf1, DTW_SEQUENCE_LEN);
 
-	rbuf_iterator_t *y1s[DTW_FEATURES];
+	rbuf_iterator_t y1s[DTW_FEATURES];
 	for(int i = 0; i < DTW_FEATURES; ++i) {
-		y1s[i] = &it1;
+		y1s[i] = it1;
 	}
 
 	check_exact_value(fastdtw(x, y1s), 25.0, __FUNCTION__);
@@ -98,10 +98,10 @@ void fastdtw_tests_2(void) {
 	ringbuf_t buf1 = ringbuf3(DTW_SEQUENCE_LEN, y1, DTW_SEQUENCE_LEN);
 	rbuf_iterator_t it1 = get_iterator(&buf1, DTW_SEQUENCE_LEN);
 
-	rbuf_iterator_t *y1s[DTW_FEATURES];
-	y1s[0] = &it1;
+	rbuf_iterator_t y1s[DTW_FEATURES];
+	y1s[0] = it1;
 	for(int i = 1; i < DTW_FEATURES; ++i) {
-		y1s[i] = &it0;
+		y1s[i] = it0;
 	}
 
 	check_exact_value(fastdtw(x, y1s), 2.08333325, __FUNCTION__);
@@ -127,10 +127,10 @@ void fastdtw_tests_3(void) {
 	ringbuf_t buf3 = ringbuf3(DTW_SEQUENCE_LEN, y3, DTW_SEQUENCE_LEN);
 	rbuf_iterator_t it3 = get_iterator(&buf3, DTW_SEQUENCE_LEN);
 
-	rbuf_iterator_t *y1s[DTW_FEATURES];
-	y1s[0] = &it3;
+	rbuf_iterator_t y1s[DTW_FEATURES];
+	y1s[0] = it3;
 	for(int i = 1; i < DTW_FEATURES; ++i) {
-		y1s[i] = &it0;
+		y1s[i] = it0;
 	}
 
 	check_exact_value(fastdtw(x, y1s), 0.416666657, __FUNCTION__);
@@ -142,9 +142,9 @@ void benchmark_runtimes() {
 	float zeros[DTW_SEQUENCE_LEN] = { 0.0 };
 	ringbuf_t ringbuf = ringbuf3(DTW_SEQUENCE_LEN, zeros, DTW_SEQUENCE_LEN);
 	rbuf_iterator_t iterator = get_iterator(&ringbuf, DTW_SEQUENCE_LEN);
-	rbuf_iterator_t *data_series[DTW_FEATURES];
+	rbuf_iterator_t data_series[DTW_FEATURES];
 	for(int i = 0; i < DTW_FEATURES; ++i) {
-		data_series[i] = &iterator;
+		data_series[i] = iterator;
 	}
 
 	uint32_t start, duration;
