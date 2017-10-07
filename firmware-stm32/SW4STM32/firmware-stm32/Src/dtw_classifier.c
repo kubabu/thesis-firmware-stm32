@@ -188,7 +188,7 @@ int get_most_frequent_in_array(int indices[K])
 
 int16_t run_dtw_classifier(rbuf_iterator_t *X[DTW_FEATURES])
 {
-	    //oblicz odlegosc do kazdego zapamietanego elementu
+	//oblicz odlegosc do kazdego zapamietanego elementu
     for(int idx = 0; idx < BATCH_SIZE; idx++) {
         costs[idx] = distance(stored_x[idx], X);
     }

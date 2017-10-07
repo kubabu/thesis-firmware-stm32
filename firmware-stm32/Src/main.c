@@ -56,6 +56,8 @@ UART_HandleTypeDef huart6;
 IMU_Sensor imu_instance;
 IMU_Sensor* imu;
 
+classifiers_dataset_t dataset;
+
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
@@ -76,6 +78,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	}
 }
 
+int8_t interval_passed(uint32_t now, uint32_t prev, uint32_t interval) {
+	return now >= prev + interval;
+}
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -115,16 +120,19 @@ int main(void)
   TM_USART_Puts(USART6, "\r\n");
 
   run_all_tests(USART6);
-  classifiers_dataset_init();
+  dataset_init(&dataset);
 
   imu = &imu_instance;
   IMU_Sensor_Initialize(imu, USART6);
 
-  volatile uint32_t now, previous;
-  const uint32_t update_frequency = 100;	// Hz
-  const uint32_t update_interval = 1000 / update_frequency; // ms
+  volatile uint32_t now, previous_reads_update, previous_results_update;
+  const uint32_t reads_update_frequency = 100;	// 25  Hz
+  const uint32_t reads_update_interval = 1000 / reads_update_frequency; // ms
 
-  previous = 0;
+  const uint32_t results_update_frequency = 10;	// Hz
+  const uint32_t results_update_interval = 1000 / results_update_frequency; // ms
+
+  previous_reads_update = previous_results_update = 0;
 
   /* USER CODE END 2 */
 
@@ -139,15 +147,21 @@ int main(void)
 
 	  now = HAL_GetTick();
 
-	  if (now >= previous + update_interval) {
-		  previous = now;
+	  if (interval_passed(now, previous_reads_update, reads_update_interval)) {
+		  previous_reads_update = now;
 		  IMU_Results angles = IMU_AHRS_Update(imu);
-		  classifiers_dataset_push(&angles);
-//
+		  dataset_push(&dataset, &angles);
+
 //		  if(imu->USART != NULL)
 //		  {
 //			AHRS_PrintSerialIMU_Results(imu->USART, angles);
 //		  }
+	  }
+
+	  if (interval_passed(now, previous_results_update, results_update_interval)) {
+		  previous_results_update = now;
+
+		  int16_t nn_result = run_nn_classifier(dataset.nn_iterators);
 	  }
   }
   /* USER CODE END 3 */
