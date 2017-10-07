@@ -138,15 +138,22 @@ void fastdtw_tests_3(void) {
 
 void benchmark_runtimes() {
 	char msg[50];
-	float X[DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};
-	float nnX[DTW_FEATURES][DTW_SEQUENCE_LEN+ 4] = {0};
+
+	float zeros[DTW_SEQUENCE_LEN] = { 0.0 };
+	ringbuf_t ringbuf = ringbuf3(DTW_SEQUENCE_LEN, zeros, DTW_SEQUENCE_LEN);
+	rbuf_iterator_t iterator = get_iterator(&ringbuf, DTW_SEQUENCE_LEN);
+	rbuf_iterator_t *data_series[DTW_FEATURES];
+	for(int i = 0; i < DTW_FEATURES; ++i) {
+		data_series[i] = &iterator;
+	}
+
 	uint32_t start, duration;
 	int16_t result;
-	const uint16_t nn_expected_time = 3;
-	const uint16_t dtw_expected_time = 10;
+	const uint16_t nn_expected_time = 5; 	// was 3 on regular array
+	const uint16_t dtw_expected_time = 32; 	// was 10... :(
 
 	start = HAL_GetTick();
-	result = run_nn_classifier(nnX);
+	result = run_nn_classifier(data_series);
 	duration = HAL_GetTick() - start;
 
 	sprintf(msg, "Benchmarking NN classifier: result=%d in %ld [ms]\r\n", result, duration);
@@ -156,7 +163,7 @@ void benchmark_runtimes() {
 
 
 	start = HAL_GetTick();
-	result = run_dtw_classifier(X);
+	result = run_dtw_classifier(data_series);
 	duration = HAL_GetTick() - start;
 
 	sprintf(msg, "Benchmarking DTW classifier: result=%d in %ld [ms]\r\n", result, duration);

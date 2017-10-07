@@ -106,9 +106,9 @@ float fastdtw(const float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t *y[
 
 
 //fja oblcizajaca koszt dopasowania odpowiednik ffastdtw
-float distance(const float x1[DTW_FEATURES][DTW_SEQUENCE_LEN], float x[DTW_FEATURES][DTW_SEQUENCE_LEN])
+float distance(const float x1[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t *y[DTW_FEATURES])
 {
-    return 0.0; // fastdtw(x1, x); // TODO
+    return fastdtw(x1, y); // TODO
 }
 
 
@@ -186,9 +186,9 @@ int get_most_frequent_in_array(int indices[K])
 }
 
 
-int16_t run_dtw_classifier(float X[DTW_FEATURES][DTW_SEQUENCE_LEN])
+int16_t run_dtw_classifier(rbuf_iterator_t *X[DTW_FEATURES])
 {
-    //oblicz odlegosc do kazdego zapamietanego elementu
+	    //oblicz odlegosc do kazdego zapamietanego elementu
     for(int idx = 0; idx < BATCH_SIZE; idx++) {
         costs[idx] = distance(stored_x[idx], X);
     }

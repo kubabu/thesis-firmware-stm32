@@ -99,7 +99,7 @@ float seq_max(float *seq, int size)
     return max;
 }
 
-int16_t run_nn_classifier(float data_series[FEATURES][PADDED_SEQ_LEN])
+int16_t run_nn_classifier(rbuf_iterator_t *data_series[DTW_FEATURES])
 {
     for(int c_idx = 0; c_idx < OUT_CHANNELS; c_idx++)
 	{
@@ -109,9 +109,8 @@ int16_t run_nn_classifier(float data_series[FEATURES][PADDED_SEQ_LEN])
 			{
 				for(int k_idx = 0; k_idx < KERNEL_SIZE; k_idx++)
 				{
-					float left = data_series[f_idx][s_idx + k_idx];
+					float left = iterate(data_series[f_idx], s_idx + k_idx);
 					float right = kernel[c_idx][f_idx][k_idx];
-					//float orig = output[c_idx][s_idx];
 
 					output[c_idx][s_idx] += left * right;
 
