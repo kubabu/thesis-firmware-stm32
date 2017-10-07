@@ -149,8 +149,8 @@ void benchmark_runtimes() {
 
 	uint32_t start, duration;
 	int16_t result;
-	const uint16_t nn_expected_time = 5; 	// was 3 on regular array
-	const uint16_t dtw_expected_time = 32; 	// was 10... :(
+	const uint16_t nn_expected_time = 6; 	// was 3 on regular array, 5 on array of itereator pointers
+	const uint16_t dtw_expected_time = 33; 	// was 10 / 32... :(
 
 	start = HAL_GetTick();
 	result = run_nn_classifier(data_series);

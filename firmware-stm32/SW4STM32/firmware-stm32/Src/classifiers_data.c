@@ -7,11 +7,10 @@
 #include "classifiers_data.h"
 
 
-const size_t buffer_size = PADDED_SEQ_LEN;
-const size_t buffer_count = FEATURES;
-
-
 void dataset_init(classifiers_dataset_t *dataset) {
+	const size_t buffer_size = PADDED_SEQ_LEN;
+	const size_t buffer_count = FEATURES;
+
 	for (int i = 0; i < buffer_count; ++i) {
 		dataset->buffers[i] = ringbuf(buffer_size, dataset->series[i]);
 

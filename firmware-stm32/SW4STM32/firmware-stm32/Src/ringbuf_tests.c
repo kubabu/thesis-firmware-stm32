@@ -23,7 +23,8 @@ void ringbuf_push_tests(void) {
 
 	for (int i = 0; i < buf.capacity * 2; ++i) {
 		ringbuf_push(&buf, i);
-		check_exact_value(buffer[i % TEST_BUF_SIZE], i, "Checking n-th added element to buffer");
+		check_exact_value(buffer[i % TEST_BUF_SIZE], i, __FUNCTION__);
+		check_exact_value(ringbuf_peek(&buf), i, __FUNCTION__);
 		if(i < buf.capacity - 1) {
 			check_exact_value(buf.is_filled, 0, "filling check before cycling over");
 		} else {
@@ -128,5 +129,4 @@ void _run_rbuf_tests(void) {
 	ringbuf_get_prev_tests();
 	ringbuf_iterate_tests();
 	iterator_on_entire_buffer_tests();
-//	ringbufs_init_tests();
 }

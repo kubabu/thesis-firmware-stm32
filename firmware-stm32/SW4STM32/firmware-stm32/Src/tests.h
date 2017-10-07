@@ -32,6 +32,7 @@ tests_result_t check_exact_value(float result, float expected_value, const char 
 
 void _run_dtw_tests(void);
 void _run_rbuf_tests(void);
+void _run_dataset_tests(void);
 
 void fill_array(float *array, float value, size_t size);
 
