@@ -27,6 +27,17 @@
 #define BATCH_SIZE 11
 
 
+// koszty nowej probki w porownaniu z istniejacymi (distances w predict_cost)
+float costs[BATCH_SIZE] = {0};
+
+//zapamietane probki (self.X)
+const float stored_x[BATCH_SIZE][DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};
+
+//zapamietane etykiety problek (self.y)
+int stored_y[BATCH_SIZE] = {2,1,1,2,2,4,3,4,4,2,2};
+
+
+
 float min2(float x, float y) {
 	if(x < y) {
 		return x;
@@ -110,16 +121,6 @@ float distance(const float x1[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t y
 {
     return fastdtw(x1, y); // TODO
 }
-
-
-// koszty nowej probki w porownaniu z istniejacymi (distances w predict_cost)
-float costs[BATCH_SIZE] = {0};
-
-//zapamietane probki (self.X)
-const float stored_x[BATCH_SIZE][DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};
-
-//zapamietane etykiety problek (self.y)
-int stored_y[BATCH_SIZE] = {2,1,1,2,2,4,3,4,4,2,2};
 
 
 // implementacja https://docs.scipy.org/doc/numpy/reference/generated/numpy.argsort.html

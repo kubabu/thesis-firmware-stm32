@@ -81,6 +81,44 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 int8_t interval_passed(uint32_t now, uint32_t prev, uint32_t interval) {
 	return now >= prev + interval;
 }
+
+
+char *gesture_names[] = {
+		"", 	// 0
+		"", 	// 1
+		"", 	// 2
+		"", 	// 3
+		"", 	// 4
+		"", 	// 5
+		"", 	// 6
+		"", 	// 7
+		"", 	// 8
+		"", 	// 9
+		"", 	// 10
+		"", 	// 11
+		"", 	// 12
+};
+
+
+void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
+	const uint32_t results_update_frequency = 10;	// Hz
+	const uint32_t results_update_interval = 1000 / results_update_frequency; // ms
+	static uint32_t  previous_results_update = 0;
+	const int16_t code_no_result = -1;
+
+	if (dataset->buffers[0].is_filled
+			  && interval_passed(now, previous_results_update, results_update_interval)) {
+		  previous_results_update = now;
+
+		  int16_t result_code = run_nn_classifier(dataset->nn_iterators);
+
+		  if(result_code != code_no_result) {
+			  char *gesture = gesture_names[result_code];
+			  TM_USART_Puts(USART6, gesture);
+			  TM_USART_Puts(USART6, "\r\n");
+		  }
+	  }
+}
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -125,14 +163,11 @@ int main(void)
   imu = &imu_instance;
   IMU_Sensor_Initialize(imu, USART6);
 
-  volatile uint32_t now, previous_reads_update, previous_results_update;
-  const uint32_t reads_update_frequency = 100;	// 25  Hz
+  volatile uint32_t now, previous_reads_update;
+  const uint32_t reads_update_frequency = 25;	// 25  Hz
   const uint32_t reads_update_interval = 1000 / reads_update_frequency; // ms
 
-  const uint32_t results_update_frequency = 10;	// Hz
-  const uint32_t results_update_interval = 1000 / results_update_frequency; // ms
-
-  previous_reads_update = previous_results_update = 0;
+  previous_reads_update = 0;
 
   /* USER CODE END 2 */
 
@@ -158,11 +193,7 @@ int main(void)
 //		  }
 	  }
 
-	  if (interval_passed(now, previous_results_update, results_update_interval)) {
-		  previous_results_update = now;
-
-		  int16_t nn_result = run_nn_classifier(dataset.nn_iterators);
-	  }
+	  process_reads(now, &dataset);
   }
   /* USER CODE END 3 */
 
