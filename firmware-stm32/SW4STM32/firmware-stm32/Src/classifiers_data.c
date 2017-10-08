@@ -15,7 +15,7 @@ void dataset_init(classifiers_dataset_t *dataset) {
 		dataset->buffers[i] = ringbuf(buffer_size, dataset->series[i]);
 
 		dataset->nn_iterators[i] = get_iterator(&dataset->buffers[i], PADDED_SEQ_LEN);
-		dataset->dtw_iterators[i] = get_iterator(&dataset->buffers[i], SEQUENCE_LEN);
+		dataset->dtw_iterators[i] = get_iterator(&dataset->buffers[i], SEQ_LEN);
 	}
 }
 

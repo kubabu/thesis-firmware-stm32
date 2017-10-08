@@ -84,19 +84,19 @@ int8_t interval_passed(uint32_t now, uint32_t prev, uint32_t interval) {
 
 
 char *gesture_names[] = {
-		"", 	// 0
-		"", 	// 1
-		"", 	// 2
-		"", 	// 3
-		"", 	// 4
-		"", 	// 5
-		"", 	// 6
-		"", 	// 7
-		"", 	// 8
-		"", 	// 9
-		"", 	// 10
-		"", 	// 11
-		"", 	// 12
+		"g0", 	// 0
+		"g1", 	// 1
+		"g2", 	// 2
+		"g3", 	// 3
+		"g4", 	// 4
+		"g5", 	// 5
+		"g6", 	// 6
+		"g7", 	// 7
+		"g8", 	// 8
+		"g9", 	// 9
+		"g10", 	// 10
+		"g11", 	// 11
+		"g12", 	// 12
 };
 
 
@@ -114,8 +114,9 @@ void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 
 		  if(result_code != code_no_result) {
 			  char *gesture = gesture_names[result_code];
-			  TM_USART_Puts(USART6, gesture);
-			  TM_USART_Puts(USART6, "\r\n");
+			  char msgbuf[50];
+			  sprintf(msgbuf, "[%lu] %s\r\n", now, gesture);
+			  TM_USART_Puts(USART6, msgbuf);
 		  }
 	  }
 }

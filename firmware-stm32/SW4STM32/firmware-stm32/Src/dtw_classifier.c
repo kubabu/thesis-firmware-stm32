@@ -30,6 +30,7 @@
 // koszty nowej probki w porownaniu z istniejacymi (distances w predict_cost)
 float costs[BATCH_SIZE] = {0};
 
+// TODO update model
 //zapamietane probki (self.X)
 const float stored_x[BATCH_SIZE][DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};
 
@@ -213,7 +214,7 @@ int16_t run_dtw_classifier(rbuf_iterator_t X[DTW_FEATURES])
     //                 predictions[idx] = 'none'
 
     if(sum_of_cost > THRESHOLD) {
-    	return -1;
+    	return NO_GESTURE_DETECTED;
     }
      else {
         int gesture = get_most_frequent_in_array(indices);
