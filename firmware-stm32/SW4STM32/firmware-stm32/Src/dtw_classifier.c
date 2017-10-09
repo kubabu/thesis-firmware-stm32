@@ -70,17 +70,16 @@ float sum(float arr[][DTW_SEQUENCE_LEN], int16_t size)
 }
 
 
-float cityblock(const float x[DTW_SEQUENCE_LEN], rbuf_iterator_t y) {
+float cityblock(const float x[DTW_SEQUENCE_LEN], float y[DTW_SEQUENCE_LEN]) {
 	float sum = 0;
-	for(int i = 0; i < y.size; ++i) {
-		sum += fabsf(x[i] - iterate(&y, i));
+	for(int i = 0; i < DTW_SEQUENCE_LEN; ++i) {
+		sum += fabsf(x[i] - y[i]);
 	}
 	return sum;
 }
 
 
-
-float fastdtw(const float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t y[DTW_FEATURES]) {
+float fastdtw(const float x[DTW_FEATURES][DTW_SEQUENCE_LEN], float y[DTW_FEATURES][DTW_SEQUENCE_LEN]) {
 	const float pos_inf = 1.0 / 0.0; // srsrly this is correct
 	const int16_t size = DTW_FEATURES;
 
@@ -119,7 +118,7 @@ float fastdtw(const float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t y[D
 
 
 //fja oblcizajaca koszt dopasowania odpowiednik ffastdtw
-float distance(const float x1[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t y[DTW_FEATURES])
+float distance(const float x1[DTW_FEATURES][DTW_SEQUENCE_LEN], float y[DTW_FEATURES][DTW_SEQUENCE_LEN])
 {
     return fastdtw(x1, y);
 }
@@ -189,7 +188,7 @@ int get_most_frequent_in_array(int indices[K])
 }
 
 
-int16_t run_dtw_classifier(rbuf_iterator_t X[DTW_FEATURES])
+int16_t run_dtw_classifier(float X[DTW_FEATURES][DTW_SEQUENCE_LEN])
 {
 	//oblicz odlegosc do kazdego zapamietanego elementu
     for(int idx = 0; idx < BATCH_SIZE; idx++) {
