@@ -79,6 +79,7 @@ float cityblock(const float x[DTW_SEQUENCE_LEN], rbuf_iterator_t y) {
 }
 
 
+
 float fastdtw(const float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t y[DTW_FEATURES]) {
 	const float pos_inf = 1.0 / 0.0; // srsrly this is correct
 	const int16_t size = DTW_FEATURES;
@@ -120,7 +121,7 @@ float fastdtw(const float x[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t y[D
 //fja oblcizajaca koszt dopasowania odpowiednik ffastdtw
 float distance(const float x1[DTW_FEATURES][DTW_SEQUENCE_LEN], rbuf_iterator_t y[DTW_FEATURES])
 {
-    return fastdtw(x1, y); // TODO
+    return fastdtw(x1, y);
 }
 
 

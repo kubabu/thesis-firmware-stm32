@@ -52,6 +52,47 @@ void dataset_tests(void) {
 }
 
 
+void dataset_push2(classifiers_dataset_t *dataset, float nextval) {
+	const size_t bytes_to_shift = (PADDED_SEQ_LEN - 1) * sizeof(float);
+
+	for (int i = 0; i < FEATURES; ++i) {
+		memmove(dataset->series[i], &dataset->series[i][1], bytes_to_shift);
+		dataset->series[i][PADDED_SEQ_LEN - 1] = nextval;
+	}
+}
+
+void memmove_dataset_tests(void) {
+	classifiers_dataset_t dataset;
+	float nextval = 997; // ten numer to kłopoty
+	uint32_t start, duration;
+
+	for (int i = 0; i < FEATURES; ++i) {
+		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+			dataset.series[i][j] = j * i;
+		}
+	}
+	for (int i = 0; i < FEATURES; ++i) {
+		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+			check_exact_value(dataset.series[i][j], j * i, __FUNCTION__);
+		}
+	}
+	start = HAL_GetTick();
+
+	// act
+	dataset_push2(&dataset, nextval);
+
+	//	verify
+	duration = HAL_GetTick() - start;
+	for (int i = 0; i < FEATURES; ++i) {
+		for (int j = 0; j < PADDED_SEQ_LEN - 1; ++j) {
+			check_exact_value(dataset.series[i][j], (j + 1) * i, __FUNCTION__);
+		}
+		check_exact_value(dataset.series[i][PADDED_SEQ_LEN - 1], nextval, __FUNCTION__);
+	}
+	check_value(duration < 1, duration, 2, __FUNCTION__);
+}
+
 void _run_dataset_tests(void) {
 	dataset_tests();
+	memmove_dataset_tests();
 }
