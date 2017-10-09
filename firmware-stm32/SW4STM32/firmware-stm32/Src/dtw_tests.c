@@ -159,7 +159,30 @@ void fastdtw_tests_3(void) {
 	check_exact_value(fastdtw(x, y3), 0.416666657, __FUNCTION__);
 }
 
-void benchmark_runtimes() {
+
+void benchmark_nn_classifier() {
+	char msg[50];
+
+	float series[FEATURES][PADDED_SEQ_LEN] = {
+					{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
+					{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
+					{0.0}, {0.0}};
+
+	uint32_t start, duration;
+	int16_t result;
+	const uint16_t nn_expected_time = 3;
+
+	start = HAL_GetTick();
+	result = run_nn_classifier(series);
+	duration = HAL_GetTick() - start;
+
+	sprintf(msg, "Benchmarking NN classifier: result=%d in %ld [ms]\r\n", result, duration);
+	TM_USART_Puts(USART6, msg);
+	check_value(duration <= nn_expected_time, duration, nn_expected_time, __FUNCTION__);
+}
+
+
+void benchmark_dtw_classifier() {
 	char msg[50];
 
 	float x[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
@@ -167,28 +190,9 @@ void benchmark_runtimes() {
 				{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 				{0.0}, {0.0}};
 
-	float zeros[DTW_SEQUENCE_LEN] = { 0.0 };
-	ringbuf_t ringbuf = ringbuf3(DTW_SEQUENCE_LEN, zeros, DTW_SEQUENCE_LEN);
-	rbuf_iterator_t iterator = get_iterator(&ringbuf, DTW_SEQUENCE_LEN);
-	rbuf_iterator_t data_series[DTW_FEATURES];
-	for(int i = 0; i < DTW_FEATURES; ++i) {
-		data_series[i] = iterator;
-	}
-
 	uint32_t start, duration;
 	int16_t result;
-	const uint16_t nn_expected_time = 6; 	// was 3 on regular array, 5 on array of itereator pointers
-	const uint16_t dtw_expected_time = 33; 	// was 10 / 32... :(
-
-	start = HAL_GetTick();
-	result = run_nn_classifier(data_series);
-	duration = HAL_GetTick() - start;
-
-	sprintf(msg, "Benchmarking NN classifier: result=%d in %ld [ms]\r\n", result, duration);
-	TM_USART_Puts(USART6, msg);
-	check_value(duration <= nn_expected_time, duration, nn_expected_time,
-				"Benchmarking NN classifier execution time");
-
+	const uint16_t dtw_expected_time = 11;
 
 	start = HAL_GetTick();
 	result = run_dtw_classifier(x);
@@ -196,10 +200,14 @@ void benchmark_runtimes() {
 
 	sprintf(msg, "Benchmarking DTW classifier: result=%d in %ld [ms]\r\n", result, duration);
 	TM_USART_Puts(USART6, msg);
-	check_value(duration <= dtw_expected_time, duration, dtw_expected_time,
-			"Benchmarking DTW classifier execution time");
+	check_value(duration <= dtw_expected_time, duration, dtw_expected_time, __FUNCTION__);
 }
 
+
+void benchmark_runtimes() {
+	benchmark_nn_classifier();
+	benchmark_dtw_classifier();
+}
 
 void _run_dtw_tests(void) {
 	cityblock_tests_1();

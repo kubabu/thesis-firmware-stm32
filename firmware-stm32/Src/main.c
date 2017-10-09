@@ -110,7 +110,7 @@ void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 			  && interval_passed(now, previous_results_update, results_update_interval)) {
 		  previous_results_update = now;
 
-		  int16_t result_code = run_nn_classifier(dataset->nn_iterators);
+		  int16_t result_code = run_nn_classifier(dataset->series);
 
 		  if(result_code != code_no_result) {
 			  char *gesture = gesture_names[result_code];

@@ -139,7 +139,7 @@ float argmax(float* seq, int size)
     return idx;
 }
 
-int16_t run_nn_classifier(rbuf_iterator_t data_series[DTW_FEATURES])
+int16_t run_nn_classifier(float series[FEATURES][PADDED_SEQ_LEN])
 {
 	for(int c_idx = 0; c_idx < OUT_CHANNELS; c_idx++){
 		for(int s_idx = 0; s_idx < SEQ_LEN; s_idx++)
@@ -148,11 +148,12 @@ int16_t run_nn_classifier(rbuf_iterator_t data_series[DTW_FEATURES])
 			{
 				for(int k_idx = 0; k_idx < KERNEL_SIZE; k_idx++)
 				{
-					float left = iterate(&data_series[f_idx], s_idx + k_idx);
-//	                float left = series[f_idx][s_idx + k_idx];
+					float left = series[f_idx][s_idx + k_idx];
 					float right = kernel[c_idx][f_idx][k_idx];
+					//float orig = output[c_idx][s_idx];
 
 					output[c_idx][s_idx] += left * right;
+                    //printf("%.1f + %.1f * %.1f = %.1f\n", orig, left,right, output[c_idx][s_idx]);
 				}
 			}
 

@@ -27,7 +27,7 @@
 #define DTW_SEQUENCE_LEN SEQ_LEN
 #define DTW_FEATURES FEATURES
 
-int16_t run_nn_classifier(rbuf_iterator_t X[DTW_FEATURES]);
+int16_t run_nn_classifier(float series[FEATURES][PADDED_SEQ_LEN]);
 
 int16_t run_dtw_classifier(float X[DTW_FEATURES][DTW_SEQUENCE_LEN]);
 
