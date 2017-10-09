@@ -5,67 +5,31 @@
  *      Author: kuba
  */
 
-#include "classifiers_data.h"
+#include <classifiers_dataset.h>
 #include "tests.h"
 
-
-void dataset_tests(void) {
+void dataset_init_tests(void) {
 	classifiers_dataset_t dataset;
-	IMU_Results results;
 
 	dataset_init(&dataset);
 
-	for (int i = 0; i < FEATURES; ++i) {
-		check_value(dataset.buffers[i].buffer == dataset.series[i], 0, 0, __FUNCTION__);
-		check_value(&dataset.buffers[i] == dataset.dtw_iterators[i].buf, 0, 0, __FUNCTION__);
-		check_value(&dataset.buffers[i] == dataset.nn_iterators[i].buf,  0, 0,__FUNCTION__);
+	check_exact_value(dataset.is_ready, DATASET_NOT_READY, __FUNCTION__);
+	check_exact_value(dataset.count, 0, __FUNCTION__);
+
+	IMU_Results results;
+
+	for (int i = 0; i < PADDED_SEQ_LEN; ++i) {
+		dataset_push(&dataset, &results);
 	}
 
-	results.ax = 0.0;
-	results.ax = 0.0;
-	results.ay = 1.0;
-	results.az = 2.0;
-	results.gx = 3.0;
-	results.gy = 4.0;
-	results.gz = 5.0;
-	results.raw_angles.pitch = 6.0;
-	results.raw_angles.roll = 7.0;
-	results.raw_angles.yaw = 8.0;
-	results.filtered_angles.pitch = 9.0;
-	results.filtered_angles.roll = 10.0;
-	results.filtered_angles.yaw = 11.0;
-
-	dataset_push(&dataset, &results);
-
-	check_exact_value(ringbuf_peek(&dataset.buffers[0]), 0.0, __FUNCTION__);
-	check_exact_value(ringbuf_peek(&dataset.buffers[1]), 1.0, __FUNCTION__);
-	check_exact_value(ringbuf_peek(&dataset.buffers[2]), 2.0, __FUNCTION__);
-	check_exact_value(ringbuf_peek(&dataset.buffers[3]), 3.0, __FUNCTION__);
-	check_exact_value(ringbuf_peek(&dataset.buffers[4]), 4.0, __FUNCTION__);
-	check_exact_value(ringbuf_peek(&dataset.buffers[5]), 5.0, __FUNCTION__);
-	check_exact_value(ringbuf_peek(&dataset.buffers[6]), 6.0, __FUNCTION__);
-	check_exact_value(ringbuf_peek(&dataset.buffers[7]), 7.0, __FUNCTION__);
-	check_exact_value(ringbuf_peek(&dataset.buffers[8]), 8.0, __FUNCTION__);
-	check_exact_value(ringbuf_peek(&dataset.buffers[9]), 9.0, __FUNCTION__);
-	check_exact_value(ringbuf_peek(&dataset.buffers[10]), 10.0, __FUNCTION__);
-	check_exact_value(ringbuf_peek(&dataset.buffers[11]), 11.0, __FUNCTION__);
+	check_exact_value(dataset.is_ready, DATASET_READY, __FUNCTION__);
 }
 
-
-void dataset_push2(classifiers_dataset_t *dataset, float nextval) {
-	const size_t bytes_to_shift = (PADDED_SEQ_LEN - 1) * sizeof(float);
-
-	for (int i = 0; i < FEATURES; ++i) {
-		memmove(dataset->series[i], &dataset->series[i][1], bytes_to_shift);
-		dataset->series[i][PADDED_SEQ_LEN - 1] = nextval;
-	}
-}
-
-void memmove_dataset_tests(void) {
+void dataset_push_tests(void) {
 	classifiers_dataset_t dataset;
-	float nextval = 997; // ten numer to kłopoty
 	uint32_t start, duration;
 
+	dataset_init(&dataset);
 	for (int i = 0; i < FEATURES; ++i) {
 		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
 			dataset.series[i][j] = j * i;
@@ -76,10 +40,26 @@ void memmove_dataset_tests(void) {
 			check_exact_value(dataset.series[i][j], j * i, __FUNCTION__);
 		}
 	}
+
+	IMU_Results results;
+	results.ax = 0.123;
+	results.ay = 1.123;
+	results.az = 2.123;
+	results.gx = 3.123;
+	results.gy = 4.123;
+	results.gz = 5.123;
+	results.raw_angles.pitch = 6.123;
+	results.raw_angles.roll = 7.123;
+	results.raw_angles.yaw = 8.123;
+	results.filtered_angles.pitch = 9.123;
+	results.filtered_angles.roll = 10.123;
+	results.filtered_angles.yaw = 11.123;
+	check_exact_value(dataset.is_ready, DATASET_NOT_READY, __FUNCTION__);
+
 	start = HAL_GetTick();
 
 	// act
-	dataset_push2(&dataset, nextval);
+	dataset_push(&dataset, &results);
 
 	//	verify
 	duration = HAL_GetTick() - start;
@@ -87,12 +67,24 @@ void memmove_dataset_tests(void) {
 		for (int j = 0; j < PADDED_SEQ_LEN - 1; ++j) {
 			check_exact_value(dataset.series[i][j], (j + 1) * i, __FUNCTION__);
 		}
-		check_exact_value(dataset.series[i][PADDED_SEQ_LEN - 1], nextval, __FUNCTION__);
 	}
+	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 1], results.ax, __FUNCTION__);
+	check_exact_value(dataset.series[1][PADDED_SEQ_LEN - 1], results.ay, __FUNCTION__);
+	check_exact_value(dataset.series[2][PADDED_SEQ_LEN - 1], results.az, __FUNCTION__);
+	check_exact_value(dataset.series[3][PADDED_SEQ_LEN - 1], results.gx, __FUNCTION__);
+	check_exact_value(dataset.series[4][PADDED_SEQ_LEN - 1], results.gy, __FUNCTION__);
+	check_exact_value(dataset.series[5][PADDED_SEQ_LEN - 1], results.gz, __FUNCTION__);
+	check_exact_value(dataset.series[6][PADDED_SEQ_LEN - 1], results.raw_angles.pitch, __FUNCTION__);
+	check_exact_value(dataset.series[7][PADDED_SEQ_LEN - 1], results.raw_angles.roll, __FUNCTION__);
+	check_exact_value(dataset.series[8][PADDED_SEQ_LEN - 1], results.raw_angles.yaw, __FUNCTION__);
+	check_exact_value(dataset.series[9][PADDED_SEQ_LEN - 1], results.filtered_angles.pitch, __FUNCTION__);
+	check_exact_value(dataset.series[10][PADDED_SEQ_LEN - 1], results.filtered_angles.roll, __FUNCTION__);
+	check_exact_value(dataset.series[11][PADDED_SEQ_LEN - 1], results.filtered_angles.yaw, __FUNCTION__);
 	check_value(duration < 1, duration, 2, __FUNCTION__);
+	check_exact_value(dataset.is_ready, DATASET_NOT_READY, __FUNCTION__);
 }
 
 void _run_dataset_tests(void) {
-	dataset_tests();
-	memmove_dataset_tests();
+	dataset_init_tests();
+	dataset_push_tests();
 }

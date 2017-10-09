@@ -36,8 +36,8 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
+#include <classifiers_dataset.h>
 #include "classifiers.h"
-#include "classifiers_data.h"
 #include "defines.h"
 #include "imu_sensor.h"
 #include "main.h"
@@ -106,7 +106,7 @@ void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 	static uint32_t  previous_results_update = 0;
 	const int16_t code_no_result = -1;
 
-	if (dataset->buffers[0].is_filled
+	if (dataset->is_ready
 			  && interval_passed(now, previous_results_update, results_update_interval)) {
 		  previous_results_update = now;
 
@@ -159,10 +159,10 @@ int main(void)
   TM_USART_Puts(USART6, "\r\n");
 
   run_all_tests(USART6);
-  dataset_init(&dataset);
 
   imu = &imu_instance;
   IMU_Sensor_Initialize(imu, USART6);
+  dataset_init(&dataset);
 
   volatile uint32_t now, previous_reads_update;
   const uint32_t reads_update_frequency = 25;	// 25  Hz
