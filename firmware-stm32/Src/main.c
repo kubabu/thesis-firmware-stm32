@@ -110,12 +110,19 @@ void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 			  && interval_passed(now, previous_results_update, results_update_interval)) {
 		  previous_results_update = now;
 
+		  char msgbuf[50] = { '\0' };
 		  int16_t result_code = run_nn_classifier(dataset->series);
 
 		  if(result_code != code_no_result) {
 			  char *gesture = gesture_names[result_code];
-			  char msgbuf[50];
-			  sprintf(msgbuf, "[%lu] %s\r\n", now, gesture);
+			  sprintf(msgbuf, "NN: [%lu] %s\r\n", now, gesture);
+			  TM_USART_Puts(USART6, msgbuf);
+		  }
+
+		  result_code = run_dtw_classifier(dataset->series);
+		  if(result_code != code_no_result) {
+			  char *gesture = gesture_names[result_code];
+			  sprintf(msgbuf, "NN: [%lu] %s\r\n", now, gesture);
 			  TM_USART_Puts(USART6, msgbuf);
 		  }
 	  }

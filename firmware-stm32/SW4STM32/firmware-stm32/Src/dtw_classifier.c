@@ -32,10 +32,10 @@ float costs[BATCH_SIZE] = {0};
 
 // TODO update model
 //zapamietane probki (self.X)
-const float stored_x[BATCH_SIZE][DTW_FEATURES][DTW_SEQUENCE_LEN] = {0};
+const float stored_x[BATCH_SIZE][FEATURES][DTW_SEQUENCE_LEN] = {0};
 
 //zapamietane etykiety problek (self.y)
-int stored_y[BATCH_SIZE] = {2,1,1,2,2,4,3,4,4,2,2};
+int16_t stored_y[BATCH_SIZE] = {2,1,1,2,2,4,3,4,4,2,2};
 
 
 
@@ -59,7 +59,7 @@ float min3(float x, float y, float z) {
 
 float sum(float arr[][DTW_SEQUENCE_LEN], int16_t size)
 {
-	float_t sum = 0;
+	float sum = 0;
 
 	for(uint16_t i = 0; i < size; ++i) {
 		for(uint16_t j = 0; j < DTW_SEQUENCE_LEN; ++j) {
@@ -79,12 +79,12 @@ float cityblock(const float x[DTW_SEQUENCE_LEN], float y[DTW_SEQUENCE_LEN]) {
 }
 
 
-float fastdtw(const float x[DTW_FEATURES][DTW_SEQUENCE_LEN], float y[DTW_FEATURES][DTW_SEQUENCE_LEN]) {
+float fastdtw(const float x[FEATURES][DTW_SEQUENCE_LEN], float y[FEATURES][DTW_SEQUENCE_LEN]) {
 	const float pos_inf = 1.0 / 0.0; // srsrly this is correct
-	const int16_t size = DTW_FEATURES;
+	const int16_t size = FEATURES;
 
 	//	D0 = np.zeros(shape=(size + 1, size + 1))
-	volatile float D0[DTW_FEATURES + 1][DTW_FEATURES + 1] = {0};
+	volatile float D0[FEATURES + 1][FEATURES + 1] = {0};
 	//	D1 = D0[1:, 1:]
 
 	for(int16_t i = 1; i <= size; ++i) {
@@ -118,7 +118,7 @@ float fastdtw(const float x[DTW_FEATURES][DTW_SEQUENCE_LEN], float y[DTW_FEATURE
 
 
 //fja oblcizajaca koszt dopasowania odpowiednik ffastdtw
-float distance(const float x1[DTW_FEATURES][DTW_SEQUENCE_LEN], float y[DTW_FEATURES][DTW_SEQUENCE_LEN])
+float distance(const float x1[FEATURES][DTW_SEQUENCE_LEN], float y[FEATURES][DTW_SEQUENCE_LEN])
 {
     return fastdtw(x1, y);
 }
@@ -188,7 +188,7 @@ int get_most_frequent_in_array(int indices[K])
 }
 
 
-int16_t run_dtw_classifier(float X[DTW_FEATURES][DTW_SEQUENCE_LEN])
+int16_t run_dtw_classifier(float X[FEATURES][DTW_SEQUENCE_LEN])
 {
 	//oblicz odlegosc do kazdego zapamietanego elementu
     for(int idx = 0; idx < BATCH_SIZE; idx++) {

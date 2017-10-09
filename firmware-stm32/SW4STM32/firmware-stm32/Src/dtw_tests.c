@@ -33,12 +33,12 @@ void cityblock_tests_2(void) {
 
 
 void fastdtw_tests_0(void) {
-	float x[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
+	float x[FEATURES][DTW_SEQUENCE_LEN] = {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
 
-	float y0[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
+	float y0[FEATURES][DTW_SEQUENCE_LEN] = {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
@@ -48,12 +48,12 @@ void fastdtw_tests_0(void) {
 
 
 void fastdtw_tests_1(void) {
-	float x[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
+	float x[FEATURES][DTW_SEQUENCE_LEN] = {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
 
-	float y1[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
+	float y1[FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -121,11 +121,11 @@ void fastdtw_tests_1(void) {
 
 
 void fastdtw_tests_2(void) {
-	float x[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
+	float x[FEATURES][DTW_SEQUENCE_LEN] = {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
-	float y2[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
+	float y2[FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -141,11 +141,11 @@ void fastdtw_tests_2(void) {
 
 
 void fastdtw_tests_3(void) {
-	float x[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
+	float x[FEATURES][DTW_SEQUENCE_LEN] = {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
-	float y3[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
+	float y3[FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -185,7 +185,7 @@ void benchmark_nn_classifier() {
 void benchmark_dtw_classifier() {
 	char msg[50];
 
-	float x[DTW_FEATURES][DTW_SEQUENCE_LEN] = {
+	float x[FEATURES][DTW_SEQUENCE_LEN] = {
 				{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 				{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 				{0.0}, {0.0}};
