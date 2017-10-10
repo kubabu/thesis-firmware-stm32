@@ -173,7 +173,7 @@ void benchmark_nn_classifier() {
 	const uint16_t nn_expected_time = 3;
 
 	start = HAL_GetTick();
-	result = run_nn_classifier(series);
+	result = nn_classifier(series);
 	duration = HAL_GetTick() - start;
 
 	sprintf(msg, "Benchmarking NN classifier: result=%d in %ld [ms]\r\n", result, duration);
@@ -195,7 +195,7 @@ void benchmark_dtw_classifier() {
 	const uint16_t dtw_expected_time = 11;
 
 	start = HAL_GetTick();
-	result = run_dtw_classifier(x);
+	result = knn_classifier(x);
 	duration = HAL_GetTick() - start;
 
 	sprintf(msg, "Benchmarking DTW classifier: result=%d in %ld [ms]\r\n", result, duration);

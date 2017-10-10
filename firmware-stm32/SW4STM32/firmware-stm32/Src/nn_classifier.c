@@ -139,7 +139,7 @@ float argmax(float* seq, int size)
     return idx;
 }
 
-int16_t run_nn_classifier(float series[FEATURES][PADDED_SEQ_LEN])
+int16_t nn_classifier(float series[FEATURES][PADDED_SEQ_LEN])
 {
 	for(int c_idx = 0; c_idx < OUT_CHANNELS; c_idx++){
 		for(int s_idx = 0; s_idx < SEQ_LEN; s_idx++)

@@ -111,7 +111,7 @@ void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 		  previous_results_update = now;
 
 		  char msgbuf[50] = { '\0' };
-		  int16_t result_code = run_nn_classifier(dataset->series);
+		  int16_t result_code = nn_classifier(dataset->series);
 
 		  if(result_code != code_no_result) {
 			  char *gesture = gesture_names[result_code];
@@ -119,7 +119,7 @@ void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 			  TM_USART_Puts(USART6, msgbuf);
 		  }
 
-		  result_code = run_dtw_classifier(dataset->series);
+		  result_code = knn_classifier(dataset->series);
 		  if(result_code != code_no_result) {
 			  char *gesture = gesture_names[result_code];
 			  sprintf(msgbuf, "NN: [%lu] %s\r\n", now, gesture);

@@ -188,7 +188,7 @@ int get_most_frequent_in_array(int indices[K])
 }
 
 
-int16_t run_dtw_classifier(float X[FEATURES][DTW_SEQUENCE_LEN])
+int16_t knn_classifier(float X[FEATURES][DTW_SEQUENCE_LEN])
 {
 	//oblicz odlegosc do kazdego zapamietanego elementu
     for(int idx = 0; idx < BATCH_SIZE; idx++) {

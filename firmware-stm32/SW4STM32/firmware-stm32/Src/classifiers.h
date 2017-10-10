@@ -26,9 +26,9 @@
 // for fastdtw
 #define DTW_SEQUENCE_LEN SEQ_LEN
 
-int16_t run_nn_classifier(float series[FEATURES][PADDED_SEQ_LEN]);
+int16_t nn_classifier(float series[FEATURES][PADDED_SEQ_LEN]);
 
-int16_t run_dtw_classifier(float X[FEATURES][DTW_SEQUENCE_LEN]);
+int16_t knn_classifier(float X[FEATURES][DTW_SEQUENCE_LEN]);
 
 float cityblock(const float x[DTW_SEQUENCE_LEN], float y[DTW_SEQUENCE_LEN]);
 float fastdtw(const float x[FEATURES][DTW_SEQUENCE_LEN], float y[FEATURES][DTW_SEQUENCE_LEN]);
