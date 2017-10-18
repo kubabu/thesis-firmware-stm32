@@ -175,6 +175,7 @@ int main(void)
   const uint32_t reads_update_frequency = 25;	// 25  Hz
   const uint32_t reads_update_interval = 1000 / reads_update_frequency; // ms
 
+//  char mode = 'n';
   previous_reads_update = 0;
 
   /* USER CODE END 2 */
@@ -189,6 +190,8 @@ int main(void)
 	  IMU_Sensor_Read_Update(imu);
 
 	  now = HAL_GetTick();
+
+//	  mode = TM_USART_Getc(USART6);
 
 	  if (interval_passed(now, previous_reads_update, reads_update_interval)) {
 		  previous_reads_update = now;
