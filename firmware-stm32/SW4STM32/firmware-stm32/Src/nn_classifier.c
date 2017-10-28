@@ -17,7 +17,7 @@
 #define NUM_CLASSES 13
 
 
-float kernel[OUT_CHANNELS][FEATURES][KERNEL_SIZE] = {
+const float kernel[OUT_CHANNELS][FEATURES][KERNEL_SIZE] = {
     {
         {0.07469f, 0.01306f, -0.09686f, -0.01433f, -0.05688f },
         {0.09101f, -0.05792f, 0.11600f, -0.06796f, 0.09631f },
@@ -62,7 +62,7 @@ float kernel[OUT_CHANNELS][FEATURES][KERNEL_SIZE] = {
     }
 };
 
-float bias[OUT_CHANNELS] = {
+const float bias[OUT_CHANNELS] = {
 
     0.07718f, 0.16852f, -0.03331f
 };
@@ -78,7 +78,7 @@ float fc_output[NUM_CLASSES]= {0.0f};
 int gesture = -1;
 
 
-float fc[NUM_CLASSES][FULLY_CONNECTED] = {
+const float fc[NUM_CLASSES][FULLY_CONNECTED] = {
     { -0.27157f, -0.25901f, -0.27163f, -0.00419f, -0.28523f, -0.08973f, -0.25379f, -0.03739f, -0.09657f, 0.13492f, -0.39082f, -0.38419f, 0.24636f, -0.12022f, 0.17143f, -0.00139f, 0.25600f, 0.07782f, 0.12302f, -0.46546f, -0.04627f, 0.32208f, -0.06370f, 0.07005f, 0.07226f, -0.06092f, 0.22740f, -0.06334f, -0.28071f, 0.05067f,  },
     { -0.18872f, 0.05562f, 0.00961f, -0.06847f, -0.00313f, 0.09037f, 0.08678f, 0.01209f, 0.09630f, -0.00478f, 0.02540f, -0.07124f, 0.03183f, 0.17415f, 0.03617f, 0.05817f, 0.06538f, 0.07932f, -0.14033f, 0.16115f, 0.11362f, 0.02805f, -0.15539f, 0.01944f, -0.04087f, 0.05532f, -0.09899f, -0.02275f, 0.04094f, 0.12847f,  },
     { -0.01587f, 0.08572f, 0.11292f, 0.24383f, -0.04665f, -0.06873f, 0.03768f, -0.10381f, 0.11157f, -0.08023f, -0.24490f, 0.05373f, -0.20566f, 0.02239f, -0.00142f, 0.04058f, 0.04021f, -0.15556f, -0.18347f, -0.36523f, -0.23964f, -0.10034f, -0.06193f, 0.06903f, -0.11670f, -0.00812f, 0.20481f, 0.16209f, -0.00949f, 0.12509f,  },
@@ -94,11 +94,11 @@ float fc[NUM_CLASSES][FULLY_CONNECTED] = {
     { -0.08767f, -0.12381f, -0.13898f, -0.09394f, -0.04507f, 0.14737f, -0.08810f, 0.02683f, 0.13648f, 0.03106f, -0.22421f, -0.20989f, -0.00916f, -0.06695f, 0.00767f, -0.10857f, 0.02624f, 0.04890f, 0.01884f, 0.19858f, 0.14659f, -0.00863f, 0.21351f, 0.03915f, 0.09676f, 0.05658f, 0.06485f, -0.16687f, -0.34425f, -0.13724f,  }
 };
 
-float fc_bias[NUM_CLASSES] = {
+const float fc_bias[NUM_CLASSES] = {
     0.02743f, 0.11996f, -0.01974f, -0.10447f, -0.07635f, -0.12257f, -0.03701f, -0.02970f, 0.17197f, 0.17025f, 0.12544f, -0.15065f, -0.12173f
 };
 
-void print_seq(const char *name, float *seq, int len)
+void print_seq(const char *name, const float *seq, int len)
 {
     puts(name);
     for(int i = 0; i < len; i++)
@@ -110,7 +110,7 @@ void print_seq(const char *name, float *seq, int len)
 }
 
 
-float seq_max(float *seq, int size)
+float seq_max(const float *seq, int size)
 {
     float max = seq[0];
     for(int i = 1; i < size; i++)
@@ -124,7 +124,7 @@ float seq_max(float *seq, int size)
 }
 
 
-float argmax(float* seq, int size)
+float argmax(const float* seq, int size)
 {
     int idx = 0;
     float max = seq[0];
@@ -139,7 +139,7 @@ float argmax(float* seq, int size)
     return idx;
 }
 
-int16_t nn_classifier(float series[FEATURES][PADDED_SEQ_LEN])
+int16_t nn_classifier(const float series[FEATURES][PADDED_SEQ_LEN])
 {
 	for(int c_idx = 0; c_idx < OUT_CHANNELS; c_idx++){
 		for(int s_idx = 0; s_idx < SEQ_LEN; s_idx++)

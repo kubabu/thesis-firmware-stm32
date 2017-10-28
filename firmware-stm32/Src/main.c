@@ -83,23 +83,6 @@ int8_t interval_passed(uint32_t now, uint32_t prev, uint32_t interval) {
 }
 
 
-char *gesture_names[] = {
-	"g0", 	// 0
-	"g1", 	// 1
-	"g2", 	// 2
-	"g3", 	// 3
-	"g4", 	// 4
-	"g5", 	// 5
-	"g6", 	// 6
-	"g7", 	// 7
-	"g8", 	// 8
-	"g9", 	// 9
-	"g10", 	// 10
-	"g11", 	// 11
-	"g12", 	// 12
-};
-
-
 void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 	const uint32_t results_update_frequency = 10;	// Hz
 	const uint32_t results_update_interval = 1000 / results_update_frequency; // ms
@@ -122,7 +105,7 @@ void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 		  result_code = knn_classifier(dataset->series);
 		  if(result_code != code_no_result) {
 			  char *gesture = gesture_names[result_code];
-			  sprintf(msgbuf, "NN: [%lu] %s\r\n", now, gesture);
+			  sprintf(msgbuf, "KNN: [%lu] %s\r\n", now, gesture);
 			  TM_USART_Puts(USART6, msgbuf);
 		  }
 	  }
@@ -172,7 +155,7 @@ int main(void)
   dataset_init(&dataset);
 
   volatile uint32_t now, previous_reads_update;
-  const uint32_t reads_update_frequency = 25;	// 25  Hz
+  const uint32_t reads_update_frequency = 100;	// 25  Hz for classifiers, 100 for sample collector
   const uint32_t reads_update_interval = 1000 / reads_update_frequency; // ms
 
 //  char mode = 'n';
@@ -196,15 +179,15 @@ int main(void)
 	  if (interval_passed(now, previous_reads_update, reads_update_interval)) {
 		  previous_reads_update = now;
 		  IMU_Results angles = IMU_AHRS_Update(imu);
-		  dataset_push(&dataset, &angles);
+//		  dataset_push(&dataset, &angles);
 
-//		  if(imu->USART != NULL)
-//		  {
-//			AHRS_PrintSerialIMU_Results(imu->USART, angles);
-//		  }
+		  if(imu->USART != NULL)
+		  {
+			AHRS_PrintSerialIMU_Results(imu->USART, angles);
+		  }
 	  }
 
-	  process_reads(now, &dataset);
+//	  process_reads(now, &dataset);
   }
   /* USER CODE END 3 */
 

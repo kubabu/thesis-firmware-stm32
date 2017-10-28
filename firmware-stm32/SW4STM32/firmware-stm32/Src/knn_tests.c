@@ -9,36 +9,33 @@
 
 
 void cityblock_tests_1(void) {
-	float x[DTW_SEQUENCE_LEN] = {0.0};
-	float y[DTW_SEQUENCE_LEN] = {0.0};
-
-//	int16_t size = DTW_SEQUENCE_LEN;
+	const float x[DTW_SEQUENCE_LEN] = {0.0};
+	const float y[DTW_SEQUENCE_LEN] = {0.0};
 
 	check_exact_value(cityblock(x, y), 0.0, __FUNCTION__);
 }
 
 
 void cityblock_tests_2(void) {
-	float x2[DTW_SEQUENCE_LEN] = {0.0};
-	float y2[DTW_SEQUENCE_LEN] = {
+	const float x2[DTW_SEQUENCE_LEN] = {0.0};
+	const float y2[DTW_SEQUENCE_LEN] = {
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-//	int16_t size = DTW_SEQUENCE_LEN;
 
 	check_exact_value(cityblock(x2, y2), 50.0, __FUNCTION__);
 }
 
 
 void fastdtw_tests_0(void) {
-	float x[FEATURES][DTW_SEQUENCE_LEN] = {
+	const float x[FEATURES][DTW_SEQUENCE_LEN] = {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
 
-	float y0[FEATURES][DTW_SEQUENCE_LEN] = {
+	const float y0[FEATURES][DTW_SEQUENCE_LEN] = {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
@@ -48,12 +45,12 @@ void fastdtw_tests_0(void) {
 
 
 void fastdtw_tests_1(void) {
-	float x[FEATURES][DTW_SEQUENCE_LEN] = {
+	const float x[FEATURES][DTW_SEQUENCE_LEN] = {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
 
-	float y1[FEATURES][DTW_SEQUENCE_LEN] = {
+	const float y1[FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -121,11 +118,11 @@ void fastdtw_tests_1(void) {
 
 
 void fastdtw_tests_2(void) {
-	float x[FEATURES][DTW_SEQUENCE_LEN] = {
+	const float x[FEATURES][DTW_SEQUENCE_LEN] = {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
-	float y2[FEATURES][DTW_SEQUENCE_LEN] = {
+	const float y2[FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -141,11 +138,11 @@ void fastdtw_tests_2(void) {
 
 
 void fastdtw_tests_3(void) {
-	float x[FEATURES][DTW_SEQUENCE_LEN] = {
+	const float x[FEATURES][DTW_SEQUENCE_LEN] = {
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 			{0.0}, {0.0}};
-	float y3[FEATURES][DTW_SEQUENCE_LEN] = {
+	const float y3[FEATURES][DTW_SEQUENCE_LEN] = {
 			{1.0, 2.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -163,14 +160,14 @@ void fastdtw_tests_3(void) {
 void benchmark_nn_classifier() {
 	char msg[50];
 
-	float series[FEATURES][PADDED_SEQ_LEN] = {
+	const float series[FEATURES][PADDED_SEQ_LEN] = {
 					{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 					{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 					{0.0}, {0.0}};
 
 	uint32_t start, duration;
 	int16_t result;
-	const uint16_t nn_expected_time = 3;
+	const uint16_t nn_expected_time = 4;
 
 	start = HAL_GetTick();
 	result = nn_classifier(series);
@@ -185,7 +182,7 @@ void benchmark_nn_classifier() {
 void benchmark_dtw_classifier() {
 	char msg[50];
 
-	float x[FEATURES][DTW_SEQUENCE_LEN] = {
+	const float x[FEATURES][DTW_SEQUENCE_LEN] = {
 				{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 				{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 				{0.0}, {0.0}};

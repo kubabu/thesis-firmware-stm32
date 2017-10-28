@@ -23,14 +23,16 @@
 
 #define NO_GESTURE_DETECTED -1
 
+extern char *gesture_names[];
+
 // for fastdtw
-#define DTW_SEQUENCE_LEN SEQ_LEN
+#define DTW_SEQUENCE_LEN PADDED_SEQ_LEN
 
-int16_t nn_classifier(float series[FEATURES][PADDED_SEQ_LEN]);
+int16_t nn_classifier(const float series[FEATURES][PADDED_SEQ_LEN]);
 
-int16_t knn_classifier(float X[FEATURES][DTW_SEQUENCE_LEN]);
+int16_t knn_classifier(const float X[FEATURES][DTW_SEQUENCE_LEN]);
 
-float cityblock(const float x[DTW_SEQUENCE_LEN], float y[DTW_SEQUENCE_LEN]);
-float fastdtw(const float x[FEATURES][DTW_SEQUENCE_LEN], float y[FEATURES][DTW_SEQUENCE_LEN]);
+float cityblock(const float x[DTW_SEQUENCE_LEN], const float y[DTW_SEQUENCE_LEN]);
+float fastdtw(const float x[FEATURES][DTW_SEQUENCE_LEN],const float y[FEATURES][DTW_SEQUENCE_LEN]);
 
 #endif /* CLASSIFIERS_H_ */
