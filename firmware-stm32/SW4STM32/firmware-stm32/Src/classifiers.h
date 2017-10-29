@@ -20,13 +20,13 @@
 #define SEQ_LEN 50
 #define PADDING 2
 #define PADDED_SEQ_LEN PADDING+SEQ_LEN+PADDING
+// for fastdtw
+#define DTW_SEQUENCE_LEN PADDED_SEQ_LEN
 
 #define NO_GESTURE_DETECTED -1
 
 extern char *gesture_names[];
 
-// for fastdtw
-#define DTW_SEQUENCE_LEN PADDED_SEQ_LEN
 
 int16_t nn_classifier(const float series[FEATURES][PADDED_SEQ_LEN]);
 
