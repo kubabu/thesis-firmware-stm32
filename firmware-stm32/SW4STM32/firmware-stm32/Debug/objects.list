@@ -26,6 +26,7 @@
 "Src/dtw_tests.o"
 "Src/imu_sensor.o"
 "Src/knn_classifier.o"
+"Src/knn_tests.o"
 "Src/nn_classifier.o"
 "Src/ringbuf.o"
 "Src/ringbuf_tests.o"

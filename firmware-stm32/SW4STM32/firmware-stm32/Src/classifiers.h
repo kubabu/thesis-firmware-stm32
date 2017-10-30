@@ -25,8 +25,9 @@
 
 #define NO_GESTURE_DETECTED -1
 
-extern char *gesture_names[];
+extern const char *gesture_names[];
 
+void normalize(float *values, float *results);
 
 int16_t nn_classifier(const float series[FEATURES][PADDED_SEQ_LEN]);
 

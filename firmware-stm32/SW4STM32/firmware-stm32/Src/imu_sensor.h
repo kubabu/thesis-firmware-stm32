@@ -46,6 +46,13 @@ typedef struct IMU_Results {
 	EulerAngles filtered_angles;	// with Madgwick filter
 } IMU_Results;
 
+#define FEATURES_COUNT 12
+
+typedef union IMU_Results_t {
+	IMU_Results results;
+	float results_buffer[FEATURES_COUNT];
+} IMU_Results_t;
+
 
 void IMU_Sensor_Initialize(IMU_Sensor* imu, USART_TypeDef* USARTx);
 

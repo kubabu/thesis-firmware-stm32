@@ -1793,7 +1793,7 @@ const float stored_means[FEATURES] = {  0.157171f,  0.0840594f,   0.834903f,   -
 
 const float stored_stds[FEATURES] = {   0.26516f,   0.314916f,   0.328472f,    50.0737f,     38.611f,    24.5587f,    19.9449f,    14.8238f,    18.6107f,    31.8006f,    105.115f,    18.5001f};
 
-char *gesture_names[] = {"circle_ccw","circle_cw","halt","pull_back","push_forward","roman_salute","slide_down","slide_left","slide_right","slide_up","square_ccw","square_cw"};
+const char *gesture_names[] = {"circle_ccw","circle_cw","halt","pull_back","push_forward","roman_salute","slide_down","slide_left","slide_right","slide_up","square_ccw","square_cw"};
 
 // ile sasiadow brac, to samo co self.k
 #define K 3

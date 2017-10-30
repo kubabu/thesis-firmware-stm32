@@ -49,6 +49,15 @@
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
+
+typedef enum MainMode {
+	NN_CLASSIFIER_MODE=0, KNN_CLASSIFIER_MODE=1, RAW_READS_MODE=2, UNIT_TESTS_MODE=3
+} MainMode;
+
+const char *modes[] = {"NN_CLASSIFIER_MODE", "KNN_CLASSIFIER_MODE", "RAW_READS_MODE", "UNIT_TESTS_MODE"};
+
+volatile MainMode mode;
+
 I2C_HandleTypeDef hi2c1;
 
 UART_HandleTypeDef huart6;
@@ -91,24 +100,84 @@ void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 
 	if (dataset->is_ready
 			  && interval_passed(now, previous_results_update, results_update_interval)) {
-		  previous_results_update = now;
+		previous_results_update = now;
 
-		  char msgbuf[50] = { '\0' };
-		  int16_t result_code = nn_classifier(dataset->series);
+		char msgbuf[50] = { '\0' };
+		int16_t result_code;
 
-		  if(result_code != code_no_result) {
-			  char *gesture = gesture_names[result_code];
+		switch(mode) {
+		case NN_CLASSIFIER_MODE:
+			result_code = nn_classifier(dataset->series);
+
+			if(result_code != code_no_result) {
+			  const char *gesture = gesture_names[result_code];
 			  sprintf(msgbuf, "NN: [%lu] %s\r\n", now, gesture);
 			  TM_USART_Puts(USART6, msgbuf);
-		  }
+			}
+			break;
 
-		  result_code = knn_classifier(dataset->series);
-		  if(result_code != code_no_result) {
-			  char *gesture = gesture_names[result_code];
+		case KNN_CLASSIFIER_MODE:
+			result_code = knn_classifier(dataset->series);
+			if(result_code != code_no_result) {
+			  const char *gesture = gesture_names[result_code];
 			  sprintf(msgbuf, "KNN: [%lu] %s\r\n", now, gesture);
 			  TM_USART_Puts(USART6, msgbuf);
-		  }
-	  }
+			}
+			break;
+
+		case UNIT_TESTS_MODE:
+			run_all_tests(USART6);
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+MainMode find_mode(char msg) {
+	switch(msg) {
+	case 's':
+	case 'S':
+	case 'r':
+	case 'R':
+		return RAW_READS_MODE;
+		break;
+
+	case 'n':
+	case 'N':
+		return NN_CLASSIFIER_MODE;
+		break;
+
+	case 'k':
+	case 'K':
+	case 'd':
+	case 'D':
+		return KNN_CLASSIFIER_MODE;
+		break;
+
+	case 't':
+	case 'T':
+	case 'u':
+	case 'U':
+		return UNIT_TESTS_MODE;
+		break;
+
+	default:
+		return mode;
+		break;
+	}
+}
+
+void check_mode_switch(void) {
+	char c = TM_USART_Getc(USART6);
+	MainMode m = find_mode(c);
+	if(m != mode) {
+	  TM_USART_Puts(USART6, "Switching mode to ");
+	  TM_USART_Puts(USART6, (char *)modes[m]);
+	  TM_USART_Puts(USART6, "\r\n");
+	  mode = m;
+	}
 }
 /* USER CODE END PFP */
 
@@ -172,18 +241,20 @@ int main(void)
   /* USER CODE BEGIN 3 */
 	  IMU_Sensor_Read_Update(imu);
 
-	  now = HAL_GetTick();
+	  check_mode_switch();
 
-//	  mode = TM_USART_Getc(USART6);
+	  now = HAL_GetTick();
 
 	  if (interval_passed(now, previous_reads_update, reads_update_interval)) {
 		  previous_reads_update = now;
-		  IMU_Results angles = IMU_AHRS_Update(imu);
-//		  dataset_push(&dataset, &angles);
+		  IMU_Results_t angles, angles_normalized;
+		  angles.results = IMU_AHRS_Update(imu);
+		  normalize(angles.results_buffer, angles_normalized.results_buffer);
+		  dataset_push(&dataset, &angles.results);
 
-		  if(imu->USART != NULL)
+		  if(imu->USART != NULL && mode == RAW_READS_MODE)
 		  {
-			AHRS_PrintSerialIMU_Results(imu->USART, angles);
+			AHRS_PrintSerialIMU_Results(imu->USART, angles.results);
 		  }
 	  }
 
