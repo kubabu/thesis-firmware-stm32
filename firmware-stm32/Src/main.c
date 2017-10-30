@@ -110,8 +110,8 @@ void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 			result_code = nn_classifier(dataset->series);
 
 			if(result_code != code_no_result) {
-			  const char *gesture = gesture_names[result_code];
-			  sprintf(msgbuf, "NN: [%lu] %s\r\n", now, gesture);
+			  const char *gesture = gesture_names[result_code];  // TODO why using this value throws hardware fault
+			  sprintf(msgbuf, "NN: [%lu] %s\r\n", now, "gesture");
 			  TM_USART_Puts(USART6, msgbuf);
 			}
 			break;
@@ -120,7 +120,7 @@ void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 			result_code = knn_classifier(dataset->series);
 			if(result_code != code_no_result) {
 			  const char *gesture = gesture_names[result_code];
-			  sprintf(msgbuf, "KNN: [%lu] %s\r\n", now, gesture);
+			  sprintf(msgbuf, "KNN: [%lu] %s\r\n", now, "gesture");
 			  TM_USART_Puts(USART6, msgbuf);
 			}
 			break;
@@ -258,7 +258,7 @@ int main(void)
 		  }
 	  }
 
-//	  process_reads(now, &dataset);
+	  process_reads(now, &dataset);
   }
   /* USER CODE END 3 */
 
