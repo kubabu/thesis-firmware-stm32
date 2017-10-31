@@ -110,6 +110,15 @@ const float fc[NUM_CLASSES][FULLY_CONNECTED] = {
 	0.24415f, -0.04383f, -0.36176f, 0.21578f, -0.18803f, -0.16367f, -0.01560f, -0.32787f, -0.35375f, -0.09983f, -0.25667f, -0.16974f, -0.20504f
 };
 
+
+const char* nn_get_name(int16_t code) {
+ 	if(code < NUM_CLASSES) {
+ 		return GESTURE_NAMES[code];
+ 	}
+ 	return "";
+}
+
+
 void print_seq(const char *name, const float *seq, int len)
 {
     puts(name);

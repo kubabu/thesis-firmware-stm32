@@ -25,8 +25,6 @@
 
 #define NO_GESTURE_DETECTED -1
 
-extern const char *gesture_names[];
-
 void normalize(float *values, float *results);
 
 int16_t nn_classifier(const float series[FEATURES][PADDED_SEQ_LEN]);
@@ -35,5 +33,8 @@ int16_t knn_classifier(const float X[FEATURES][DTW_SEQUENCE_LEN]);
 
 float cityblock(const float x[DTW_SEQUENCE_LEN], const float y[DTW_SEQUENCE_LEN]);
 float fastdtw(const float x[FEATURES][DTW_SEQUENCE_LEN],const float y[FEATURES][DTW_SEQUENCE_LEN]);
+
+const char* knn_get_name(int16_t code);
+const char* nn_get_name(int16_t code);
 
 #endif /* CLASSIFIERS_H_ */

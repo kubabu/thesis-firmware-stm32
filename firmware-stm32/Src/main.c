@@ -104,24 +104,27 @@ void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 
 		char msgbuf[50] = { '\0' };
 		int16_t result_code;
+		static int16_t prev_result;
 
 		switch(mode) {
 		case NN_CLASSIFIER_MODE:
 			result_code = nn_classifier(dataset->series);
 
-			if(result_code != code_no_result) {
-			  const char *gesture = gesture_names[result_code];  // TODO why using this value throws hardware fault
-			  sprintf(msgbuf, "NN: [%lu] %s\r\n", now, "gesture");
-			  TM_USART_Puts(USART6, msgbuf);
+			if(result_code != code_no_result && result_code != prev_result) {
+				const char *gesture = nn_get_name(result_code);
+				sprintf(msgbuf, "NN: [%lu] %s\r\n", now, gesture);
+				TM_USART_Puts(USART6, msgbuf);
+				prev_result = result_code;
 			}
 			break;
 
 		case KNN_CLASSIFIER_MODE:
 			result_code = knn_classifier(dataset->series);
-			if(result_code != code_no_result) {
-			  const char *gesture = gesture_names[result_code];
-			  sprintf(msgbuf, "KNN: [%lu] %s\r\n", now, "gesture");
-			  TM_USART_Puts(USART6, msgbuf);
+			if(result_code != code_no_result && result_code != prev_result) {
+				const char *gesture = knn_get_name(result_code);
+				sprintf(msgbuf, "KNN: [%lu] %s\r\n", now, gesture);
+				TM_USART_Puts(USART6, msgbuf);
+				prev_result = result_code;
 			}
 			break;
 

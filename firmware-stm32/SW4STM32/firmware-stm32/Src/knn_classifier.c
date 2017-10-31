@@ -1805,6 +1805,14 @@ const char *gesture_names[] = {"circle_ccw","circle_cw","halt","pull_back","push
 float costs[BATCH_SIZE] = {0};
 
 
+const char* knn_get_name(int16_t code) {
+	if(code < NUMBER_OF_GESTURES) {
+		return gesture_names[code];
+	}
+	return "";
+}
+
+
 float min2(const float x, const float y) {
     if(x < y) {
         return x;
@@ -1908,7 +1916,7 @@ void part_argsort(float array[BATCH_SIZE], int indices[K])
 
         for(int j = 0; j < BATCH_SIZE; j++)
         {
-            if(array[j] < val && used[j] == 0)
+        	if(array[j] < val && used[j] == 0)
             {
                 val = array[j];
                 idx = j;
