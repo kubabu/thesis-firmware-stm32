@@ -252,7 +252,7 @@ int main(void)
 		  previous_reads_update = now;
 		  IMU_Results_t angles, angles_normalized;
 		  angles.results = IMU_AHRS_Update(imu);
-		  normalize(angles.results_buffer, angles_normalized.results_buffer);
+		  nn_normalize(angles.results_buffer, angles_normalized.results_buffer);
 		  dataset_push(&dataset, &angles.results);
 
 		  if(imu->USART != NULL && mode == RAW_READS_MODE)

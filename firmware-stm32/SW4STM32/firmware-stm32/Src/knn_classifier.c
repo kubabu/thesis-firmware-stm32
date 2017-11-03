@@ -4,9 +4,14 @@
  *  Created on: Sep 8, 2017
  *      Author: kuba
  */
-#include <stdlib.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <math.h>
 
-#include "classifiers.h"
+#ifdef STM32
+    #include "classifiers.h"
+#endif
+
 
 // ile gestow mamy zdefiniowane w sumie
 #define NUMBER_OF_GESTURES 12
@@ -17,7 +22,9 @@
 
 #define FEATURES 12
 
-//#define DTW_SEQUENCE_LEN 54
+#ifndef DTW_SEQUENCE_LEN
+    #define DTW_SEQUENCE_LEN 54
+#endif
 
 
 const float stored_x[BATCH_SIZE][FEATURES][DTW_SEQUENCE_LEN] = {
@@ -1793,7 +1800,7 @@ const float stored_means[FEATURES] = {  0.157171f,  0.0840594f,   0.834903f,   -
 
 const float stored_stds[FEATURES] = {   0.26516f,   0.314916f,   0.328472f,    50.0737f,     38.611f,    24.5587f,    19.9449f,    14.8238f,    18.6107f,    31.8006f,    105.115f,    18.5001f};
 
-const char *gesture_names[] = {"circle_ccw","circle_cw","halt","pull_back","push_forward","roman_salute","slide_down","slide_left","slide_right","slide_up","square_ccw","square_cw"};
+char *knn_gesture_names[] = {"circle_ccw","circle_cw","halt","pull_back","push_forward","roman_salute","slide_down","slide_left","slide_right","slide_up","square_ccw","square_cw"};
 
 // ile sasiadow brac, to samo co self.k
 #define K 3
@@ -1806,10 +1813,17 @@ float costs[BATCH_SIZE] = {0};
 
 
 const char* knn_get_name(int16_t code) {
-	if(code < NUMBER_OF_GESTURES) {
-		return gesture_names[code];
-	}
-	return "";
+    if(code < NUMBER_OF_GESTURES) {
+        return knn_gesture_names[code];
+    }
+    return "";
+}
+
+
+void knn_normalize(float *values, float *results) {
+    for(int i = 0; i < FEATURES; ++i) {
+        results[i] = (values[i] - stored_means[i]) / stored_stds[i];
+    }
 }
 
 
@@ -1916,7 +1930,7 @@ void part_argsort(float array[BATCH_SIZE], int indices[K])
 
         for(int j = 0; j < BATCH_SIZE; j++)
         {
-        	if(array[j] < val && used[j] == 0)
+            if(array[j] < val && used[j] == 0)
             {
                 val = array[j];
                 idx = j;
@@ -1992,4 +2006,3 @@ int16_t knn_classifier(const float X[FEATURES][DTW_SEQUENCE_LEN])
         return gesture;
     }
 }
-
