@@ -51,9 +51,9 @@ void dataset_push_tests(void) {
 	results.raw_angles.pitch = 6.123;
 	results.raw_angles.roll = 7.123;
 	results.raw_angles.yaw = 8.123;
-	results.filtered_angles.pitch = 9.123;
-	results.filtered_angles.roll = 10.123;
-	results.filtered_angles.yaw = 11.123;
+	results.imu_angles.pitch = 9.123;
+	results.imu_angles.roll = 10.123;
+	results.imu_angles.yaw = 11.123;
 	check_exact_value(dataset.is_ready, DATASET_NOT_READY, __FUNCTION__);
 
 	start = HAL_GetTick();
@@ -77,9 +77,9 @@ void dataset_push_tests(void) {
 	check_exact_value(dataset.series[6][PADDED_SEQ_LEN - 1], results.raw_angles.pitch, __FUNCTION__);
 	check_exact_value(dataset.series[7][PADDED_SEQ_LEN - 1], results.raw_angles.roll, __FUNCTION__);
 	check_exact_value(dataset.series[8][PADDED_SEQ_LEN - 1], results.raw_angles.yaw, __FUNCTION__);
-	check_exact_value(dataset.series[9][PADDED_SEQ_LEN - 1], results.filtered_angles.pitch, __FUNCTION__);
-	check_exact_value(dataset.series[10][PADDED_SEQ_LEN - 1], results.filtered_angles.roll, __FUNCTION__);
-	check_exact_value(dataset.series[11][PADDED_SEQ_LEN - 1], results.filtered_angles.yaw, __FUNCTION__);
+	check_exact_value(dataset.series[9][PADDED_SEQ_LEN - 1], results.imu_angles.pitch, __FUNCTION__);
+	check_exact_value(dataset.series[10][PADDED_SEQ_LEN - 1], results.imu_angles.roll, __FUNCTION__);
+	check_exact_value(dataset.series[11][PADDED_SEQ_LEN - 1], results.imu_angles.yaw, __FUNCTION__);
 	check_value(duration < 1, duration, 2, __FUNCTION__);
 	check_exact_value(dataset.is_ready, DATASET_NOT_READY, __FUNCTION__);
 }

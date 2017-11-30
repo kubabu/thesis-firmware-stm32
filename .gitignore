@@ -5,3 +5,4 @@
 *.map
 *.mk
 SW4STM32/firmware-stm32/Debug/
+Src/*.o

@@ -28,9 +28,9 @@ void dataset_push(classifiers_dataset_t *dataset, IMU_Results *results) {
 	dataset->series[6][PADDED_SEQ_LEN - 1] = results->raw_angles.pitch;
 	dataset->series[7][PADDED_SEQ_LEN - 1] = results->raw_angles.roll;
 	dataset->series[8][PADDED_SEQ_LEN - 1] = results->raw_angles.yaw;
-	dataset->series[9][PADDED_SEQ_LEN - 1] = results->filtered_angles.pitch;
-	dataset->series[10][PADDED_SEQ_LEN - 1] = results->filtered_angles.roll;
-	dataset->series[11][PADDED_SEQ_LEN - 1] = results->filtered_angles.yaw;
+	dataset->series[9][PADDED_SEQ_LEN - 1] = results->imu_angles.pitch;
+	dataset->series[10][PADDED_SEQ_LEN - 1] = results->imu_angles.roll;
+	dataset->series[11][PADDED_SEQ_LEN - 1] = results->imu_angles.yaw;
 
 	++dataset->count;
 	if(dataset->count >= PADDED_SEQ_LEN) {

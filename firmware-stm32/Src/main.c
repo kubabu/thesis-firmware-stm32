@@ -39,7 +39,7 @@
 #include <classifiers_dataset.h>
 #include "classifiers.h"
 #include "defines.h"
-#include "imu_sensor.h"
+#include "imu.h"
 #include "main.h"
 #include "stm32f4xx_hal.h"
 #include "tests.h"
@@ -227,8 +227,7 @@ int main(void)
   dataset_init(&dataset);
 
   volatile uint32_t now, previous_reads_update;
-  const uint32_t reads_update_frequency = 100;	// 25  Hz for classifiers, 100 for sample collector
-  const uint32_t reads_update_interval = 1000 / reads_update_frequency; // ms
+  const uint32_t Reads_update_interval_ms = 1000 / READS_UPDATE_FREQUENCY_HZ; // ms
 
 //  char mode = 'n';
   previous_reads_update = 0;
@@ -248,7 +247,7 @@ int main(void)
 
 	  now = HAL_GetTick();
 
-	  if (interval_passed(now, previous_reads_update, reads_update_interval)) {
+	  if (interval_passed(now, previous_reads_update, Reads_update_interval_ms)) {
 		  previous_reads_update = now;
 		  IMU_Results_t angles, angles_normalized;
 		  angles.results = IMU_AHRS_Update(imu);

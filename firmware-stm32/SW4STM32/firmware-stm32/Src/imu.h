@@ -5,8 +5,8 @@
  *      Author: kuba
  */
 
-#ifndef IMU_SENSOR_H_
-#define IMU_SENSOR_H_
+#ifndef IMU_H_
+#define IMU_H_
 
 #include <math.h>
 #include <tm_stm32_ahrs_imu.h>
@@ -41,12 +41,16 @@ typedef struct EulerAngles {
 typedef struct IMU_Results {
 	float gx, gy, gz;	// gyroscope [deg/sec]
 	float ax, ay, az;	// acceleration [G]
-	float mx, my, mz;	// magnetometer [microTesla]
+//	float mx, my, mz;	// magnetometer [microTesla] not used now
 	EulerAngles raw_angles;			// from accelerometer only
-	EulerAngles filtered_angles;	// with Madgwick filter
+	EulerAngles imu_angles;	// with Madgwick filter
 } IMU_Results;
 
-#define FEATURES_COUNT 12
+
+#define READS_UPDATE_FREQUENCY_HZ 100
+
+#define FEATURES_COUNT 12  // 3D gyro raw reads + 3D acc raw reads + 3d raw angles + 3d IMU results = 12
+
 
 typedef union IMU_Results_t {
 	IMU_Results results;
@@ -65,4 +69,4 @@ IMU_Results IMU_AHRS_Update(IMU_Sensor* imu);
 void AHRS_PrintSerialIMU_Results(USART_TypeDef* USARTx, IMU_Results result);
 
 
-#endif /* IMU_SENSOR_H_ */
+#endif /* IMU_H_ */

@@ -8,8 +8,8 @@
 #ifndef CLASSIFIERS_DATASET_H_
 #define CLASSIFIERS_DATASET_H_
 
+#include <imu.h>
 #include "classifiers.h"
-#include "imu_sensor.h"
 #include "ringbuf.h"
 
 typedef enum dataset_state {
