@@ -28,6 +28,7 @@
 "Src/knn_classifier.o"
 "Src/knn_tests.o"
 "Src/nn_classifier.o"
+"Src/result_processor.o"
 "Src/ringbuf.o"
 "Src/ringbuf_tests.o"
 "Src/tests.o"
