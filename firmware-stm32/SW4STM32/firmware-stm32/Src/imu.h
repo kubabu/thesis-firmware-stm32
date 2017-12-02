@@ -16,15 +16,21 @@
 
 
 typedef enum SENSOR_IRQ_STATE {
-	SENSOR_NO_DATA,
-	SENSOR_DATA_READY
+	SENSOR_NO_DATA = 0,
+	SENSOR_DATA_READY = 1
 } SENSOR_IRQ_STATE;
+
+typedef enum SENSOR_FIRST_READ_STATE {
+	NO_FIRST_READ = 0,
+	FIRST_READ_DONE = 1
+} SENSOR_FIRST_READ_STATE;
 
 
 typedef struct IMU_Sensor_Data {
 	TM_MPU6050_t reads;
 	TM_MPU6050_Interrupt_t reads_interrupts;
-	SENSOR_IRQ_STATE state_flag;
+	SENSOR_IRQ_STATE irq_flag_state;
+	SENSOR_FIRST_READ_STATE first_read_state;
 	TM_MPU6050_Result_t init_result;
 	USART_TypeDef* USART;
 	TM_AHRSIMU_t ahrs;
@@ -48,6 +54,12 @@ typedef struct IMU_Results {
 
 
 #define READS_UPDATE_FREQUENCY_HZ 100
+#define DATASET_UPDATE_FREQUENCY_HZ 25
+
+#if (DATASET_UPDATE_FREQUENCY_HZ > READS_UPDATE_FREQUENCY_HZ)
+#error "Dataset for classifier cannot be updated faster than data is sampled"
+#endif
+
 
 #define FEATURES_COUNT 12  // 3D gyro raw reads + 3D acc raw reads + 3d raw angles + 3d IMU results = 12
 

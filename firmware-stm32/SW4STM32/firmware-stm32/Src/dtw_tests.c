@@ -5,8 +5,11 @@
  *      Author: kuba
  */
 #include "classifiers.h"
+#include "result_processor.h"
 #include "tests.h"
 
+
+const uint32_t classifier_update_interval = 1000 / results_update_frequency_hz; // ms
 
 void cityblock_tests_1(void) {
 	const float x[DTW_SEQUENCE_LEN] = {0.0};
@@ -167,7 +170,6 @@ void benchmark_nn_classifier_runtime() {
 
 	uint32_t start, duration;
 	int16_t result;
-	const uint16_t nn_expected_time = 4;
 
 	start = HAL_GetTick();
 	result = nn_classifier(series);
@@ -175,7 +177,7 @@ void benchmark_nn_classifier_runtime() {
 
 	sprintf(msg, "Benchmarking NN classifier: result=%d in %ld [ms]\r\n", result, duration);
 	TM_USART_Puts(USART6, msg);
-	check_value(duration <= nn_expected_time, duration, nn_expected_time, __FUNCTION__);
+	check_value(duration <= classifier_update_interval, duration, classifier_update_interval, __FUNCTION__);
 }
 
 
@@ -189,7 +191,6 @@ void benchmark_knn_classifier_runtime() {
 
 	uint32_t start, duration;
 	int16_t result;
-	const uint16_t dtw_expected_time = 128; // previously 11; // :v
 
 	start = HAL_GetTick();
 	result = knn_classifier(x);
@@ -197,7 +198,7 @@ void benchmark_knn_classifier_runtime() {
 
 	sprintf(msg, "Benchmarking DTW classifier: result=%d in %ld [ms]\r\n", result, duration);
 	TM_USART_Puts(USART6, msg);
-	check_value(duration <= dtw_expected_time, duration, dtw_expected_time, __FUNCTION__);
+	check_value(duration <= classifier_update_interval, duration, classifier_update_interval, __FUNCTION__);
 }
 
 

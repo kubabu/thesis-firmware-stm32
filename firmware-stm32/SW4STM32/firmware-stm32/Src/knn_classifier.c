@@ -1805,7 +1805,7 @@ char *knn_gesture_names[] = {"circle_ccw","circle_cw","halt","pull_back","push_f
 // ile sasiadow brac, to samo co self.k
 #define K 3
 // powyzej jakiego ksotu dopasowania uznajemy ze nic z tego nie bedzie (self.threshold)
-#define THRESHOLD 100
+#define THRESHOLD 500
 
 
 // koszty nowej probki w porownaniu z istniejacymi (distances w predict_cost)

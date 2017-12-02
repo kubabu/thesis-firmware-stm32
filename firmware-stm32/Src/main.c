@@ -124,11 +124,11 @@ int main(void)
   IMU_Sensor_Initialize(imu, USART6);
   dataset_init(&dataset);
 
-  volatile uint32_t now, previous_reads_update;
-  const uint32_t Reads_update_interval_ms = 1000 / READS_UPDATE_FREQUENCY_HZ; // ms
+  volatile uint32_t now, previous_reads_update, previous_dataset_update;
+  const uint32_t reads_update_interval_ms = 1000 / READS_UPDATE_FREQUENCY_HZ; // ms
+  const uint32_t dataset_update_interval_ms = 1000 / DATASET_UPDATE_FREQUENCY_HZ; // ms
 
-//  char mode = 'n';
-  previous_reads_update = 0;
+  previous_reads_update = previous_dataset_update = 0;
 
   /* USER CODE END 2 */
 
@@ -145,16 +145,21 @@ int main(void)
 
 	  now = HAL_GetTick();
 
-	  if (interval_passed(now, previous_reads_update, Reads_update_interval_ms)) {
+	  if (interval_passed(now, previous_reads_update, reads_update_interval_ms)
+			  && imu->first_read_state == FIRST_READ_DONE) {
 		  previous_reads_update = now;
 		  IMU_Results_t angles, angles_normalized;
 		  angles.results = IMU_AHRS_Update(imu);
-		  nn_normalize(angles.results_buffer, angles_normalized.results_buffer);
-		  dataset_push(&dataset, &angles.results);
 
 		  if(imu->USART != NULL && mode == RAW_READS_MODE)
 		  {
 			AHRS_PrintSerialIMU_Results(imu->USART, angles.results);
+		  }
+
+		  if(interval_passed(now, previous_dataset_update, dataset_update_interval_ms)) {
+			  previous_dataset_update = now;
+			  nn_normalize(angles.results_buffer, angles_normalized.results_buffer);
+			  dataset_push(&dataset, &angles.results);
 		  }
 	  }
 

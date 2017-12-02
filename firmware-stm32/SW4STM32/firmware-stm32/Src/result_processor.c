@@ -6,13 +6,12 @@ const char *modes[] = {"NN_CLASSIFIER_MODE", "KNN_CLASSIFIER_MODE", "RAW_READS_M
 
 
 void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
-	const uint32_t results_update_frequency = 10;	// Hz
-	const uint32_t results_update_interval = 1000 / results_update_frequency; // ms
+	const uint32_t classifier_update_interval = 1000 / results_update_frequency_hz; // ms
 	static uint32_t  previous_results_update = 0;
 	const int16_t code_no_result = -1;
 
 	if (dataset->is_ready
-			  && interval_passed(now, previous_results_update, results_update_interval)) {
+			  && interval_passed(now, previous_results_update, classifier_update_interval)) {
 		previous_results_update = now;
 
 		char msgbuf[50] = { '\0' };

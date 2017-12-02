@@ -12,6 +12,9 @@ typedef enum MainMode {
 volatile MainMode mode;
 
 
+#define results_update_frequency_hz 10;	// Hz
+
+
 void process_reads(uint32_t now, classifiers_dataset_t *dataset);
 
 MainMode find_mode(char msg);
