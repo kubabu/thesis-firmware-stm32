@@ -21,7 +21,7 @@ void AHRS_PrintSerial(USART_TypeDef* USARTx, float x, float y, float z) {
 
 
 void AHRS_PrintSerialEulers(USART_TypeDef* USARTx, EulerAngles angles) {
-	AHRS_PrintSerial(USARTx, angles.pitch, angles.roll, angles.yaw);
+	AHRS_PrintSerial(USARTx, angles.roll, angles.pitch, angles.yaw);
 }
 
 

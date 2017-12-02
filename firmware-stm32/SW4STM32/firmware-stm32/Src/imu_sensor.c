@@ -33,7 +33,8 @@ void IMU_Sensor_Initialize(IMU_Sensor* imu, USART_TypeDef* USARTx) {
 
 	/* Init structure with 100hZ sample rate, 0.1 beta and 3.5 inclination
 	* (3.5 degrees is inclination in Ljubljana, Slovenia) on July, 2016 */
-	TM_AHRSIMU_Init(&(imu->ahrs), READS_UPDATE_FREQUENCY_HZ, 0.1f, 3.5f);
+//	TM_AHRSIMU_Init(&(imu->ahrs), READS_UPDATE_FREQUENCY_HZ, 0.1f, 3.5f);
+	TM_AHRSIMU_Init(&(imu->ahrs), READS_UPDATE_FREQUENCY_HZ, 0.005f, 3.5f);
 }
 
 
