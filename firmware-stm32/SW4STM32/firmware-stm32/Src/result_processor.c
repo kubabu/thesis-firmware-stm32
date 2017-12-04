@@ -8,6 +8,9 @@ const char *modes[] = {"NN_CLASSIFIER_MODE", "KNN_CLASSIFIER_MODE", "RAW_READS_M
 void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 	const uint32_t classifier_update_interval = 1000 / results_update_frequency_hz; // ms
 	static uint32_t  previous_results_update = 0;
+
+	const uint32_t results_display_break = 2000;
+	static uint32_t  previous_results_display = 0;
 	const int16_t code_no_result = -1;
 
 	if (dataset->is_ready
@@ -32,11 +35,15 @@ void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
 
 		case KNN_CLASSIFIER_MODE:
 			result_code = knn_classifier(dataset->series);
-			if(result_code != code_no_result && result_code != prev_result) {
+			if(result_code != code_no_result
+//					&& result_code != prev_result
+//					&& now >= previous_results_display + results_display_break
+					) {
 				const char *gesture = knn_get_name(result_code);
 				sprintf(msgbuf, "KNN: [%lu] %s\r\n", now, gesture);
 				TM_USART_Puts(USART6, msgbuf);
 				prev_result = result_code;
+				previous_results_display = now;
 			}
 			break;
 

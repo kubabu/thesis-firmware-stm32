@@ -158,8 +158,8 @@ int main(void)
 
 		  if(interval_passed(now, previous_dataset_update, dataset_update_interval_ms)) {
 			  previous_dataset_update = now;
-			  nn_normalize(angles.results_buffer, angles_normalized.results_buffer);
-			  dataset_push(&dataset, &angles.results);
+			  knn_normalize(angles.results_buffer, angles_normalized.results_buffer);
+			  dataset_push(&dataset, &angles_normalized.results);
 		  }
 	  }
 

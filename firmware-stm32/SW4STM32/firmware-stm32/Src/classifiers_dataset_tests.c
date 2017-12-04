@@ -80,7 +80,7 @@ void dataset_push_tests(void) {
 	check_exact_value(dataset.series[9][PADDED_SEQ_LEN - 1], results.imu_angles.pitch, __FUNCTION__);
 	check_exact_value(dataset.series[10][PADDED_SEQ_LEN - 1], results.imu_angles.roll, __FUNCTION__);
 	check_exact_value(dataset.series[11][PADDED_SEQ_LEN - 1], results.imu_angles.yaw, __FUNCTION__);
-	check_value(duration < 1, duration, 2, __FUNCTION__);
+	check_value(duration <= 1, duration, 1, __FUNCTION__);
 	check_exact_value(dataset.is_ready, DATASET_NOT_READY, __FUNCTION__);
 }
 
