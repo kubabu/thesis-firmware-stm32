@@ -33,6 +33,7 @@ void _run_knn_tests(void);
 void _run_dtw_tests(void);
 void _run_rbuf_tests(void);
 void _run_dataset_tests(void);
+void _run_imu_tests(void);
 
 void fill_array(float *array, float value, size_t size);
 

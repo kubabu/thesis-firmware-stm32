@@ -53,6 +53,7 @@ uint16_t run_all_tests(USART_TypeDef *usart) {
 	_run_dtw_tests();
 	_run_dataset_tests();
 	_run_knn_tests();
+	_run_imu_tests();
 
 	if(check_exact_value(_failed_tests, 0, "Running all tests done, some") == TEST_PASSED) {
 		TM_USART_Puts(_results_usart, "All tests passed\r\n");

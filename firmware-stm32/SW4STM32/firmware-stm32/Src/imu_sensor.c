@@ -19,14 +19,14 @@ void IMU_Sensor_Initialize(IMU_Sensor* imu, USART_TypeDef* USARTx) {
 		  TM_USART_Puts(USARTx, "MPU6050 not initialized properly, will not start\r\n");
 	  }
 
-	  TM_DISCO_LedToggle(LED_RED);
+	  TM_DISCO_LedToggle(LED_ORANGE);
 	  HAL_Delay(500);
 
 	  imu->init_result =  TM_MPU6050_Init(&imu->reads, TM_MPU6050_Device_0,
 	  				  TM_MPU6050_Accelerometer_2G, TM_MPU6050_Gyroscope_2000s);
 	}
 
-	TM_DISCO_LedOff(LED_RED);
+	TM_DISCO_LedOff(LED_ORANGE);
 	TM_DISCO_LedOn(LED_GREEN);
 	TM_MPU6050_SetDataRate(MPU6050, TM_MPU6050_DataRate_100Hz);
 	TM_MPU6050_EnableInterrupts(MPU6050);
