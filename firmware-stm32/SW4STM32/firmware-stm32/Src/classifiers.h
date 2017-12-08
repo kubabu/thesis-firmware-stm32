@@ -11,19 +11,14 @@
 #include <math.h>
 #include <stdint.h>
 
-#include "ringbuf.h"
+#include "settings.h"
 
 
-// data features count (3xacc + 3xgyro + 3xyawpithroll + 3xyawpithrollkalman)
-#define FEATURES 12
-// length of reads window sequence (2s * 25HZ = 50)
-#define SEQ_LEN 50
 #define PADDING 2
 #define PADDED_SEQ_LEN PADDING+SEQ_LEN+PADDING
 // for fastdtw
 #define DTW_SEQUENCE_LEN PADDED_SEQ_LEN
 
-#define NO_GESTURE_DETECTED -1
 
 void knn_normalize(float *values, float *results);
 const char* knn_get_name(int16_t code);

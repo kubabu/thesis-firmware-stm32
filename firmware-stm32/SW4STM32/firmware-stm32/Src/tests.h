@@ -14,8 +14,6 @@
 
 #include "defines.h"
 
-//#define UTEST_LOC  __function__
-
 
 typedef enum tests_result_t {
 	TEST_FAILED = 0,

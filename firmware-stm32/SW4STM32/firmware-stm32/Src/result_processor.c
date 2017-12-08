@@ -6,7 +6,7 @@ const char *modes[] = {"NN_CLASSIFIER_MODE", "KNN_CLASSIFIER_MODE", "RAW_READS_M
 
 
 void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
-	const uint32_t classifier_update_interval = 1000 / results_update_frequency_hz; // ms
+	const uint32_t classifier_update_interval = 1000 / RESULTS_UPDATE_FREQUENCY_HZ; // ms
 	static uint32_t  previous_results_update = 0;
 
 	const uint32_t results_display_break = 2000;

@@ -9,6 +9,7 @@
 #define IMU_H_
 
 #include <math.h>
+#include <settings.h>
 #include <tm_stm32_ahrs_imu.h>
 #include <tm_stm32_disco.h>
 #include <tm_stm32_mpu6050.h>
@@ -19,6 +20,7 @@ typedef enum SENSOR_IRQ_STATE {
 	SENSOR_NO_DATA = 0,
 	SENSOR_DATA_READY = 1
 } SENSOR_IRQ_STATE;
+
 
 typedef enum SENSOR_FIRST_READ_STATE {
 	NO_FIRST_READ = 0,
@@ -53,15 +55,9 @@ typedef struct IMU_Results {
 } IMU_Results;
 
 
-#define READS_UPDATE_FREQUENCY_HZ 100
-#define DATASET_UPDATE_FREQUENCY_HZ 25
-
 #if (DATASET_UPDATE_FREQUENCY_HZ > READS_UPDATE_FREQUENCY_HZ)
 #error "Dataset for classifier cannot be updated faster than data is sampled"
 #endif
-
-
-#define FEATURES_COUNT 12  // 3D gyro raw reads + 3D acc raw reads + 3d raw angles + 3d IMU results = 12
 
 
 typedef union IMU_Results_t {

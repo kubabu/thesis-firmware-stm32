@@ -9,7 +9,7 @@
 #include "tests.h"
 
 
-const uint32_t classifier_update_interval = 1000 / results_update_frequency_hz; // ms
+const uint32_t classifier_update_interval = 1000 / RESULTS_UPDATE_FREQUENCY_HZ; // ms
 
 void cityblock_tests_1(void) {
 	const float x[DTW_SEQUENCE_LEN] = {0.0};

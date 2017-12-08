@@ -4,13 +4,8 @@
  *  Created on: Dec 5, 2017
  *      Author: kuba
  */
-#include <imu.h>
+#include "imu.h"
 #include "tests.h"
-
-//
-//void PrintSerialIMU_Tests(void) {
-//
-//}
 
 
 void benchmark_printserialimu_runtime(int32_t baud) {
@@ -25,11 +20,12 @@ void benchmark_printserialimu_runtime(int32_t baud) {
 	duration = HAL_GetTick() - start;
 
 	char msg[128];
-	sprintf(msg, "Benchmarking PrintSerialIMU on %ld baud %ld [ms]\r\n", baud, duration);
+	sprintf(msg, "\r\nBenchmarking PrintSerialIMU on %ld baud %ld [ms]\r\n", baud, duration);
+
+	TM_USART_Init(USART6, TM_USART_PinsPack_1, COM_PORT_BAUD_RATE);
 	TM_USART_Puts(USART6, msg);
 	check_value(duration <= expected, duration, expected, __FUNCTION__);
 }
-
 
 
 void _run_imu_tests(void)

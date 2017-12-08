@@ -36,16 +36,17 @@
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
-#include "classifiers_dataset.h"
-#include "classifiers.h"
-#include "defines.h"
-#include "imu.h"
 #include "main.h"
-#include "result_processor.h"
 #include "stm32f4xx_hal.h"
-#include "tests.h"
 
 /* USER CODE BEGIN Includes */
+#include "defines.h"
+#include "classifiers_dataset.h"
+#include "classifiers.h"
+#include "imu.h"
+#include "result_processor.h"
+#include "tests.h"
+
 
 /* USER CODE END Includes */
 
@@ -115,7 +116,7 @@ int main(void)
   MX_USART6_UART_Init();
 
   /* USER CODE BEGIN 2 */
-  TM_USART_Init(USART6, TM_USART_PinsPack_1, 115200);
+  TM_USART_Init(USART6, TM_USART_PinsPack_1, COM_PORT_BAUD_RATE);
   TM_USART_Puts(USART6, "\r\n");
 
   run_all_tests(USART6);
