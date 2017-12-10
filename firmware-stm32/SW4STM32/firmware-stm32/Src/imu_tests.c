@@ -30,8 +30,8 @@ void benchmark_printserialimu_runtime(int32_t baud) {
 
 void _run_imu_tests(void)
 {
-	benchmark_printserialimu_runtime(9600);
-	benchmark_printserialimu_runtime(19200);
+//	benchmark_printserialimu_runtime(9600);
+//	benchmark_printserialimu_runtime(19200);
 	benchmark_printserialimu_runtime(38400);
 	benchmark_printserialimu_runtime(57600);
 	benchmark_printserialimu_runtime(115200);
