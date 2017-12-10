@@ -176,7 +176,7 @@ void benchmark_nn_classifier_runtime() {
 
 	sprintf(msg, "Benchmarking NN classifier: result=%d in %ld [ms]\r\n", result, duration);
 	TM_USART_Puts(USART6, msg);
-	check_value(duration <= CLASSIFIER_UPDATE_INTERVAL, duration, CLASSIFIER_UPDATE_INTERVAL, __FUNCTION__);
+	check_value(duration <= CLASSIFIER_UPDATE_INTERVAL_MS, duration, CLASSIFIER_UPDATE_INTERVAL_MS, __FUNCTION__);
 }
 
 

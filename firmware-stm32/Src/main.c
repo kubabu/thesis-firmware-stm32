@@ -126,8 +126,6 @@ int main(void)
   dataset_init(&dataset);
 
   volatile uint32_t now, previous_reads_update, previous_dataset_update;
-  const uint32_t reads_update_interval_ms = 1000 / READS_UPDATE_FREQUENCY_HZ; // ms
-  const uint32_t dataset_update_interval_ms = 1000 / DATASET_UPDATE_FREQUENCY_HZ; // ms
 
   previous_reads_update = previous_dataset_update = 0;
 
@@ -146,7 +144,7 @@ int main(void)
 
 	  now = HAL_GetTick();
 
-	  if (interval_passed(now, previous_reads_update, reads_update_interval_ms)
+	  if (interval_passed(now, previous_reads_update, READS_UPDATE_INTERVAL_MS)
 			  && imu->first_read_state == FIRST_READ_DONE) {
 		  previous_reads_update = now;
 		  IMU_Results_t angles, angles_normalized;
@@ -157,7 +155,7 @@ int main(void)
 			AHRS_PrintSerialIMU_Results(imu->USART, angles.results);
 		  }
 
-		  if(interval_passed(now, previous_dataset_update, dataset_update_interval_ms)) {
+		  if(interval_passed(now, previous_dataset_update, DATASET_UPDATE_INTERVAL_MS)) {
 			  previous_dataset_update = now;
 			  knn_normalize(angles.results_buffer, angles_normalized.results_buffer);
 			  dataset_push(&dataset, &angles_normalized.results);

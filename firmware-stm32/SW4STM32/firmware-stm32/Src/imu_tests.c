@@ -5,12 +5,13 @@
  *      Author: kuba
  */
 #include "imu.h"
+#include "settings.h"
 #include "tests.h"
 
 
 void benchmark_printserialimu_runtime(int32_t baud) {
 	int32_t start, duration;
-	const uint32_t expected = 100;
+	const uint32_t expected = CLASSIFIER_UPDATE_INTERVAL_MS;
 	IMU_Results result;
 
 	TM_USART_Init(USART6, TM_USART_PinsPack_1, baud);

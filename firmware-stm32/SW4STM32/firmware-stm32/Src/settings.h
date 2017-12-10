@@ -10,9 +10,14 @@
 
 #define COM_PORT_BAUD_RATE 115200
 
-#define READS_UPDATE_FREQUENCY_HZ 100
-#define DATASET_UPDATE_FREQUENCY_HZ 25
-#define RESULTS_UPDATE_FREQUENCY_HZ 10
+#define READS_UPDATE_FREQUENCY_HZ 100	// how often I read from sensor
+#define DATASET_UPDATE_FREQUENCY_HZ 25	// how often reads are pushed to dataset
+#define RESULTS_UPDATE_FREQUENCY_HZ 10	// how often is classifier run
+
+
+#define READS_UPDATE_INTERVAL_MS 1000 / READS_UPDATE_FREQUENCY_HZ
+#define DATASET_UPDATE_INTERVAL_MS 1000 / DATASET_UPDATE_FREQUENCY_HZ
+#define CLASSIFIER_UPDATE_INTERVAL_MS 1000 / RESULTS_UPDATE_FREQUENCY_HZ
 
 // data features count (3xacc + 3xgyro + 3xyawpithroll + 3xyawpithrollkalman)
 #define FEATURES 12
@@ -23,7 +28,7 @@
 
 #define NO_GESTURE_DETECTED -1
 
-#define CLASSIFIER_UPDATE_INTERVAL 1000 / RESULTS_UPDATE_FREQUENCY_HZ
+
 
 #if SEQ_LEN != 50
 #error "NOPE"
