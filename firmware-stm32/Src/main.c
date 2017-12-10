@@ -113,6 +113,7 @@ int main(void)
   imu = &imu_instance;
   IMU_Sensor_Initialize(imu, USART6);
   dataset_init(&dataset);
+  result_processor_init(USART6);
 
   volatile uint32_t now, previous_reads_update, previous_dataset_update;
 
@@ -127,7 +128,8 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	  IMU_Sensor_Read_Update(imu);
+	  IMU_Sensor_Read_Update(imu); // TODO move to timer interrupt!
+//	  angles.results = IMU_AHRS_Update(imu);
 
 	  check_mode_switch();
 
@@ -138,11 +140,6 @@ int main(void)
 		  previous_reads_update = now;
 		  IMU_Results_t angles, angles_normalized;
 		  angles.results = IMU_AHRS_Update(imu);
-
-		  if(imu->USART != NULL && mode == RAW_READS_MODE)
-		  {
-			AHRS_PrintSerialIMU_Results(imu->USART, angles.results);
-		  }
 
 		  if(interval_passed(now, previous_dataset_update, DATASET_UPDATE_INTERVAL_MS)) {
 			  previous_dataset_update = now;
@@ -287,6 +284,14 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		// I2C communication uses interrupts, ext interrupt handler can only set flag
 		IMU_Sensor_UpdateInterruptFlag(imu, SENSOR_DATA_READY);
 	}
+}
+
+// TODO hook it in
+void ImuUpdateInInterrupt() {
+	IMU_Sensor_Read_Update(imu);
+	IMU_Results_t angles;
+	angles.results = IMU_AHRS_Update(imu);
+	dataset_queue_push(&dataset, &angles); // classifier will normalize it itself
 }
 /* USER CODE END 4 */
 

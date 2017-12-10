@@ -10,7 +10,6 @@
 void IMU_Sensor_Initialize(IMU_Sensor* imu, USART_TypeDef* USARTx) {
 	TM_MPU6050_t* MPU6050 = &(imu->reads);
 	imu->irq_flag_state = SENSOR_NO_DATA;
-	imu->USART = USARTx;
 	imu->init_result =  TM_MPU6050_Init(&imu->reads, TM_MPU6050_Device_0,
 				  TM_MPU6050_Accelerometer_2G, TM_MPU6050_Gyroscope_2000s);
 

@@ -21,12 +21,16 @@ typedef struct classifiers_dataset_t {
 	float series[FEATURES][PADDED_SEQ_LEN];
 	uint8_t count;
 	dataset_state_t is_ready;
+	// TODO queue
 } classifiers_dataset_t;
 
 
 void dataset_init(classifiers_dataset_t *dataset);
 
 void dataset_push(classifiers_dataset_t *dataset, IMU_Results *results);
+
+// for use in interrupts
+void dataset_queue_push(classifiers_dataset_t *dataset, IMU_Results_t *results);
 
 
 #endif /* CLASSIFIERS_DATASET_H_ */

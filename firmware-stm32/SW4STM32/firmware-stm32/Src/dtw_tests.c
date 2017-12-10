@@ -184,6 +184,7 @@ void benchmark_classifier_runtimes() {
 	benchmark_nn_classifier_runtime();
 }
 
+
 void _run_dtw_tests(void) {
 	cityblock_tests_1();
 	cityblock_tests_2();

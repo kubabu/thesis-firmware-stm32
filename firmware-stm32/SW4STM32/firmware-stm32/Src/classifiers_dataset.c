@@ -11,6 +11,9 @@ void dataset_init(classifiers_dataset_t *dataset) {
 	dataset->count = 0;
 }
 
+void dataset_queue_push(classifiers_dataset_t *dataset, IMU_Results_t *results) {
+	// for use in interrupts, TODO
+}
 
 void dataset_push(classifiers_dataset_t *dataset, IMU_Results *results) {
 	const size_t bytes_to_shift = (PADDED_SEQ_LEN - 1) * sizeof(float);

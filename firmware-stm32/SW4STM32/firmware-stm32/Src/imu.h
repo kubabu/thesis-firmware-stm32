@@ -34,7 +34,6 @@ typedef struct IMU_Sensor_Data {
 	SENSOR_IRQ_STATE irq_flag_state;
 	SENSOR_FIRST_READ_STATE first_read_state;
 	TM_MPU6050_Result_t init_result;
-	USART_TypeDef* USART;
 	TM_AHRSIMU_t ahrs;
 } IMU_Sensor;
 
