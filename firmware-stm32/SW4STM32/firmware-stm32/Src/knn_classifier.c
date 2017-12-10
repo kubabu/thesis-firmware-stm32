@@ -1,23 +1,21 @@
-/*
- * dtw_classifier.c
- *
- *  Created on: Sep 8, 2017
- *      Author: kuba
- */
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>
 
-#include "defines.h"
-#include "main.h"
-#include "stm32f4xx_hal.h"
+//#ifdef
+//
+//#endif
+
+#include "classifiers.h"
+
+#include "stm32f407xx.h"
 #include "tm_stm32_usart.h"
 
 
-#ifdef STM32
-    #include "classifiers.h"
-#endif
-
+// ile sasiadow brac, to samo co self.k
+#define K 3
+// powyzej jakiego kosztu dopasowania uznajemy ze nic z tego nie bedzie (self.threshold)
+#define THRESHOLD 200
 
 // ile gestow mamy zdefiniowane w sumie
 #define NUMBER_OF_GESTURES 3
@@ -26,14 +24,20 @@
 
 #define NO_GESTURE_DETECTED -1
 
-#define FEATURES 12
+#define KNN_FEATURES_COUNT 12
+
+#ifdef FEATURES
+    #if FEATURES != KNN_FEATURES_COUNT
+        #error "FEATURES != KNN_FEATURES_COUNT"
+    #endif
+#endif
 
 #ifndef DTW_SEQUENCE_LEN
     #define DTW_SEQUENCE_LEN 54
 #endif
 
 
-const float stored_x[BATCH_SIZE][FEATURES][DTW_SEQUENCE_LEN] = {
+const float stored_x[BATCH_SIZE][KNN_FEATURES_COUNT][DTW_SEQUENCE_LEN] = {
 	{
 		{-0.0944447f, -0.0183709f, -0.0373893f, 0.000647582f, -0.0564078f, -0.0373893f, -0.0564078f, -0.0373893f, -0.0944447f,  -0.132482f, 0.000647582f,    -0.1515f,  -0.436777f,  -0.417758f,  -0.436777f,  -0.474814f,  -0.246592f,  -0.322666f,  -0.379721f,  -0.588924f,  -0.474814f,  -0.874201f,  -0.874201f,   -1.34966f,   -2.07236f,   -2.94721f,   -2.60488f,   -1.44475f,   -1.27359f,  -0.988312f,    -1.5969f,   -0.89322f,  -0.626961f,  -0.950275f,  -0.817146f,   -1.23555f,   -1.10242f,  -0.931256f,  -0.722053f,  -0.379721f,  -0.988312f,   -1.40672f,   -2.37666f,   -1.86316f,   -1.29261f,   -1.33064f,  -0.722053f,  -0.379721f,  0.0577029f,  -0.113463f,   0.514146f,   0.495127f,   0.400035f,    0.45709f},
 		{  0.013859f,  0.0310696f,   0.013859f, -0.0205622f,   0.168754f,  0.0654908f,   0.117123f, -0.0377728f, -0.0549834f,    -0.2443f, -0.00335165f,   0.461335f,    1.04649f,    2.14797f,    2.13076f,    1.64887f,   0.994863f, -0.00335165f,   -0.51967f,   -1.46625f,   -2.27515f,   -2.60215f,    -1.3802f,   -1.31136f,   0.272018f,   0.753915f,    2.52661f,    2.88803f,    2.71592f,    2.13076f,    1.58002f,    1.09813f,   0.409703f,   0.013859f,  -0.881092f,    -2.0342f,   -3.04963f,   -2.24073f,   -2.43005f,   -3.04963f,   -1.68999f,  -0.364774f,  -0.158247f,    1.25302f,     1.3735f,    1.04649f,    0.90881f,   0.409703f,   0.220386f,  -0.364774f,  -0.175458f,  -0.708986f,  -0.313142f,  -0.433617f},
@@ -472,17 +476,11 @@ const float stored_x[BATCH_SIZE][FEATURES][DTW_SEQUENCE_LEN] = {
 
 const int16_t stored_y[BATCH_SIZE] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
 
-const float stored_means[FEATURES] = {-0.0803405f,  0.0219474f,   0.811231f,   -3.31864f,   -1.54524f,    5.00093f,   0.541864f,    1.34551f,    30.7631f,   0.468949f,    12.1212f,    17.1013f};
+const float stored_means[KNN_FEATURES_COUNT] = {-0.0803405f,  0.0219474f,   0.811231f,   -3.31864f,   -1.54524f,    5.00093f,   0.541864f,    1.34551f,    30.7631f,   0.468949f,    12.1212f,    17.1013f};
 
-const float stored_stds[FEATURES] = {  0.525805f,   0.581037f,    0.66853f,    50.3204f,    108.955f,    100.748f,    34.9414f,    28.3875f,    22.9198f,    34.6459f,    55.9843f,    106.687f};
+const float stored_stds[KNN_FEATURES_COUNT] = {  0.525805f,   0.581037f,    0.66853f,    50.3204f,    108.955f,    100.748f,    34.9414f,    28.3875f,    22.9198f,    34.6459f,    55.9843f,    106.687f};
 
 char *knn_gesture_names[] = {"circle_ccw","circle_cw","halt"};
-
-// ile sasiadow brac, to samo co self.k
-#define K 3
-// powyzej jakiego ksotu dopasowania uznajemy ze nic z tego nie bedzie (self.threshold)
-#define THRESHOLD 200
-
 
 // koszty nowej probki w porownaniu z istniejacymi (distances w predict_cost)
 float costs[BATCH_SIZE] = {0};
@@ -497,7 +495,7 @@ const char* knn_get_name(int16_t code) {
 
 
 void knn_normalize(float *values, float *results) {
-    for(int i = 0; i < FEATURES; ++i) {
+    for(int i = 0; i < KNN_FEATURES_COUNT; ++i) {
         results[i] = (values[i] - stored_means[i]) / stored_stds[i];
     }
 }
@@ -543,12 +541,12 @@ float cityblock(const float x[DTW_SEQUENCE_LEN],const float y[DTW_SEQUENCE_LEN])
 }
 
 
-float fastdtw(const float x[FEATURES][DTW_SEQUENCE_LEN],const float y[FEATURES][DTW_SEQUENCE_LEN]) {
+float fastdtw(const float x[KNN_FEATURES_COUNT][DTW_SEQUENCE_LEN],const float y[KNN_FEATURES_COUNT][DTW_SEQUENCE_LEN]) {
     const float pos_inf = 1.0 / 0.0; // srsrly this is correct
-    const int16_t size = FEATURES;
+    const int16_t size = KNN_FEATURES_COUNT;
 
     //  D0 = np.zeros(shape=(size + 1, size + 1))
-    volatile float D0[FEATURES + 1][FEATURES + 1] = {0};
+    volatile float D0[KNN_FEATURES_COUNT + 1][KNN_FEATURES_COUNT + 1] = {0};
     //  D1 = D0[1:, 1:]
 
     for(int16_t i = 1; i <= size; ++i) {
@@ -582,7 +580,7 @@ float fastdtw(const float x[FEATURES][DTW_SEQUENCE_LEN],const float y[FEATURES][
 
 
 //fja oblcizajaca koszt dopasowania odpowiednik ffastdtw
-float distance(const float x1[FEATURES][DTW_SEQUENCE_LEN],const float y[FEATURES][DTW_SEQUENCE_LEN])
+float distance(const float x1[KNN_FEATURES_COUNT][DTW_SEQUENCE_LEN],const float y[KNN_FEATURES_COUNT][DTW_SEQUENCE_LEN])
 {
     return fastdtw(x1, y);
 }
@@ -651,7 +649,7 @@ int get_most_frequent_in_array(int indices[K])
 }
 
 
-int16_t knn_classifier(const float X[FEATURES][DTW_SEQUENCE_LEN])
+int16_t knn_classifier(const float X[KNN_FEATURES_COUNT][DTW_SEQUENCE_LEN])
 {
     //oblicz odlegosc do kazdego zapamietanego elementu
     for(int idx = 0; idx < BATCH_SIZE; idx++) {
@@ -671,7 +669,7 @@ int16_t knn_classifier(const float X[FEATURES][DTW_SEQUENCE_LEN])
         sum_of_cost += costs[indices[i]];
     }
     //sprawdz czy kost dopasowania nie jest za duzy
-    // if cost >=77 self.threshsold:
+    // if cost >= self.threshsold:
     //                 predictions[idx] = 'none'
 
     char msg[128];
@@ -682,7 +680,7 @@ int16_t knn_classifier(const float X[FEATURES][DTW_SEQUENCE_LEN])
         return NO_GESTURE_DETECTED;
     }
      else {
-        int current_gesture = get_most_frequent_in_array(indices);
-        return current_gesture;
+        int gesture = get_most_frequent_in_array(indices);
+        return gesture;
     }
 }
