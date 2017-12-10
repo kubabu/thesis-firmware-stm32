@@ -2,14 +2,13 @@
 #include "tests.h"
 
 
-volatile MainMode mode;
+volatile MainMode mode = SERIAL_FRONTEND_MODE;
 
-const char *modes[] = {"NN_CLASSIFIER_MODE", "KNN_CLASSIFIER_MODE", "SERIAL_FRONTEND_MODE", "UNIT_TESTS_MODE"};
-
-USART_TypeDef* USARTx = USART6;
+USART_TypeDef* USARTx;
 IMU_Sensor serial_imu;
 
 char msgbuf[50] = { '\0' };
+const char *modes[] = {"NN_CLASSIFIER_MODE", "KNN_CLASSIFIER_MODE", "SERIAL_FRONTEND_MODE", "UNIT_TESTS_MODE"};
 
 
 void result_processor_init(USART_TypeDef* serial_port) {
@@ -22,6 +21,7 @@ void process_serial(uint32_t now, classifiers_dataset_t *dataset)
 {
 	static uint32_t previous_reads_update;
 
+	// TODO pass original IMU and new AHRS to update
 	IMU_Sensor_Read_Update(&serial_imu);
 
 	if (interval_passed(now, previous_reads_update, READS_UPDATE_INTERVAL_MS)

@@ -14,20 +14,19 @@
 #define DATASET_UPDATE_FREQUENCY_HZ 25	// how often reads are pushed to dataset
 #define RESULTS_UPDATE_FREQUENCY_HZ 10	// how often is classifier run
 
-
 #define READS_UPDATE_INTERVAL_MS 1000 / READS_UPDATE_FREQUENCY_HZ
 #define DATASET_UPDATE_INTERVAL_MS 1000 / DATASET_UPDATE_FREQUENCY_HZ
 #define CLASSIFIER_UPDATE_INTERVAL_MS 1000 / RESULTS_UPDATE_FREQUENCY_HZ
 
-// data features count (3xacc + 3xgyro + 3xyawpithroll + 3xyawpithrollkalman)
-#define FEATURES 12
 // duration of reads window sequence [s]
 #define WINDOW_DURATION 2
 // length of reads window sequence (2s * 25HZ = 50)
-#define SEQ_LEN DATASET_UPDATE_FREQUENCY_HZ*2
+#define SEQ_LEN DATASET_UPDATE_FREQUENCY_HZ * WINDOW_DURATION
+
+// data features count (3xacc + 3xgyro + 3xyawpithroll + 3xyawpithrollkalman)
+#define FEATURES 12
 
 #define NO_GESTURE_DETECTED -1
-
 
 
 #if SEQ_LEN != 50
