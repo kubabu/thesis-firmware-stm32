@@ -51,19 +51,14 @@
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
-
-I2C_HandleTypeDef hi2c1;
-
 UART_HandleTypeDef huart6;
 
-IMU_Sensor imu_instance;
-IMU_Sensor* imu;
-
-classifiers_dataset_t dataset;
-
+I2C_HandleTypeDef hi2c1;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+IMU_Sensor imu_instance;
+IMU_Sensor* imu;
+classifiers_dataset_t dataset;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -74,13 +69,7 @@ static void MX_USART6_UART_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-	if (GPIO_Pin == MPU6050_INT_Pin) {
-		// I2C communication uses interrupts, ext interrupt handler can only set flag
-		IMU_Sensor_UpdateInterruptFlag(imu, SENSOR_DATA_READY);
-	}
-}
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -293,7 +282,12 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	if (GPIO_Pin == MPU6050_INT_Pin) {
+		// I2C communication uses interrupts, ext interrupt handler can only set flag
+		IMU_Sensor_UpdateInterruptFlag(imu, SENSOR_DATA_READY);
+	}
+}
 /* USER CODE END 4 */
 
 /**
