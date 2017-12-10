@@ -6,10 +6,9 @@
  */
 #include "classifiers.h"
 #include "result_processor.h"
+#include "settings.h"
 #include "tests.h"
 
-
-const uint32_t classifier_update_interval = 1000 / RESULTS_UPDATE_FREQUENCY_HZ; // ms
 
 void cityblock_tests_1(void) {
 	const float x[DTW_SEQUENCE_LEN] = {0.0};
@@ -177,34 +176,12 @@ void benchmark_nn_classifier_runtime() {
 
 	sprintf(msg, "Benchmarking NN classifier: result=%d in %ld [ms]\r\n", result, duration);
 	TM_USART_Puts(USART6, msg);
-	check_value(duration <= classifier_update_interval, duration, classifier_update_interval, __FUNCTION__);
-}
-
-
-void benchmark_knn_classifier_runtime() {
-	char msg[50];
-
-	const float x[FEATURES][DTW_SEQUENCE_LEN] = {
-				{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
-				{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
-				{0.0}, {0.0}};
-
-	uint32_t start, duration;
-	int16_t result;
-
-	start = HAL_GetTick();
-	result = knn_classifier(x);
-	duration = HAL_GetTick() - start;
-
-	sprintf(msg, "Benchmarking DTW classifier: result=%d in %ld [ms]\r\n", result, duration);
-	TM_USART_Puts(USART6, msg);
-	check_value(duration <= classifier_update_interval, duration, classifier_update_interval, __FUNCTION__);
+	check_value(duration <= CLASSIFIER_UPDATE_INTERVAL, duration, CLASSIFIER_UPDATE_INTERVAL, __FUNCTION__);
 }
 
 
 void benchmark_classifier_runtimes() {
 	benchmark_nn_classifier_runtime();
-	benchmark_knn_classifier_runtime();
 }
 
 void _run_dtw_tests(void) {

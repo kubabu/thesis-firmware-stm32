@@ -5,6 +5,7 @@
  *      Author: kuba
  */
 #include "classifiers.h"
+#include "settings.h"
 #include "tests.h"
 
 
@@ -54,7 +55,30 @@ int circle_ccw_test1(void) {
     return result;
 };
 
+void benchmark_knn_classifier_runtime() {
+	char msg[50];
+
+	const float x[FEATURES][DTW_SEQUENCE_LEN] = {
+				{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
+				{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
+				{0.0}, {0.0}};
+
+	uint32_t start, duration;
+	int16_t result;
+
+	start = HAL_GetTick();
+	result = knn_classifier(x);
+	duration = HAL_GetTick() - start;
+
+	sprintf(msg, "Benchmarking DTW classifier: result=%d in %ld [ms]\r\n", result, duration);
+	TM_USART_Puts(USART6, msg);
+	check_value(duration <= CLASSIFIER_UPDATE_INTERVAL, duration, CLASSIFIER_UPDATE_INTERVAL, __FUNCTION__);
+}
+
+
 void _run_knn_tests(void) {
 	circle_ccw_test();
 	circle_ccw_test1();
+
+	benchmark_knn_classifier_runtime();
 };

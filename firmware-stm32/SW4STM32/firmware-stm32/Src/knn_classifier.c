@@ -2,12 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 
-//#ifdef
-//
-//#endif
-
 #include "classifiers.h"
-
 #include "stm32f407xx.h"
 #include "tm_stm32_usart.h"
 
