@@ -51,9 +51,12 @@
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
+
+TIM_HandleTypeDef htim10;
+
 UART_HandleTypeDef huart6;
 
-I2C_HandleTypeDef hi2c1;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 IMU_Sensor imu_instance;
@@ -66,6 +69,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART6_UART_Init(void);
+static void MX_TIM10_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -103,6 +107,7 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_USART6_UART_Init();
+  MX_TIM10_Init();
 
   /* USER CODE BEGIN 2 */
   TM_USART_Init(USART6, TM_USART_PinsPack_1, COM_PORT_BAUD_RATE);
@@ -114,6 +119,7 @@ int main(void)
   IMU_Sensor_Initialize(imu, USART6);
   dataset_init(&dataset);
   result_processor_init(USART6);
+  HAL_TIM_Base_Start_IT(&htim10);
 
   volatile uint32_t now, previous_reads_update, previous_dataset_update;
 
@@ -224,6 +230,22 @@ static void MX_I2C1_Init(void)
   hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
   hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
   if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+/* TIM10 init function */
+static void MX_TIM10_Init(void)
+{
+
+  htim10.Instance = TIM10;
+  htim10.Init.Prescaler = 671;
+  htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim10.Init.Period = 1999;
+  htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV4;
+  if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
