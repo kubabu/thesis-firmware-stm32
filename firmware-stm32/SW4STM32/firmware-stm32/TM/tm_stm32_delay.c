@@ -197,15 +197,15 @@ __weak void TM_DELAY_1msHandler(void) {
 /* Called from Systick handler */
 void HAL_IncTick(void) {
 	uint8_t i;
-	
+
 	/* Increase system time */
 	TM_Time++;
-	
+
 	/* Decrease other system time */
 	if (TM_Time2) {
 		TM_Time2--;
 	}
-	
+
 	/* Check for timers */
 	/* Check custom timers */
 	for (i = 0; i < CustomTimers.Count; i++) {
@@ -235,7 +235,7 @@ void HAL_IncTick(void) {
 			}
 		}
 	}
-	
+
 	/* Call 1ms interrupt handler function */
 	TM_DELAY_1msHandler();
 }
@@ -246,7 +246,7 @@ void HAL_Delay(uint32_t Delay) {
 	if (__get_IPSR() == 0) {
 		/* Called from thread mode */
 		uint32_t tickstart = HAL_GetTick();
-		
+
 		/* Count interrupts */
 		while ((HAL_GetTick() - tickstart) < Delay) {
 #ifdef DELAY_SLEEP

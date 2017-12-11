@@ -45,6 +45,7 @@
 #include "classifiers.h"
 #include "imu.h"
 #include "result_processor.h"
+#include "settings.h"
 #include "tests.h"
 
 
@@ -53,15 +54,17 @@
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
 
-TIM_HandleTypeDef htim10;
-
 UART_HandleTypeDef huart6;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+USART_TypeDef* USARTx = USART6;
+
 IMU_Sensor imu_instance;
 IMU_Sensor* imu;
 classifiers_dataset_t dataset;
+
+volatile int32_t dataset_int_updates = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -69,11 +72,12 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART6_UART_Init(void);
-static void MX_TIM10_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+
+void TM_DELAY_1msHandler(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -107,22 +111,18 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_USART6_UART_Init();
-  MX_TIM10_Init();
 
   /* USER CODE BEGIN 2 */
-  TM_USART_Init(USART6, TM_USART_PinsPack_1, COM_PORT_BAUD_RATE);
-  TM_USART_Puts(USART6, "\r\n");
-
-  run_all_tests(USART6);
-
+  TM_USART_Init(USARTx, TM_USART_PinsPack_1, COM_PORT_BAUD_RATE);
+  TM_USART_Puts(USARTx, "\r\n");
+//
+  run_all_tests(USARTx);
   imu = &imu_instance;
-  IMU_Sensor_Initialize(imu, USART6);
+  IMU_Sensor_Initialize(imu, USARTx);
   dataset_init(&dataset);
-  result_processor_init(USART6);
-  HAL_TIM_Base_Start_IT(&htim10);
+  result_processor_init(USARTx);
 
-  volatile uint32_t now, previous_reads_update, previous_dataset_update;
-
+  volatile uint32_t previous_reads_update, previous_dataset_update;
   previous_reads_update = previous_dataset_update = 0;
 
   /* USER CODE END 2 */
@@ -138,8 +138,7 @@ int main(void)
 //	  angles.results = IMU_AHRS_Update(imu);
 
 	  check_mode_switch();
-
-	  now = HAL_GetTick();
+	  uint32_t now = HAL_GetTick();
 
 	  if (interval_passed(now, previous_reads_update, READS_UPDATE_INTERVAL_MS)
 			  && imu->first_read_state == FIRST_READ_DONE) {
@@ -153,7 +152,6 @@ int main(void)
 			  dataset_push(&dataset, &angles_normalized.results);
 		  }
 	  }
-
 	  process_reads(now, &dataset);
   }
   /* USER CODE END 3 */
@@ -236,22 +234,6 @@ static void MX_I2C1_Init(void)
 
 }
 
-/* TIM10 init function */
-static void MX_TIM10_Init(void)
-{
-
-  htim10.Instance = TIM10;
-  htim10.Init.Prescaler = 671;
-  htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 1999;
-  htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV4;
-  if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-}
-
 /* USART6 init function */
 static void MX_USART6_UART_Init(void)
 {
@@ -310,10 +292,21 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 
 // TODO hook it in
 void ImuUpdateInInterrupt() {
+	dataset_int_updates++;
+
 	IMU_Sensor_Read_Update(imu);
 	IMU_Results_t angles;
 	angles.results = IMU_AHRS_Update(imu);
-	dataset_queue_push(&dataset, &angles); // classifier will normalize it itself
+//	dataset_queue_push(&dataset, &angles); // TODO classifier will normalize it itself
+}
+
+
+void TM_DELAY_1msHandler(void) {
+	static uint8_t dataset_update_counter = 0;
+	if(dataset_update_counter++ >= DATASET_UPDATE_INTERVAL_MS){
+		ImuUpdateInInterrupt();
+		dataset_update_counter = 0;
+	}
 }
 /* USER CODE END 4 */
 
