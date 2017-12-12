@@ -108,7 +108,7 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-//  MX_GPIO_Init();
+  MX_GPIO_Init(); // TODO commented to avoid timing issues
   MX_I2C1_Init();
   MX_USART6_UART_Init();
 
@@ -154,7 +154,7 @@ int main(void)
 //			  dataset_push(&dataset, &angles_normalized.results);
 //		  }
 //	  }
-//	  process_reads(now, &dataset);
+	  process_reads(now, &dataset);
   }
   /* USER CODE END 3 */
 

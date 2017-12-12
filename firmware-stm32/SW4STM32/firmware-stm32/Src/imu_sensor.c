@@ -27,8 +27,7 @@ void IMU_Sensor_Initialize(IMU_Sensor* imu, USART_TypeDef* USARTx) {
 
 	TM_DISCO_LedOff(LED_ORANGE);
 	TM_DISCO_LedOn(LED_GREEN);
-	TM_MPU6050_SetDataRate(MPU6050, TM_MPU6050_DataRate_500Hz);
-//	TM_MPU6050_SetDataRate(MPU6050, TM_MPU6050_DataRate_100Hz);
+	TM_MPU6050_SetDataRate(MPU6050, TM_MPU6050_DataRate_100Hz);
 //	TM_MPU6050_EnableInterrupts(MPU6050);
 }
 
@@ -57,6 +56,6 @@ void IMU_Sensor_Initialize(IMU_Sensor* imu, USART_TypeDef* USARTx) {
 
 
 inline void IMU_Sensor_Read(IMU_Sensor* imu) {
-	TM_MPU6050_ReadAll(imu);
+	TM_MPU6050_ReadAll(&imu->reads);
 	imu->first_read_state = FIRST_READ_DONE;
 }
