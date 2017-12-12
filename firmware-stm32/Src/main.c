@@ -88,7 +88,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-//	TM_RCC_InitSystem();
+
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -108,14 +108,14 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init(); // TODO commented to avoid timing issues
+  MX_GPIO_Init();
   MX_I2C1_Init();
   MX_USART6_UART_Init();
 
   /* USER CODE BEGIN 2 */
-  TM_USART_Init(USARTx, TM_USART_PinsPack_1, COM_PORT_BAUD_RATE);
-  TM_USART_Puts(USARTx, "\r\n");
-//
+  TM_USART_Init(USART6, TM_USART_PinsPack_1, COM_PORT_BAUD_RATE);
+  TM_USART_Puts(USART6, "\r\n");
+
   run_all_tests(USARTx);
   imu_sensor = &imu_instance;
   IMU_Sensor_Initialize(imu_sensor, USARTx);
@@ -124,7 +124,7 @@ int main(void)
    * TODO: parameter order taken from example is against param names */
   TM_AHRSIMU_Init(&ahrs, DATASET_UPDATE_FREQUENCY_HZ, 0.2f, 3.5f);
   Dataset_Initialize(&dataset);
-  Result_process_Initialize(USARTx);
+//  Result_process_Initialize(USARTx);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -134,10 +134,10 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+	  Dataset_Update();
 	  Result_process_Check_Mode();
 	  uint32_t now = HAL_GetTick();
 
-	  Dataset_Update();
 	  Result_process_Reads(now, &dataset);
   }
 
