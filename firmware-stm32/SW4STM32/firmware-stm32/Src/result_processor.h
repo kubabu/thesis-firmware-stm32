@@ -16,7 +16,4 @@ void process_reads(uint32_t now, classifiers_dataset_t *dataset);
 
 void check_mode_switch(void);
 
-
-int8_t interval_passed(uint32_t now, uint32_t prev, uint32_t interval); // TODO hide this monstrosity
-
 #endif // _RESULT_PROCESSOR

@@ -61,10 +61,10 @@ UART_HandleTypeDef huart6;
 USART_TypeDef* USARTx = USART6;
 
 IMU_Sensor imu_instance;
-IMU_Sensor* imu;
+IMU_Sensor* imu_sensor;
+TM_AHRSIMU_t ahrs;
 classifiers_dataset_t dataset;
-
-volatile int32_t dataset_int_updates = 0;
+uint32_t dataset_updates;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -77,7 +77,7 @@ static void MX_USART6_UART_Init(void);
 /* Private function prototypes -----------------------------------------------*/
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
-void TM_DELAY_1msHandler(void);
+//void TM_DELAY_1msHandler(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -117,13 +117,18 @@ int main(void)
   TM_USART_Puts(USARTx, "\r\n");
 //
   run_all_tests(USARTx);
-  imu = &imu_instance;
-  IMU_Sensor_Initialize(imu, USARTx);
+  imu_sensor = &imu_instance;
+  IMU_Sensor_Initialize(imu_sensor, USARTx);
+  /* Init structure with 100hZ sample rate, 0.1 beta and 3.5 inclination
+   * (3.5 degrees is inclination in Ljubljana, Slovenia) on July, 2016
+   * TODO: parameter order taken from example is against param names */
+	TM_AHRSIMU_Init(&ahrs, DATASET_UPDATE_FREQUENCY_HZ, 0.2f, 3.5f);
+
   dataset_init(&dataset);
   result_processor_init(USARTx);
 
-  volatile uint32_t previous_reads_update, previous_dataset_update;
-  previous_reads_update = previous_dataset_update = 0;
+//  volatile uint32_t previous_reads_update, previous_dataset_update;
+//  previous_reads_update = previous_dataset_update = 0;
 
   /* USER CODE END 2 */
 
@@ -134,25 +139,22 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	  IMU_Sensor_Read_Update(imu); // TODO move to timer interrupt!
-//	  angles.results = IMU_AHRS_Update(imu);
-
 	  check_mode_switch();
 	  uint32_t now = HAL_GetTick();
 
-	  if (interval_passed(now, previous_reads_update, READS_UPDATE_INTERVAL_MS)
-			  && imu->first_read_state == FIRST_READ_DONE) {
-		  previous_reads_update = now;
-		  IMU_Results_t angles, angles_normalized;
-		  angles.results = IMU_AHRS_Update(imu);
-
-		  if(interval_passed(now, previous_dataset_update, DATASET_UPDATE_INTERVAL_MS)) {
-			  previous_dataset_update = now;
-			  knn_normalize(angles.results_buffer, angles_normalized.results_buffer);
-			  dataset_push(&dataset, &angles_normalized.results);
-		  }
-	  }
-	  process_reads(now, &dataset);
+//	  if (interval_passed(now, previous_reads_update, READS_UPDATE_INTERVAL_MS)
+//			  && imu_sensor->first_read_state == FIRST_READ_DONE) {
+//		  previous_reads_update = now;
+//		  IMU_Results_t angles, angles_normalized;
+//		  angles.results = IMU_AHRS_Update(imu_sensor, &ahrs);
+//
+//		  if(interval_passed(now, previous_dataset_update, DATASET_UPDATE_INTERVAL_MS)) {
+//			  previous_dataset_update = now;
+//			  knn_normalize(angles.results_buffer, angles_normalized.results_buffer);
+//			  dataset_push(&dataset, &angles_normalized.results);
+//		  }
+//	  }
+//	  process_reads(now, &dataset);
   }
   /* USER CODE END 3 */
 
@@ -286,25 +288,27 @@ static void MX_GPIO_Init(void)
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	if (GPIO_Pin == MPU6050_INT_Pin) {
 		// I2C communication uses interrupts, ext interrupt handler can only set flag
-		IMU_Sensor_UpdateInterruptFlag(imu, SENSOR_DATA_READY);
+		IMU_Sensor_UpdateInterruptFlag(imu_sensor, SENSOR_DATA_READY);
 	}
 }
 
-// TODO hook it in
 void ImuUpdateInInterrupt() {
-	dataset_int_updates++;
 
-	IMU_Sensor_Read_Update(imu);
+	IMU_Sensor_Read_Update(imu_sensor);
 	IMU_Results_t angles;
-	angles.results = IMU_AHRS_Update(imu);
-//	dataset_queue_push(&dataset, &angles); // TODO classifier will normalize it itself
+	angles.results = IMU_AHRS_Update(imu_sensor, &ahrs);
+	dataset_queue_push(&dataset, &angles);
 }
 
 
 void TM_DELAY_1msHandler(void) {
 	static uint8_t dataset_update_counter = 0;
-	if(dataset_update_counter++ >= DATASET_UPDATE_INTERVAL_MS){
+	if(dataset_update_counter++ >= DATASET_UPDATE_INTERVAL_MS
+			&& imu_sensor->init_result == TM_MPU6050_Result_Ok
+			&& imu_sensor->irq_flag_state == SENSOR_DATA_READY)
+	{
 		ImuUpdateInInterrupt();
+		dataset_updates++;
 		dataset_update_counter = 0;
 	}
 }

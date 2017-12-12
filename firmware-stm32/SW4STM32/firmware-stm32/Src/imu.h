@@ -34,7 +34,6 @@ typedef struct IMU_Sensor_Data {
 	SENSOR_IRQ_STATE irq_flag_state;
 	SENSOR_FIRST_READ_STATE first_read_state;
 	TM_MPU6050_Result_t init_result;
-	TM_AHRSIMU_t ahrs;
 } IMU_Sensor;
 
 
@@ -71,7 +70,7 @@ void IMU_Sensor_UpdateInterruptFlag(IMU_Sensor* imu, SENSOR_IRQ_STATE state);
 
 void IMU_Sensor_Read_Update(IMU_Sensor* imu);
 
-IMU_Results IMU_AHRS_Update(IMU_Sensor* imu);
+IMU_Results IMU_AHRS_Update(IMU_Sensor* imu, TM_AHRSIMU_t *ahrs);
 
 void AHRS_PrintSerialIMU_Results(USART_TypeDef* USARTx, IMU_Results result);
 

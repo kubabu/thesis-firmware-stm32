@@ -6,29 +6,32 @@ volatile MainMode mode = SERIAL_FRONTEND_MODE;
 
 USART_TypeDef* USARTx;
 IMU_Sensor serial_imu;
+TM_AHRSIMU_t serial_ahrs;
 
 char msgbuf[50] = { '\0' };
 const char *modes[] = {"NN_CLASSIFIER_MODE", "KNN_CLASSIFIER_MODE", "SERIAL_FRONTEND_MODE", "UNIT_TESTS_MODE"};
 
 
+int8_t interval_passed(uint32_t now, uint32_t prev, uint32_t interval);
+
 void result_processor_init(USART_TypeDef* serial_port) {
 	USARTx = serial_port;
-	IMU_Sensor_Initialize(&serial_imu, serial_port);
+	// TODO params order from example or header?
+   TM_AHRSIMU_Init(&serial_ahrs, READS_UPDATE_FREQUENCY_HZ, 0.1f, 3.5f);
 }
 
 
 void process_serial(uint32_t now, classifiers_dataset_t *dataset)
 {
 	static uint32_t previous_reads_update;
+	IMU_Results_t angles;
 
-	// TODO pass original IMU and new AHRS to update
 	IMU_Sensor_Read_Update(&serial_imu);
-
 	if (interval_passed(now, previous_reads_update, READS_UPDATE_INTERVAL_MS)
-		  && serial_imu.first_read_state == FIRST_READ_DONE) {
-		IMU_Results_t angles;
+		  && serial_imu.first_read_state == FIRST_READ_DONE)
+	{
 		previous_reads_update = now;
-		angles.results = IMU_AHRS_Update(&serial_imu);
+		angles.results = IMU_AHRS_Update(&serial_imu, &serial_ahrs);
 
 		if(USARTx != NULL) {
 			AHRS_PrintSerialIMU_Results(USARTx, angles.results);
@@ -45,7 +48,8 @@ void process_knn(uint32_t now, classifiers_dataset_t *dataset)
 //	static int16_t prev_result;
 
 	if (dataset->is_ready
-			&& interval_passed(now, previous_results_update, CLASSIFIER_UPDATE_INTERVAL_MS)) {
+			&& interval_passed(now, previous_results_update, CLASSIFIER_UPDATE_INTERVAL_MS))
+	{
 		previous_results_update = now;
 
 		int16_t result_code = knn_classifier(dataset->series);

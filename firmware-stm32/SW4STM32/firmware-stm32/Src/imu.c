@@ -60,7 +60,7 @@ EulerAngles CalculateFromCalibratedAccelerometer(float ax, float ay, float az) {
 }
 
 
-IMU_Results IMU_AHRS_Update(IMU_Sensor* imu) {
+IMU_Results IMU_AHRS_Update(IMU_Sensor* imu, TM_AHRSIMU_t *ahrs) {
 	IMU_Results result;
 
     const float dpsRangePerDigit = imu->reads.Gyro_Mult;
@@ -82,12 +82,12 @@ IMU_Results IMU_AHRS_Update(IMU_Sensor* imu) {
     /* This function must be called periodically in intervals set by sample rate on initialization process */
 //    TM_AHRSIMU_UpdateAHRS(&imu->ahrs, AHRSIMU_DEG2RAD(result.gx), AHRSIMU_DEG2RAD(result.gy), AHRSIMU_DEG2RAD(result.gz),
 //    		result.ax, result.ay, result.az, result.mx, result.my, result.mz);
-    TM_AHRSIMU_UpdateIMU(&imu->ahrs, AHRSIMU_DEG2RAD(result.gx), AHRSIMU_DEG2RAD(result.gy), AHRSIMU_DEG2RAD(result.gz),
+    TM_AHRSIMU_UpdateIMU(ahrs, AHRSIMU_DEG2RAD(result.gx), AHRSIMU_DEG2RAD(result.gy), AHRSIMU_DEG2RAD(result.gz),
         		result.ax, result.ay, result.az);
 
-    result.imu_angles.pitch = imu->ahrs.Pitch;
-    result.imu_angles.roll = rotate180(imu->ahrs.Roll); //for some reason roll is backwards on STM
-    result.imu_angles.yaw = imu->ahrs.Yaw;
+    result.imu_angles.pitch = ahrs->Pitch;
+    result.imu_angles.roll = rotate180(ahrs->Roll); //for some reason roll is backwards on STM
+    result.imu_angles.yaw = ahrs->Yaw;
 
     return result;
 }
