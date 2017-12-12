@@ -2,7 +2,7 @@
 #include "tests.h"
 
 
-volatile MainMode mode = SERIAL_FRONTEND_MODE;
+volatile MainMode mode = NN_CLASSIFIER_MODE; // SERIAL_FRONTEND_MODE;
 
 USART_TypeDef* USARTx;
 IMU_Sensor serial_imu;

@@ -108,7 +108,7 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init(); // TODO commented to avoid timing issues
+//  MX_GPIO_Init(); // TODO commented to avoid timing issues
   MX_I2C1_Init();
   MX_USART6_UART_Init();
 
@@ -126,6 +126,8 @@ int main(void)
 
   dataset_init(&dataset);
   result_processor_init(USARTx);
+
+  IMU_Sensor_Read(imu_sensor);
 
 //  volatile uint32_t previous_reads_update, previous_dataset_update;
 //  previous_reads_update = previous_dataset_update = 0;
@@ -292,19 +294,23 @@ static void MX_GPIO_Init(void)
 //	}
 //}
 
+volatile uint32_t prev;
+
 void ImuUpdateInInterrupt() {
+	uint32_t now = HAL_GetTick();
 	IMU_Sensor_Read(imu_sensor);
 	IMU_Results_t angles;
 	angles.results = IMU_AHRS_Update(imu_sensor, &ahrs);
 	dataset_queue_push(&dataset, &angles);
+	prev = now;
 }
 
 
 void TM_DELAY_1msHandler(void) {
 	static uint8_t dataset_update_counter = 0;
-	if(dataset_update_counter++ >= DATASET_UPDATE_INTERVAL_MS
-			&& imu_sensor->init_result == TM_MPU6050_Result_Ok)
-//			&& imu_sensor->irq_flag_state == SENSOR_DATA_READY_TO_READ)
+	if(dataset_update_counter++ >= DATASET_UPDATE_INTERVAL_MS - 1
+			&& imu_sensor->init_result == TM_MPU6050_Result_Ok
+			&& imu_sensor->first_read_state == FIRST_READ_DONE)
 	{
 		ImuUpdateInInterrupt();
 		dataset_updates++;
