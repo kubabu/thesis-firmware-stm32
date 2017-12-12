@@ -75,7 +75,7 @@ static void MX_USART6_UART_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 //void TM_DELAY_1msHandler(void);
 /* USER CODE END PFP */
@@ -88,7 +88,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	TM_RCC_InitSystem();
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -101,14 +101,14 @@ int main(void)
   /* USER CODE END Init */
 
   /* Configure the system clock */
-  SystemClock_Config();
+//  SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
+//  MX_GPIO_Init();
   MX_I2C1_Init();
   MX_USART6_UART_Init();
 
@@ -285,16 +285,15 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-	if (GPIO_Pin == MPU6050_INT_Pin) {
-		// I2C communication uses interrupts, ext interrupt handler can only set flag
-		IMU_Sensor_UpdateInterruptFlag(imu_sensor, SENSOR_DATA_READY);
-	}
-}
+//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+//	if (GPIO_Pin == MPU6050_INT_Pin) {
+//		// I2C communication uses interrupts, ext interrupt handler can only set flag
+//		IMU_Sensor_UpdateInterruptFlag(imu_sensor, SENSOR_DATA_READY_TO_READ);
+//	}
+//}
 
 void ImuUpdateInInterrupt() {
-
-	IMU_Sensor_Read_Update(imu_sensor);
+	IMU_Sensor_Read(imu_sensor);
 	IMU_Results_t angles;
 	angles.results = IMU_AHRS_Update(imu_sensor, &ahrs);
 	dataset_queue_push(&dataset, &angles);
@@ -304,8 +303,8 @@ void ImuUpdateInInterrupt() {
 void TM_DELAY_1msHandler(void) {
 	static uint8_t dataset_update_counter = 0;
 	if(dataset_update_counter++ >= DATASET_UPDATE_INTERVAL_MS
-			&& imu_sensor->init_result == TM_MPU6050_Result_Ok
-			&& imu_sensor->irq_flag_state == SENSOR_DATA_READY)
+			&& imu_sensor->init_result == TM_MPU6050_Result_Ok)
+//			&& imu_sensor->irq_flag_state == SENSOR_DATA_READY_TO_READ)
 	{
 		ImuUpdateInInterrupt();
 		dataset_updates++;

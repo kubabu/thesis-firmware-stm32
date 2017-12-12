@@ -26,7 +26,7 @@ void process_serial(uint32_t now, classifiers_dataset_t *dataset)
 	static uint32_t previous_reads_update;
 	IMU_Results_t angles;
 
-	IMU_Sensor_Read_Update(&serial_imu);
+	IMU_Sensor_Read(&serial_imu);
 	if (interval_passed(now, previous_reads_update, READS_UPDATE_INTERVAL_MS)
 		  && serial_imu.first_read_state == FIRST_READ_DONE)
 	{
