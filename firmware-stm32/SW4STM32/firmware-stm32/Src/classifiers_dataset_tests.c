@@ -11,7 +11,7 @@
 void dataset_init_tests(void) {
 	classifiers_dataset_t dataset;
 
-	dataset_init(&dataset);
+	Dataset_Initialize(&dataset);
 
 	check_exact_value(dataset.is_ready, DATASET_NOT_READY, __FUNCTION__);
 	check_exact_value(dataset.count, 0, __FUNCTION__);
@@ -19,7 +19,7 @@ void dataset_init_tests(void) {
 	IMU_Results results;
 
 	for (int i = 0; i < PADDED_SEQ_LEN; ++i) {
-		dataset_push(&dataset, &results);
+		Dataset_Push(&dataset, &results);
 	}
 
 	check_exact_value(dataset.is_ready, DATASET_READY, __FUNCTION__);
@@ -29,7 +29,7 @@ void dataset_push_tests(void) {
 	classifiers_dataset_t dataset;
 	uint32_t start, duration;
 
-	dataset_init(&dataset);
+	Dataset_Initialize(&dataset);
 	for (int i = 0; i < FEATURES; ++i) {
 		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
 			dataset.series[i][j] = j * i;
@@ -59,7 +59,7 @@ void dataset_push_tests(void) {
 	start = HAL_GetTick();
 
 	// act
-	dataset_push(&dataset, &results);
+	Dataset_Push(&dataset, &results);
 
 	//	verify
 	duration = HAL_GetTick() - start;

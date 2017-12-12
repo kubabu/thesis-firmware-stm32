@@ -75,7 +75,7 @@ static void MX_USART6_UART_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 //void TM_DELAY_1msHandler(void);
 /* USER CODE END PFP */
@@ -88,7 +88,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	TM_RCC_InitSystem();
+//	TM_RCC_InitSystem();
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -101,14 +101,14 @@ int main(void)
   /* USER CODE END Init */
 
   /* Configure the system clock */
-//  SystemClock_Config();
+  SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-//  MX_GPIO_Init(); // TODO commented to avoid timing issues
+  MX_GPIO_Init(); // TODO commented to avoid timing issues
   MX_I2C1_Init();
   MX_USART6_UART_Init();
 
@@ -122,16 +122,9 @@ int main(void)
   /* Init structure with 100hZ sample rate, 0.1 beta and 3.5 inclination
    * (3.5 degrees is inclination in Ljubljana, Slovenia) on July, 2016
    * TODO: parameter order taken from example is against param names */
-	TM_AHRSIMU_Init(&ahrs, DATASET_UPDATE_FREQUENCY_HZ, 0.2f, 3.5f);
-
-  dataset_init(&dataset);
-  result_processor_init(USARTx);
-
-  IMU_Sensor_Read(imu_sensor);
-
-//  volatile uint32_t previous_reads_update, previous_dataset_update;
-//  previous_reads_update = previous_dataset_update = 0;
-
+  TM_AHRSIMU_Init(&ahrs, DATASET_UPDATE_FREQUENCY_HZ, 0.2f, 3.5f);
+  Dataset_Initialize(&dataset);
+  Result_process_Initialize(USARTx);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -141,23 +134,25 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	  check_mode_switch();
+	  Result_process_Check_Mode();
 	  uint32_t now = HAL_GetTick();
 
-//	  if (interval_passed(now, previous_reads_update, READS_UPDATE_INTERVAL_MS)
-//			  && imu_sensor->first_read_state == FIRST_READ_DONE) {
-//		  previous_reads_update = now;
-//		  IMU_Results_t angles, angles_normalized;
-//		  angles.results = IMU_AHRS_Update(imu_sensor, &ahrs);
-//
-//		  if(interval_passed(now, previous_dataset_update, DATASET_UPDATE_INTERVAL_MS)) {
-//			  previous_dataset_update = now;
-//			  knn_normalize(angles.results_buffer, angles_normalized.results_buffer);
-//			  dataset_push(&dataset, &angles_normalized.results);
-//		  }
-//	  }
-	  process_reads(now, &dataset);
+	  Dataset_Update();
+	  Result_process_Reads(now, &dataset);
   }
+
+  //	  if (interval_passed(now, previous_reads_update, READS_UPDATE_INTERVAL_MS)
+  //			  && imu_sensor->first_read_state == FIRST_READ_DONE) {
+  //		  previous_reads_update = now;
+  //		  IMU_Results_t angles, angles_normalized;
+  //		  angles.results = IMU_AHRS_Update(imu_sensor, &ahrs);
+  //
+  //		  if(interval_passed(now, previous_dataset_update, DATASET_UPDATE_INTERVAL_MS)) {
+  //			  previous_dataset_update = now;
+  //			  knn_normalize(angles.results_buffer, angles_normalized.results_buffer);
+  //			  dataset_push(&dataset, &angles_normalized.results);
+  //		  }
+  //	  }
   /* USER CODE END 3 */
 
 }
@@ -287,36 +282,38 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-//	if (GPIO_Pin == MPU6050_INT_Pin) {
-//		// I2C communication uses interrupts, ext interrupt handler can only set flag
-//		IMU_Sensor_UpdateInterruptFlag(imu_sensor, SENSOR_DATA_READY_TO_READ);
-//	}
-//}
-
-volatile uint32_t prev;
-
-void ImuUpdateInInterrupt() {
-	uint32_t now = HAL_GetTick();
-	IMU_Sensor_Read(imu_sensor);
-	IMU_Results_t angles;
-	angles.results = IMU_AHRS_Update(imu_sensor, &ahrs);
-	dataset_queue_push(&dataset, &angles);
-	prev = now;
-}
-
-
-void TM_DELAY_1msHandler(void) {
-	static uint8_t dataset_update_counter = 0;
-	if(dataset_update_counter++ >= DATASET_UPDATE_INTERVAL_MS - 1
-			&& imu_sensor->init_result == TM_MPU6050_Result_Ok
-			&& imu_sensor->first_read_state == FIRST_READ_DONE)
-	{
-		ImuUpdateInInterrupt();
-		dataset_updates++;
-		dataset_update_counter = 0;
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	if (GPIO_Pin == MPU6050_INT_Pin) {
+		// I2C communication uses interrupts, ext interrupt handler can only set flag
+		IMU_Sensor_UpdateInterruptFlag(imu_sensor, SENSOR_DATA_READY_TO_READ);
 	}
 }
+
+
+volatile uint8_t dataset_update_interval = DATASET_UPDATE_INTERVAL_MS;
+volatile uint32_t prev_dataset_update;
+volatile uint8_t dataset_update_counter = 0;
+
+void Dataset_Update() {
+	uint32_t now = HAL_GetTick();
+	uint32_t timedelta = now - prev_dataset_update;
+	if(timedelta >= dataset_update_interval
+			&& imu_sensor->init_result == TM_MPU6050_Result_Ok
+			&& imu_sensor->irq_flag_state == SENSOR_DATA_READY_TO_READ)
+	{
+		IMU_Results_t angles;
+		IMU_Sensor_Read_Interrupts(imu_sensor);
+		angles.results = IMU_AHRS_Update(imu_sensor, &ahrs);
+//		Dataset_queue_Push(&dataset, &angles);
+		Dataset_Push(&dataset, &angles.results);
+		prev_dataset_update = now;
+	}
+}
+
+void Dataset_Set_Update_Frequency(uint8_t interval) {
+	 dataset_update_interval = interval;
+}
+
 /* USER CODE END 4 */
 
 /**
@@ -330,6 +327,7 @@ void _Error_Handler(char * file, int line)
   /* User can add his own implementation to report the HAL error return state */
   while(1) 
   {
+
   }
   /* USER CODE END Error_Handler_Debug */ 
 }

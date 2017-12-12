@@ -6,16 +6,16 @@
  */
 #include <classifiers_dataset.h>
 
-void dataset_init(classifiers_dataset_t *dataset) {
+void Dataset_Initialize(classifiers_dataset_t *dataset) {
 	dataset->is_ready = DATASET_NOT_READY;
 	dataset->count = 0;
 }
 
-void dataset_queue_push(classifiers_dataset_t *dataset, IMU_Results_t *results) {
+void Dataset_queue_Push(classifiers_dataset_t *dataset, IMU_Results_t *results) {
 	// for use in interrupts, TODO
 }
 
-void dataset_push(classifiers_dataset_t *dataset, IMU_Results *results) {
+void Dataset_Push(classifiers_dataset_t *dataset, IMU_Results *results) {
 	const size_t bytes_to_shift = (PADDED_SEQ_LEN - 1) * sizeof(float);
 
 	for (int i = 0; i < FEATURES; ++i) {

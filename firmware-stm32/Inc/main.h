@@ -41,6 +41,7 @@
   /* Includes ------------------------------------------------------------------*/
 
 /* USER CODE BEGIN Includes */
+#include <stdint.h>
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/
@@ -50,7 +51,8 @@
 #define MPU6050_INT_EXTI_IRQn EXTI9_5_IRQn
 
 /* USER CODE BEGIN Private defines */
-
+void Dataset_Update();
+void Dataset_Set_Update_Frequency(uint8_t interval);
 /* USER CODE END Private defines */
 
 void _Error_Handler(char *, int);

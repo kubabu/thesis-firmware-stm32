@@ -2,7 +2,7 @@
 #include "tests.h"
 
 
-volatile MainMode mode = NN_CLASSIFIER_MODE; // SERIAL_FRONTEND_MODE;
+volatile MainMode mode = KNN_CLASSIFIER_MODE; // SERIAL_FRONTEND_MODE;
 
 USART_TypeDef* USARTx;
 IMU_Sensor serial_imu;
@@ -14,7 +14,7 @@ const char *modes[] = {"NN_CLASSIFIER_MODE", "KNN_CLASSIFIER_MODE", "SERIAL_FRON
 
 int8_t interval_passed(uint32_t now, uint32_t prev, uint32_t interval);
 
-void result_processor_init(USART_TypeDef* serial_port) {
+void Result_process_Initialize(USART_TypeDef* serial_port) {
 	USARTx = serial_port;
 	// TODO params order from example or header?
    TM_AHRSIMU_Init(&serial_ahrs, READS_UPDATE_FREQUENCY_HZ, 0.1f, 3.5f);
@@ -26,7 +26,7 @@ void process_serial(uint32_t now, classifiers_dataset_t *dataset)
 	static uint32_t previous_reads_update;
 	IMU_Results_t angles;
 
-	IMU_Sensor_Read(&serial_imu);
+//	IMU_Sensor_Read(&serial_imu);
 	if (interval_passed(now, previous_reads_update, READS_UPDATE_INTERVAL_MS)
 		  && serial_imu.first_read_state == FIRST_READ_DONE)
 	{
@@ -90,7 +90,7 @@ void process_nn(uint32_t now, classifiers_dataset_t *dataset)
 }
 
 
-void process_reads(uint32_t now, classifiers_dataset_t *dataset) {
+void Result_process_Reads(uint32_t now, classifiers_dataset_t *dataset) {
 	switch(mode) {
 	case NN_CLASSIFIER_MODE:
 		process_nn(now, dataset);
@@ -151,7 +151,7 @@ MainMode find_mode(char msg) {
 }
 
 
-void check_mode_switch(void) {
+void Result_process_Check_Mode(void) {
 	char c = TM_USART_Getc(USART6);
 	MainMode m = find_mode(c);
 	if(m != mode) {
