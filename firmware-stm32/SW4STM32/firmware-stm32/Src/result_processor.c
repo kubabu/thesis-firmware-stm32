@@ -1,8 +1,9 @@
+#include "main.h"
 #include "result_processor.h"
 #include "tests.h"
 
 
-volatile MainMode mode = KNN_CLASSIFIER_MODE; // SERIAL_FRONTEND_MODE;
+volatile MainMode mode = UNIT_TESTS_MODE; // SERIAL_FRONTEND_MODE;
 
 USART_TypeDef* USARTx;
 IMU_Sensor serial_imu;
@@ -17,7 +18,7 @@ int8_t interval_passed(uint32_t now, uint32_t prev, uint32_t interval);
 void Result_process_Initialize(USART_TypeDef* serial_port) {
 	USARTx = serial_port;
 	// TODO params order from example or header?
-   TM_AHRSIMU_Init(&serial_ahrs, READS_UPDATE_FREQUENCY_HZ, 0.1f, 3.5f);
+   TM_AHRSIMU_Init(&serial_ahrs, SERIAL_READS_UPDATE_FREQUENCY_HZ, 0.1f, 3.5f);
 }
 
 
@@ -27,7 +28,7 @@ void process_serial(uint32_t now, classifiers_dataset_t *dataset)
 	IMU_Results_t angles;
 
 //	IMU_Sensor_Read(&serial_imu);
-	if (interval_passed(now, previous_reads_update, READS_UPDATE_INTERVAL_MS)
+	if (interval_passed(now, previous_reads_update, SERIAL_READS_UPDATE_INTERVAL_MS)
 		  && serial_imu.first_read_state == FIRST_READ_DONE)
 	{
 		previous_reads_update = now;
@@ -158,6 +159,13 @@ void Result_process_Check_Mode(void) {
 	  TM_USART_Puts(USART6, "Switching mode to ");
 	  TM_USART_Puts(USART6, (char *)modes[m]);
 	  TM_USART_Puts(USART6, "\r\n");
+	  if(m == SERIAL_FRONTEND_MODE) {
+		  // serial reads to PC needs to be in 100Hz
+		  Dataset_Set_Update_Frequency(SERIAL_READS_UPDATE_INTERVAL_MS);
+	  } else if(mode == SERIAL_FRONTEND_MODE) {
+		  // dataset update has reduced frequency
+		  Dataset_Set_Update_Frequency(DATASET_UPDATE_INTERVAL_MS);
+	  }
 	  mode = m;
 	}
 }

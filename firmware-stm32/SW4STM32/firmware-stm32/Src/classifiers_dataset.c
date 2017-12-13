@@ -11,17 +11,14 @@ void Dataset_Initialize(classifiers_dataset_t *dataset) {
 	dataset->count = 0;
 }
 
-void Dataset_queue_Push(classifiers_dataset_t *dataset, IMU_Results_t *results) {
-	// for use in interrupts, TODO
-}
 
 void Dataset_Push(classifiers_dataset_t *dataset, IMU_Results *results) {
 	const size_t bytes_to_shift = (PADDED_SEQ_LEN - 1) * sizeof(float);
-
+	// push over previous results: first in first out
 	for (int i = 0; i < FEATURES; ++i) {
 		memmove(dataset->series[i], &dataset->series[i][1], bytes_to_shift);
 	}
-
+	// at the end insert fresh results
 	dataset->series[0][PADDED_SEQ_LEN - 1] = results->ax;
 	dataset->series[1][PADDED_SEQ_LEN - 1] = results->ay;
 	dataset->series[2][PADDED_SEQ_LEN - 1] = results->az;
@@ -37,6 +34,26 @@ void Dataset_Push(classifiers_dataset_t *dataset, IMU_Results *results) {
 
 	++dataset->count;
 	if(dataset->count >= PADDED_SEQ_LEN) {
+		// first read frame is filled, data in set can be used
 		dataset->is_ready = DATASET_READY;
 	}
+}
+
+
+void Dataset_queue_Push(classifiers_dataset_t *dataset, IMU_Results_t *results) {
+	// push over previous results: first in first out
+	memmove(dataset->queue, dataset->queue+1, sizeof(IMU_Results_t) * dataset->queue_size);
+	// add new results
+	dataset->queue[dataset->queue_size] = *results;
+	if(dataset->queue_size < DATASET_QUEUE_CAPACITY -1) {
+		++dataset->queue_size;
+	}
+}
+
+
+void Dataset_queue_Process(classifiers_dataset_t *dataset) {
+	for (int i = 0; i < dataset->queue_size; ++i) {
+		Dataset_Push(dataset, &dataset->queue[i].results);
+	}
+	dataset->queue_size = 0;
 }

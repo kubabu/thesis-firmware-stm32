@@ -12,6 +12,9 @@
 #include "classifiers.h"
 #include "ringbuf.h"
 
+
+#define DATASET_QUEUE_CAPACITY (DATASET_UPDATE_INTERVAL_MS / SERIAL_READS_UPDATE_FREQUENCY_HZ) + 1
+
 typedef enum dataset_state {
 	DATASET_NOT_READY = 0,
 	DATASET_READY = 1
@@ -22,6 +25,8 @@ typedef struct classifiers_dataset_t {
 	uint8_t count;
 	dataset_state_t is_ready;
 	// TODO queue, imu?
+	IMU_Results_t queue[DATASET_QUEUE_CAPACITY];
+	size_t queue_size;
 } classifiers_dataset_t;
 
 

@@ -53,7 +53,7 @@ typedef struct IMU_Results {
 } IMU_Results;
 
 
-#if (DATASET_UPDATE_FREQUENCY_HZ > READS_UPDATE_FREQUENCY_HZ)
+#if (DATASET_UPDATE_FREQUENCY_HZ > SERIAL_READS_UPDATE_FREQUENCY_HZ)
 #error "Dataset for classifier cannot be updated faster than data is sampled"
 #endif
 
