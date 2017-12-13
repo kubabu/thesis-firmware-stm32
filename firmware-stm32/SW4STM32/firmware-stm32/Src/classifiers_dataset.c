@@ -6,12 +6,16 @@
  */
 #include <classifiers_dataset.h>
 
-void Dataset_Initialize(classifiers_dataset_t *dataset) {
-	dataset->is_ready = DATASET_NOT_READY;
-	dataset->count = 0;
+
+classifiers_dataset_t Dataset_Initialize() {
+	classifiers_dataset_t dataset;
+	dataset.is_ready = DATASET_NOT_READY;
+	dataset.count = 0;
+	return dataset;
 }
 
 
+// TODO if queue processing is too slow, entire queue can be pushed
 void Dataset_Push(classifiers_dataset_t *dataset, IMU_Results *results) {
 	const size_t bytes_to_shift = (PADDED_SEQ_LEN - 1) * sizeof(float);
 	// push over previous results: first in first out
@@ -52,6 +56,7 @@ void Dataset_queue_Push(classifiers_dataset_t *dataset, IMU_Results_t *results) 
 
 
 void Dataset_queue_Process(classifiers_dataset_t *dataset) {
+	// TODO this might be too slow
 	for (int i = 0; i < dataset->queue_size; ++i) {
 		Dataset_Push(dataset, &dataset->queue[i].results);
 	}

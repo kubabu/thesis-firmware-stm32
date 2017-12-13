@@ -123,7 +123,7 @@ int main(void)
    * (3.5 degrees is inclination in Ljubljana, Slovenia) on July, 2016
    * TODO: parameter order taken from example is against param names */
   TM_AHRSIMU_Init(&ahrs, DATASET_UPDATE_FREQUENCY_HZ, 0.2f, 3.5f);
-  Dataset_Initialize(&dataset);
+  dataset = Dataset_Initialize();
 //  Result_process_Initialize(USARTx);
   /* USER CODE END 2 */
 
@@ -304,7 +304,7 @@ void Dataset_Update() {
 		IMU_Results_t angles;
 		IMU_Sensor_Read_Interrupts(imu_sensor);
 		angles.results = IMU_AHRS_Update(imu_sensor, &ahrs);
-//		Dataset_queue_Push(&dataset, &angles);
+//		Dataset_queue_Push(&dataset, &angles); // TODO push on queue
 		Dataset_Push(&dataset, &angles.results);
 		prev_dataset_update = now;
 	}

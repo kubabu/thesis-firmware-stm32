@@ -9,9 +9,7 @@
 #include "tests.h"
 
 void dataset_init_tests(void) {
-	classifiers_dataset_t dataset;
-
-	Dataset_Initialize(&dataset);
+	classifiers_dataset_t dataset = Dataset_Initialize();
 
 	check_exact_value(dataset.is_ready, DATASET_NOT_READY, __FUNCTION__);
 	check_exact_value(dataset.count, 0, __FUNCTION__);
@@ -26,10 +24,9 @@ void dataset_init_tests(void) {
 }
 
 void dataset_push_tests(void) {
-	classifiers_dataset_t dataset;
 	uint32_t start, duration;
+	classifiers_dataset_t dataset = Dataset_Initialize();
 
-	Dataset_Initialize(&dataset);
 	for (int i = 0; i < FEATURES; ++i) {
 		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
 			dataset.series[i][j] = j * i;
@@ -84,7 +81,22 @@ void dataset_push_tests(void) {
 	check_exact_value(dataset.is_ready, DATASET_NOT_READY, __FUNCTION__);
 }
 
+
+void dataset_queue_push_tests(void) {
+	classifiers_dataset_t dataset = Dataset_Initialize();
+	// TODO implement and verify
+}
+
+
+void dataset_queue_process_tests(void) {
+	classifiers_dataset_t dataset = Dataset_Initialize();
+	// TODO implement and verify
+}
+
+
 void _run_dataset_tests(void) {
 	dataset_init_tests();
 	dataset_push_tests();
+	dataset_queue_push_tests();
+	dataset_queue_process_tests();
 }

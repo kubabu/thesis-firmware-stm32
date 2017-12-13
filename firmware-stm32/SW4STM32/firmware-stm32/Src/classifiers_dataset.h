@@ -24,18 +24,31 @@ typedef struct classifiers_dataset_t {
 	float series[FEATURES][PADDED_SEQ_LEN];
 	uint8_t count;
 	dataset_state_t is_ready;
-	// TODO queue, imu?
 	IMU_Results_t queue[DATASET_QUEUE_CAPACITY];
 	size_t queue_size;
 } classifiers_dataset_t;
 
 
-void Dataset_Initialize(classifiers_dataset_t *dataset);
+/*
+ * dataset =  Dataset_Initialize();
+ *
+ * while(!dataset_processing_finished) {
+ *  	process_dataset()
+ *  	Dataset_queue_Push(datasetdo_new_reads)
+ * }
+ * Dataset_queue_Process(dataset);
+ */
 
+classifiers_dataset_t Dataset_Initialize();
+
+// add single read to dataset
 void Dataset_Push(classifiers_dataset_t *dataset, IMU_Results *results);
 
-// for use in interrupts
+// add read to queue, while dataset is processed
 void Dataset_queue_Push(classifiers_dataset_t *dataset, IMU_Results_t *results);
+
+// eat queue when current dataset processing cycle is finished
+void Dataset_queue_Process(classifiers_dataset_t *dataset);
 
 
 #endif /* CLASSIFIERS_DATASET_H_ */
