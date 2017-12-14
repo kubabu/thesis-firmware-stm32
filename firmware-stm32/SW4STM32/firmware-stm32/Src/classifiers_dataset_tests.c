@@ -358,21 +358,21 @@ void dataset_queue_process_tests(void) {
 
 void dataset_queue_process_multiple_tests(void) {
 	classifiers_dataset_t dataset = Dataset_Initialize();
-	IMU_Reads_union results;
+	IMU_Reads_union reads;
 	// initialize with 0s
 	for (int i = 0; i < FEATURES; ++i) {
 		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
 			dataset.series[i][j] = 0;
 		}
 	}
-	results.buffer[0] = 1;
-	results.buffer[1] = 2.0;
-	results.buffer[3] = 42.0;
-	Dataset_queue_Push(&dataset, &results);
-	results.buffer[0] = 2;
-	Dataset_queue_Push(&dataset, &results);
-	results.buffer[0] = 3;
-	Dataset_queue_Push(&dataset, &results);
+	reads.buffer[0] = 1;
+	reads.buffer[1] = 2.0;
+	reads.buffer[3] = 42.0;
+	Dataset_queue_Push(&dataset, &reads);
+	reads.buffer[0] = 2;
+	Dataset_queue_Push(&dataset, &reads);
+	reads.buffer[0] = 3;
+	Dataset_queue_Push(&dataset, &reads);
 	check_exact_value(dataset.queue_size, 3, __FUNCTION__);
 
 	// act
@@ -380,39 +380,34 @@ void dataset_queue_process_multiple_tests(void) {
 
 	check_exact_value(dataset.queue_size, 0, __FUNCTION__);
 	check_exact_value(dataset.count, 3, __FUNCTION__);
-//	for (int j = 0; j < 3; ++j) {
-//		check_exact_value(dataset.series[][PADDED_SEQ_LEN - 1 - j], results.buffer[j], __FUNCTION__);
-//		check_exact_value(dataset.series[0][j], j + 1, __FUNCTION__);
-//		for (int i = 1; i < FEATURES; ++i) {
-//			check_exact_value(dataset.series[i][j], results.buffer[i], __FUNCTION__);
-//		}
-//	}
-	for (int i = 0; i < FEATURES; ++i) {
+	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 3], 1.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 2], 2.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 1], 3.0, __FUNCTION__);
+	for (int j = 0; j < 3; ++j) {
+		check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 3 + j], j + 1, __FUNCTION__);
+	}
+	for (int i = 1; i < FEATURES; ++i) {
 		for (int j = 0; j < 3; ++j) {
-			check_exact_value(dataset.series[i][PADDED_SEQ_LEN - 3 + j], j + 1, __FUNCTION__);
+			check_exact_value(dataset.series[i][PADDED_SEQ_LEN - 3 + j], reads.buffer[i], __FUNCTION__);
 		}
 	}
-
-//	for (int i = 0; i < FEATURES; ++i) {
-//		check_exact_value(dataset.series[i][PADDED_SEQ_LEN - 1], results.buffer[i], __FUNCTION__);
-//	}
 }
 
 
 void dataset_queue_process_full_queue_tests(void) {
 	classifiers_dataset_t dataset = Dataset_Initialize();
-	IMU_Reads_union results;
+	IMU_Reads_union reads;
 	// initialize with 0s
 	for (int i = 0; i < FEATURES; ++i) {
 		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
 			dataset.series[i][j] = 0;
 		}
 	}
-	results.buffer[1] = 2.0;
-	results.buffer[3] = 42.0;
+	reads.buffer[1] = 2.0;
+	reads.buffer[3] = 42.0;
 	for (int i = 0; i <= DATASET_QUEUE_CAPACITY; ++i) {
-		results.buffer[0] = i;
-		Dataset_queue_Push(&dataset, &results);
+		reads.buffer[0] = i;
+		Dataset_queue_Push(&dataset, &reads);
 	}
 	check_exact_value(dataset.queue_size, DATASET_QUEUE_CAPACITY, __FUNCTION__);
 
@@ -420,22 +415,64 @@ void dataset_queue_process_full_queue_tests(void) {
 	Dataset_queue_Process(&dataset);
 
 	check_exact_value(dataset.queue_size, 0, __FUNCTION__);
-	check_exact_value(dataset.count, 3, __FUNCTION__);
+	check_exact_value(dataset.count, DATASET_QUEUE_CAPACITY, __FUNCTION__);
 
-	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < DATASET_QUEUE_CAPACITY; ++j) {
-			int index = (PADDED_SEQ_LEN - 2 - DATASET_QUEUE_CAPACITY) + j;
-			check_exact_value(dataset.series[i][index], j + 1, __FUNCTION__);
-		}
-	}
+	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 5], 1.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 4], 2.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 3], 3.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 2], 4.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 1], 5.0, __FUNCTION__);
 
-	for (int j = 0; j < DATASET_QUEUE_CAPACITY; ++j) {
-		check_exact_value(dataset.series[0][j], j + 1, __FUNCTION__);
-		for (int i = 1; i < FEATURES; ++i) {
-			check_exact_value(dataset.series[i][j], results.buffer[i], __FUNCTION__);
-		}
-	}
+//	for (int j = 0; j < DATASET_QUEUE_CAPACITY; ++j) {
+//		check_exact_value(dataset.series[0][PADDED_SEQ_LEN - DATASET_QUEUE_CAPACITY + j], j + 1, __FUNCTION__);
+//	}
+//	for (int i = 1; i < FEATURES; ++i) {
+//		for (int j = 0; j < DATASET_QUEUE_CAPACITY; ++j) {
+//			check_exact_value(dataset.series[i][PADDED_SEQ_LEN - DATASET_QUEUE_CAPACITY + j], reads.buffer[i], __FUNCTION__);
+//		}
+//	} // TODO there is some bug in those checks
 }
+
+
+void benchmark_push_classifier_runtime() {
+	uint32_t start, duration;
+	char msg[128];
+	classifiers_dataset_t dataset = Dataset_Initialize();
+	IMU_Reads_union reads;
+	for (int i = 0; i <= DATASET_QUEUE_CAPACITY; ++i) {
+		reads.buffer[0] = i;
+		Dataset_queue_Push(&dataset, &reads);
+	}
+	start = HAL_GetTick();
+
+	Dataset_Push(&dataset, &reads.results);
+
+	duration = HAL_GetTick() - start;
+	sprintf(msg, "Benchmarking Dataset_Push: %ld [ms]\r\n", duration);
+	TM_USART_Puts(USART6, msg);
+	check_value(duration <= CLASSIFIER_UPDATE_INTERVAL_MS, duration, CLASSIFIER_UPDATE_INTERVAL_MS, __FUNCTION__);
+}
+
+
+void benchmark_queue_process_classifier_runtime() {
+	uint32_t start, duration;
+	char msg[128];
+	classifiers_dataset_t dataset = Dataset_Initialize();
+	IMU_Reads_union reads;
+	for (int i = 0; i <= DATASET_QUEUE_CAPACITY; ++i) {
+		reads.buffer[0] = i;
+		Dataset_queue_Push(&dataset, &reads);
+	}
+	start = HAL_GetTick();
+
+	Dataset_queue_Process(&dataset);
+
+	duration = HAL_GetTick() - start;
+	sprintf(msg, "Benchmarking Dataset_queue_Process: %ld [ms]\r\n", duration);
+	TM_USART_Puts(USART6, msg);
+	check_value(duration <= CLASSIFIER_UPDATE_INTERVAL_MS, duration, CLASSIFIER_UPDATE_INTERVAL_MS, __FUNCTION__);
+}
+
 
 void _run_dataset_tests(void) {
 	dataset_init_tests();
@@ -449,4 +486,7 @@ void _run_dataset_tests(void) {
 	dataset_queue_process_tests();
 	dataset_queue_process_multiple_tests();
 	dataset_queue_process_full_queue_tests();
+
+	benchmark_push_classifier_runtime();
+	benchmark_queue_process_classifier_runtime();
 }

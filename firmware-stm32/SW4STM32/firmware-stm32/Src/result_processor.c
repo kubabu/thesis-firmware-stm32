@@ -65,7 +65,8 @@ void process_knn(uint32_t now, classifiers_dataset_t *dataset)
 //			prev_result = result_code;
 //			previous_results_display = now;
 		}
-		// TODO process queue
+//		Dataset_queue_Process(dataset); // TODO process queue
+
 	}
 }
 
@@ -89,6 +90,7 @@ void process_nn(uint32_t now, classifiers_dataset_t *dataset)
 //			prev_result = result_code;
 		}
 		// TODO process queue
+		// Dataset_queue_Process(dataset);
 	}
 }
 
