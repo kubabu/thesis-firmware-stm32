@@ -11,6 +11,7 @@ classifiers_dataset_t Dataset_Initialize() {
 	classifiers_dataset_t dataset;
 	dataset.is_ready = DATASET_NOT_READY;
 	dataset.count = 0;
+	dataset.queue_size = 0;
 	return dataset;
 }
 
@@ -44,12 +45,16 @@ void Dataset_Push(classifiers_dataset_t *dataset, IMU_Results *results) {
 }
 
 
-void Dataset_queue_Push(classifiers_dataset_t *dataset, IMU_Results_t *results) {
+void Dataset_queue_Push(classifiers_dataset_t *dataset, IMU_Reads_union *results) {
 	// push over previous results: first in first out
-	memmove(dataset->queue, dataset->queue+1, sizeof(IMU_Results_t) * dataset->queue_size);
+	size_t bytes_to_move = sizeof(IMU_Reads_union) * dataset->queue_size;
+	if(dataset->queue_size == DATASET_QUEUE_CAPACITY) {
+		bytes_to_move = sizeof(IMU_Reads_union) * (DATASET_QUEUE_CAPACITY - 1);
+	}
+	memmove(dataset->queue+1, dataset->queue, bytes_to_move);
 	// add new results
-	dataset->queue[dataset->queue_size] = *results;
-	if(dataset->queue_size < DATASET_QUEUE_CAPACITY -1) {
+	dataset->queue[0] = *results;
+	if(dataset->queue_size < DATASET_QUEUE_CAPACITY) {
 		++dataset->queue_size;
 	}
 }
@@ -57,7 +62,7 @@ void Dataset_queue_Push(classifiers_dataset_t *dataset, IMU_Results_t *results) 
 
 void Dataset_queue_Process(classifiers_dataset_t *dataset) {
 	// TODO this might be too slow
-	for (int i = 0; i < dataset->queue_size; ++i) {
+	for (int i = dataset->queue_size - 1; i >= 0; --i) {
 		Dataset_Push(dataset, &dataset->queue[i].results);
 	}
 	dataset->queue_size = 0;

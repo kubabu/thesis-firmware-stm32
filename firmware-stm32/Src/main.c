@@ -301,7 +301,7 @@ void Dataset_Update() {
 			&& imu_sensor->init_result == TM_MPU6050_Result_Ok
 			&& imu_sensor->irq_flag_state == SENSOR_DATA_READY_TO_READ)
 	{
-		IMU_Results_t angles;
+		IMU_Reads_union angles;
 		IMU_Sensor_Read_Interrupts(imu_sensor);
 		angles.results = IMU_AHRS_Update(imu_sensor, &ahrs);
 //		Dataset_queue_Push(&dataset, &angles); // TODO push on queue

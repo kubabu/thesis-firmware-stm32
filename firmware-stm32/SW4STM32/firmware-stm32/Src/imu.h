@@ -45,9 +45,9 @@ typedef struct EulerAngles {
 
 
 typedef struct IMU_Results {
-	float gx, gy, gz;	// gyroscope [deg/sec]
 	float ax, ay, az;	// acceleration [G]
-//	float mx, my, mz;	// magnetometer [microTesla] not used now
+	float gx, gy, gz;	// gyroscope [deg/sec]
+	//	float mx, my, mz;	// magnetometer [microTesla] not used now
 	EulerAngles raw_angles;			// from accelerometer only
 	EulerAngles imu_angles;	// with Madgwick filter
 } IMU_Results;
@@ -60,8 +60,8 @@ typedef struct IMU_Results {
 
 typedef union IMU_Results_t {
 	IMU_Results results;
-	float results_buffer[FEATURES_COUNT];
-} IMU_Results_t;
+	float buffer[FEATURES_COUNT];
+} IMU_Reads_union;
 
 
 void IMU_Sensor_Initialize(IMU_Sensor* imu, USART_TypeDef* USARTx);

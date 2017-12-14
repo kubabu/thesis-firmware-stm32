@@ -23,6 +23,10 @@
 // length of reads window sequence (2s * 25HZ = 50)
 #define SEQ_LEN DATASET_UPDATE_FREQUENCY_HZ * WINDOW_DURATION
 
+#if(SEQ_LEN != 50)
+#error "HOW"
+#endif
+
 // data features count (3xacc + 3xgyro + 3xyawpithroll + 3xyawpithrollkalman)
 #define FEATURES 12
 

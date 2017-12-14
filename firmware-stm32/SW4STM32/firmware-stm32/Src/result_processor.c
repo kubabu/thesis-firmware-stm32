@@ -25,7 +25,7 @@ void Result_process_Initialize(USART_TypeDef* serial_port) {
 void process_serial(uint32_t now, classifiers_dataset_t *dataset)
 {
 	static uint32_t previous_reads_update;
-	IMU_Results_t angles;
+	IMU_Reads_union angles;
 
 //	IMU_Sensor_Read(&serial_imu);
 	if (interval_passed(now, previous_reads_update, SERIAL_READS_UPDATE_INTERVAL_MS)
