@@ -423,14 +423,14 @@ void dataset_queue_process_full_queue_tests(void) {
 	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 2], 4.0, __FUNCTION__);
 	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 1], 5.0, __FUNCTION__);
 
-//	for (int j = 0; j < DATASET_QUEUE_CAPACITY; ++j) {
-//		check_exact_value(dataset.series[0][PADDED_SEQ_LEN - DATASET_QUEUE_CAPACITY + j], j + 1, __FUNCTION__);
-//	}
-//	for (int i = 1; i < FEATURES; ++i) {
-//		for (int j = 0; j < DATASET_QUEUE_CAPACITY; ++j) {
-//			check_exact_value(dataset.series[i][PADDED_SEQ_LEN - DATASET_QUEUE_CAPACITY + j], reads.buffer[i], __FUNCTION__);
-//		}
-//	} // TODO there is some bug in those checks
+	for (int j = 0; j < DATASET_QUEUE_CAPACITY; ++j) {
+		check_exact_value(dataset.series[0][PADDED_SEQ_LEN - DATASET_QUEUE_CAPACITY + j], j + 1, __FUNCTION__);
+	}
+	for (int i = 1; i < FEATURES; ++i) {
+		for (int j = 0; j < DATASET_QUEUE_CAPACITY; ++j) {
+			check_exact_value(dataset.series[i][PADDED_SEQ_LEN - DATASET_QUEUE_CAPACITY + j], reads.buffer[i], __FUNCTION__);
+		}
+	}
 }
 
 

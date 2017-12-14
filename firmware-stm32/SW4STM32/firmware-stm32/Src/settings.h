@@ -11,8 +11,8 @@
 #define COM_PORT_BAUD_RATE 115200
 
 #define SERIAL_READS_UPDATE_FREQUENCY_HZ 100	// how often I read from sensor
-#define DATASET_UPDATE_FREQUENCY_HZ 25	// how often reads are pushed to dataset
-#define RESULTS_UPDATE_FREQUENCY_HZ 10	// how often is classifier run
+#define DATASET_UPDATE_FREQUENCY_HZ 25			// how often reads are pushed to dataset
+#define RESULTS_UPDATE_FREQUENCY_HZ 10			// how often is classifier run
 
 #define SERIAL_READS_UPDATE_INTERVAL_MS 1000 / SERIAL_READS_UPDATE_FREQUENCY_HZ
 #define DATASET_UPDATE_INTERVAL_MS 1000 / DATASET_UPDATE_FREQUENCY_HZ
@@ -21,11 +21,7 @@
 // duration of reads window sequence [s]
 #define WINDOW_DURATION 2
 // length of reads window sequence (2s * 25HZ = 50)
-#define SEQ_LEN DATASET_UPDATE_FREQUENCY_HZ * WINDOW_DURATION
-
-#if(SEQ_LEN != 50)
-#error "HOW"
-#endif
+#define SEQ_LEN 50 		// DATASET_UPDATE_FREQUENCY_HZ * WINDOW_DURATION
 
 // data features count (3xacc + 3xgyro + 3xyawpithroll + 3xyawpithrollkalman)
 #define FEATURES 12
@@ -34,7 +30,7 @@
 
 
 #if SEQ_LEN != 50
-#error "NOPE"
+#error "Sequence length must be compatible with Python generated code"
 #endif
 
 

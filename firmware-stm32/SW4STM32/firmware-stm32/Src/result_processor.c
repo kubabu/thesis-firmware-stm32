@@ -38,6 +38,7 @@ void process_serial(uint32_t now, classifiers_dataset_t *dataset)
 			AHRS_PrintSerialIMU_Results(USARTx, angles.results);
 		}
 	}
+//		Dataset_queue_Process(dataset); // TODO process queue
 }
 
 
@@ -66,7 +67,6 @@ void process_knn(uint32_t now, classifiers_dataset_t *dataset)
 //			previous_results_display = now;
 		}
 //		Dataset_queue_Process(dataset); // TODO process queue
-
 	}
 }
 
