@@ -16,7 +16,6 @@ classifiers_dataset_t Dataset_Initialize() {
 }
 
 
-// TODO if queue processing is too slow, entire queue can be pushed
 void Dataset_Push(classifiers_dataset_t *dataset, IMU_Results *results) {
 	const size_t bytes_to_shift = (PADDED_SEQ_LEN - 1) * sizeof(float);
 	// push over previous results: first in first out
@@ -48,11 +47,13 @@ void Dataset_Push(classifiers_dataset_t *dataset, IMU_Results *results) {
 void Dataset_queue_Push(classifiers_dataset_t *dataset, IMU_Reads_union *results) {
 	// push over previous results: first in first out
 	size_t bytes_to_move = sizeof(IMU_Reads_union) * dataset->queue_size;
+	// in case of overflow
 	if(dataset->queue_size == DATASET_QUEUE_CAPACITY) {
+		// queue acts as shift register:  oldest (queue[len - 1] is forgotten
 		bytes_to_move = sizeof(IMU_Reads_union) * (DATASET_QUEUE_CAPACITY - 1);
 	}
 	memmove(dataset->queue+1, dataset->queue, bytes_to_move);
-	// add new results
+	// add new results at the end: queue[0] is newest result
 	dataset->queue[0] = *results;
 	if(dataset->queue_size < DATASET_QUEUE_CAPACITY) {
 		++dataset->queue_size;
@@ -61,7 +62,6 @@ void Dataset_queue_Push(classifiers_dataset_t *dataset, IMU_Reads_union *results
 
 
 void Dataset_queue_Process(classifiers_dataset_t *dataset) {
-	// TODO this might be too slow
 	for (int i = dataset->queue_size - 1; i >= 0; --i) {
 		Dataset_Push(dataset, &dataset->queue[i].results);
 	}

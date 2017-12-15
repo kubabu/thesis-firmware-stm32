@@ -3,11 +3,11 @@
 #include "tests.h"
 
 
-volatile MainMode mode = UNIT_TESTS_MODE; // SERIAL_FRONTEND_MODE;
+volatile MainMode mode = SERIAL_FRONTEND_MODE;
 
 USART_TypeDef* USARTx;
-IMU_Sensor serial_imu;
-TM_AHRSIMU_t serial_ahrs;
+//IMU_Sensor serial_imu;
+//TM_AHRSIMU_t serial_ahrs;
 
 char msgbuf[50] = { '\0' };
 const char *modes[] = {"NN_CLASSIFIER_MODE", "KNN_CLASSIFIER_MODE", "SERIAL_FRONTEND_MODE", "UNIT_TESTS_MODE"};
@@ -17,28 +17,31 @@ int8_t interval_passed(uint32_t now, uint32_t prev, uint32_t interval);
 
 void Result_process_Initialize(USART_TypeDef* serial_port) {
 	USARTx = serial_port;
-	// TODO params order from example or header?
-   TM_AHRSIMU_Init(&serial_ahrs, SERIAL_READS_UPDATE_FREQUENCY_HZ, 0.1f, 3.5f);
+//	// TODO params order + do I need separate IMU for 100hz?
+//   TM_AHRSIMU_Init(&serial_ahrs, SERIAL_READS_UPDATE_FREQUENCY_HZ, 0.1f, 3.5f);
+
+	if(mode == SERIAL_FRONTEND_MODE) {
+		// serial reads to PC needs to be in 100Hz
+		Dataset_Set_Update_Frequency(SERIAL_READS_UPDATE_INTERVAL_MS);
+	} else {
+		// dataset for recognition is updated at 25Hz
+		Dataset_Set_Update_Frequency(DATASET_UPDATE_INTERVAL_MS);
+	}
 }
 
 
 void process_serial(uint32_t now, classifiers_dataset_t *dataset)
 {
-	static uint32_t previous_reads_update;
-	IMU_Reads_union angles;
+//	static uint32_t previous_reads_update;
+//	if (interval_passed(now, previous_reads_update, SERIAL_READS_UPDATE_INTERVAL_MS)
+//			&& dataset->queue_size)
+//	{
+//
+//	}
 
-//	IMU_Sensor_Read(&serial_imu);
-	if (interval_passed(now, previous_reads_update, SERIAL_READS_UPDATE_INTERVAL_MS)
-		  && serial_imu.first_read_state == FIRST_READ_DONE)
-	{
-		previous_reads_update = now;
-		angles.results = IMU_AHRS_Update(&serial_imu, &serial_ahrs);
-
-		if(USARTx != NULL) {
-			AHRS_PrintSerialIMU_Results(USARTx, angles.results);
-		}
-	}
-//		Dataset_queue_Process(dataset); // TODO process queue
+	// dummy process method, for right timing all is done in sensor update
+	// do not use dataset series but last enqueued element
+	// so do not process (push on series) queued results at all
 }
 
 
@@ -66,7 +69,8 @@ void process_knn(uint32_t now, classifiers_dataset_t *dataset)
 //			prev_result = result_code;
 //			previous_results_display = now;
 		}
-//		Dataset_queue_Process(dataset); // TODO process queue
+		// push all results queued in meantime
+		Dataset_queue_Process(dataset);
 	}
 }
 
@@ -89,8 +93,8 @@ void process_nn(uint32_t now, classifiers_dataset_t *dataset)
 			TM_USART_Puts(USARTx, msgbuf);
 //			prev_result = result_code;
 		}
-		// TODO process queue
-		// Dataset_queue_Process(dataset);
+		// push all results queued in meantime
+		Dataset_queue_Process(dataset);
 	}
 }
 
@@ -156,6 +160,7 @@ MainMode find_mode(char msg) {
 }
 
 
+
 void Result_process_Check_Mode(void) {
 	char c = TM_USART_Getc(USART6);
 	MainMode m = find_mode(c);
@@ -163,6 +168,7 @@ void Result_process_Check_Mode(void) {
 	  TM_USART_Puts(USART6, "Switching mode to ");
 	  TM_USART_Puts(USART6, (char *)modes[m]);
 	  TM_USART_Puts(USART6, "\r\n");
+
 	  if(m == SERIAL_FRONTEND_MODE) {
 		  // serial reads to PC needs to be in 100Hz
 		  Dataset_Set_Update_Frequency(SERIAL_READS_UPDATE_INTERVAL_MS);

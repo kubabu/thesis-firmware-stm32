@@ -124,7 +124,7 @@ int main(void)
    * TODO: parameter order taken from example is against param names */
   TM_AHRSIMU_Init(&ahrs, DATASET_UPDATE_FREQUENCY_HZ, 0.2f, 3.5f);
   dataset = Dataset_Initialize();
-//  Result_process_Initialize(USARTx);
+  Result_process_Initialize(USARTx);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -137,9 +137,15 @@ int main(void)
 	  Dataset_Update();
 	  Result_process_Check_Mode();
 	  uint32_t now = HAL_GetTick();
-
 	  Result_process_Reads(now, &dataset);
   }
+  //
+  //		uint32_t newnow = HAL_GetTick();
+  //		uint32_t timedelta = newnow - now;
+  //		if(timedelta >= 1230) {
+  //			return 0;
+  //		}
+
 
   //	  if (interval_passed(now, previous_reads_update, READS_UPDATE_INTERVAL_MS)
   //			  && imu_sensor->first_read_state == FIRST_READ_DONE) {
@@ -153,6 +159,7 @@ int main(void)
   //			  dataset_push(&dataset, &angles_normalized.results);
   //		  }
   //	  }
+
   /* USER CODE END 3 */
 
 }
@@ -301,11 +308,19 @@ void Dataset_Update() {
 			&& imu_sensor->init_result == TM_MPU6050_Result_Ok
 			&& imu_sensor->irq_flag_state == SENSOR_DATA_READY_TO_READ)
 	{
-		IMU_Reads_union angles;
+		IMU_Reads_union last_reads;
 		IMU_Sensor_Read_Interrupts(imu_sensor);
-		angles.results = IMU_AHRS_Update(imu_sensor, &ahrs);
-//		Dataset_queue_Push(&dataset, &angles); // TODO push on queue
-		Dataset_Push(&dataset, &angles.results);
+
+		if(dataset_update_interval == SERIAL_READS_UPDATE_INTERVAL_MS)
+		{
+			// SERIAL_FRONTEND_MODE
+			if(USARTx != NULL) {
+				AHRS_PrintSerialIMU_Results(USARTx, last_reads.results);
+			}
+		} else {
+			last_reads.results = IMU_AHRS_Update(imu_sensor, &ahrs);
+			Dataset_queue_Push(&dataset, &last_reads);
+		}
 		prev_dataset_update = now;
 	}
 }

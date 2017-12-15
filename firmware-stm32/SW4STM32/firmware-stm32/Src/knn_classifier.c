@@ -1441,7 +1441,9 @@ int16_t knn_classifier(const float X[KNN_FEATURES_COUNT][DTW_SEQUENCE_LEN])
     //oblicz odlegosc do kazdego zapamietanego elementu
     for(int idx = 0; idx < BATCH_SIZE; idx++) {
         costs[idx] = distance(stored_x[idx], X);
-        Dataset_Update();
+        // check for new data from sensor (sensor refreshin goes faster than recognition)
+        // horrible but sensor library makes interrupts dont work
+        Dataset_Update(); // TODO add to generator
     }
     // to symuluje jakies wyniki
     //float costs[BATCH_SIZE] = {1,13,4,5,1,0,8,1,2,5,8};
