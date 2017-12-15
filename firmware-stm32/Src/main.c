@@ -142,26 +142,6 @@ int main(void)
 	  // push all results queued in meantime
 	  Dataset_queue_Process(&dataset);
   }
-  //
-  //		uint32_t newnow = HAL_GetTick();
-  //		uint32_t timedelta = newnow - now;
-  //		if(timedelta >= 1230) {
-  //			return 0;
-  //		}
-
-
-  //	  if (interval_passed(now, previous_reads_update, READS_UPDATE_INTERVAL_MS)
-  //			  && imu_sensor->first_read_state == FIRST_READ_DONE) {
-  //		  previous_reads_update = now;
-  //		  IMU_Results_t angles, angles_normalized;
-  //		  angles.results = IMU_AHRS_Update(imu_sensor, &ahrs);
-  //
-  //		  if(interval_passed(now, previous_dataset_update, DATASET_UPDATE_INTERVAL_MS)) {
-  //			  previous_dataset_update = now;
-  //			  knn_normalize(angles.results_buffer, angles_normalized.results_buffer);
-  //			  dataset_push(&dataset, &angles_normalized.results);
-  //		  }
-  //	  }
 
   /* USER CODE END 3 */
 
@@ -311,7 +291,7 @@ void Dataset_Update() {
 			&& imu_sensor->init_result == TM_MPU6050_Result_Ok
 			&& imu_sensor->irq_flag_state == SENSOR_DATA_READY_TO_READ)
 	{
-		IMU_Reads_union last_reads;
+		IMU_Reads_union last_reads, reads_normalized;
 		IMU_Sensor_Read_Interrupts(imu_sensor);
 
 		if(dataset_update_interval == SERIAL_READS_UPDATE_INTERVAL_MS)
@@ -322,6 +302,7 @@ void Dataset_Update() {
 			}
 		} else {
 			last_reads.results = IMU_AHRS_Update(imu_sensor, &ahrs);
+			knn_normalize(last_reads.buffer, reads_normalized.buffer);
 			Dataset_queue_Push(&dataset, &last_reads);
 		}
 		prev_dataset_update = now;

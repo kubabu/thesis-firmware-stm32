@@ -1281,6 +1281,7 @@ const char* knn_get_name(int16_t code) {
 }
 
 
+// TODO verify if order of features is in line with struct
 void knn_normalize(float *values, float *results) {
     for(int i = 0; i < KNN_FEATURES_COUNT; ++i) {
         results[i] = (values[i] - stored_means[i]) / stored_stds[i];
@@ -1386,7 +1387,7 @@ void part_argsort(float array[BATCH_SIZE], int indices[K])
 
     for(int i = 0; i < K; i++)
     {
-        int idx = -1;
+        int idx = -1; // TODO bug: idx can be uninitialized
         float val = +100000;
 
         for(int j = 0; j < BATCH_SIZE; j++)
@@ -1462,7 +1463,7 @@ int16_t knn_classifier(const float X[KNN_FEATURES_COUNT][DTW_SEQUENCE_LEN])
     // if cost >= self.threshsold:
     //                 predictions[idx] = 'none'
 
-    char msg[128];
+    char msg[128];  // TODO add to generator
     sprintf(msg, " KNN sum of costs= %f\r\n", sum_of_cost);
     TM_USART_Puts(USART6, msg);
 
@@ -1470,6 +1471,7 @@ int16_t knn_classifier(const float X[KNN_FEATURES_COUNT][DTW_SEQUENCE_LEN])
         return NO_GESTURE_DETECTED;
     }
      else {
+    	 return NO_GESTURE_DETECTED;
         int gesture = get_most_frequent_in_array(indices);
         return gesture;
     }

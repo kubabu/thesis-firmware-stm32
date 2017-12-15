@@ -56,11 +56,7 @@ void process_knn(uint32_t now, classifiers_dataset_t *dataset)
 			&& interval_passed(now, previous_results_update, CLASSIFIER_UPDATE_INTERVAL_MS))
 	{
 		previous_results_update = now;
-
 		int16_t result_code = knn_classifier(dataset->series);
-
-		// TODO remove after result serial transmit test
-		result_code = 2;
 
 		if(result_code != NO_GESTURE_DETECTED
 //			&& result_code != prev_result
