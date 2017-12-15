@@ -70,7 +70,7 @@ void IMU_Sensor_UpdateInterruptFlag(IMU_Sensor* imu, SENSOR_IRQ_STATE state);
 
 void IMU_Sensor_Read_Interrupts(IMU_Sensor* imu);
 
-//void IMU_Sensor_Read(IMU_Sensor* imu);
+void IMU_Sensor_Read(IMU_Sensor* imu);
 
 
 IMU_Results IMU_AHRS_Update(IMU_Sensor* imu, TM_AHRSIMU_t *ahrs);

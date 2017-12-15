@@ -1337,6 +1337,7 @@ float fastdtw(const float x[KNN_FEATURES_COUNT][DTW_SEQUENCE_LEN],const float y[
     volatile float D0[KNN_FEATURES_COUNT + 1][KNN_FEATURES_COUNT + 1] = {0};
     //  D1 = D0[1:, 1:]
 
+
     for(int16_t i = 1; i <= size; ++i) {
         // D0[0, 1:] = np.inf
         D0[0][i] = pos_inf;
@@ -1392,10 +1393,12 @@ void part_argsort(float array[BATCH_SIZE], int indices[K])
 
         for(int j = 0; j < BATCH_SIZE; j++)
         {
-            if(array[j] < val && used[j] == 0)
+            if(array[j] < val)
             {
-                val = array[j];
-                idx = j;
+            	if(used[j] == 0) {
+            		val = array[j];
+            		idx = j;
+            	}
             }
         }
         indices[i] = idx;

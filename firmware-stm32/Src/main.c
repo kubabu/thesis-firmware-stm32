@@ -116,7 +116,7 @@ int main(void)
   TM_USART_Init(USART6, TM_USART_PinsPack_1, COM_PORT_BAUD_RATE);
   TM_USART_Puts(USART6, "\r\n");
 
-  run_all_tests(USARTx);
+//  run_all_tests(USARTx);
   imu_sensor = &imu_instance;
   IMU_Sensor_Initialize(imu_sensor, USARTx);
   /* Init structure with 100hZ sample rate, 0.1 beta and 3.5 inclination
@@ -292,7 +292,9 @@ void Dataset_Update() {
 			&& imu_sensor->irq_flag_state == SENSOR_DATA_READY_TO_READ)
 	{
 		IMU_Reads_union last_reads, reads_normalized;
-		IMU_Sensor_Read_Interrupts(imu_sensor);
+//		IMU_Sensor_Read(imu_sensor);
+		IMU_Sensor_Read_Interrupts(imu_sensor); // TODO uncomment
+		last_reads.results = IMU_AHRS_Update(imu_sensor, &ahrs);
 
 		if(dataset_update_interval == SERIAL_READS_UPDATE_INTERVAL_MS)
 		{
@@ -301,7 +303,6 @@ void Dataset_Update() {
 				AHRS_PrintSerialIMU_Results(USARTx, last_reads.results);
 			}
 		} else {
-			last_reads.results = IMU_AHRS_Update(imu_sensor, &ahrs);
 			knn_normalize(last_reads.buffer, reads_normalized.buffer);
 			Dataset_queue_Push(&dataset, &last_reads);
 		}
