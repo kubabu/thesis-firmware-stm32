@@ -1471,7 +1471,7 @@ int16_t knn_classifier(const float X[KNN_FEATURES_COUNT][DTW_SEQUENCE_LEN])
         return NO_GESTURE_DETECTED;
     }
      else {
-    	 return NO_GESTURE_DETECTED;
+    	 return NO_GESTURE_DETECTED; // TODO remove after argsort fix
         int gesture = get_most_frequent_in_array(indices);
         return gesture;
     }

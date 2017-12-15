@@ -32,16 +32,8 @@ void Result_process_Initialize(USART_TypeDef* serial_port) {
 
 void process_serial(uint32_t now, classifiers_dataset_t *dataset)
 {
-//	static uint32_t previous_reads_update;
-//	if (interval_passed(now, previous_reads_update, SERIAL_READS_UPDATE_INTERVAL_MS)
-//			&& dataset->queue_size)
-//	{
-//
-//	}
-
-	// dummy process method, for right timing all is done in sensor update
-	// do not use dataset series but last enqueued element
-	// so do not process (push on series) queued results at all
+	// dummy process method, for right timing all must be done in sensor update
+	// does not use dataset series
 }
 
 
@@ -58,6 +50,7 @@ void process_knn(uint32_t now, classifiers_dataset_t *dataset)
 		previous_results_update = now;
 		int16_t result_code = knn_classifier(dataset->series);
 
+		// TODO set conditions to print detected gesture
 		if(result_code != NO_GESTURE_DETECTED
 //			&& result_code != prev_result
 //			&& now >= previous_results_display + results_display_break
