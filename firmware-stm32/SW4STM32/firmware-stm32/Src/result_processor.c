@@ -3,7 +3,7 @@
 #include "tests.h"
 
 
-volatile MainMode mode = SERIAL_FRONTEND_MODE;
+volatile MainMode mode =  KNN_CLASSIFIER_MODE;
 
 USART_TypeDef* USARTx;
 //IMU_Sensor serial_imu;
@@ -59,6 +59,9 @@ void process_knn(uint32_t now, classifiers_dataset_t *dataset)
 
 		int16_t result_code = knn_classifier(dataset->series);
 
+		// TODO remove after result serial transmit test
+		result_code = 2;
+
 		if(result_code != NO_GESTURE_DETECTED
 //			&& result_code != prev_result
 //			&& now >= previous_results_display + results_display_break
@@ -69,8 +72,6 @@ void process_knn(uint32_t now, classifiers_dataset_t *dataset)
 //			prev_result = result_code;
 //			previous_results_display = now;
 		}
-		// push all results queued in meantime
-		Dataset_queue_Process(dataset);
 	}
 }
 
@@ -93,8 +94,6 @@ void process_nn(uint32_t now, classifiers_dataset_t *dataset)
 			TM_USART_Puts(USARTx, msgbuf);
 //			prev_result = result_code;
 		}
-		// push all results queued in meantime
-		Dataset_queue_Process(dataset);
 	}
 }
 

@@ -134,10 +134,13 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+	  // get new reads from sensor
 	  Dataset_Update();
 	  Result_process_Check_Mode();
 	  uint32_t now = HAL_GetTick();
 	  Result_process_Reads(now, &dataset);
+	  // push all results queued in meantime
+	  Dataset_queue_Process(&dataset);
   }
   //
   //		uint32_t newnow = HAL_GetTick();
