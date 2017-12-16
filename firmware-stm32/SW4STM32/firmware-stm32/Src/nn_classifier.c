@@ -171,7 +171,7 @@ void normalize(float *values, float *results) {
 }
 
 
-int16_t nn_classifier(const float series[FEATURES][PADDED_SEQ_LEN])
+int16_t nn_classifier(const float series[FEATURES][NN_SEQ_LEN])
 {
     for(int c_idx = 0; c_idx < OUT_CHANNELS; c_idx++)
     {

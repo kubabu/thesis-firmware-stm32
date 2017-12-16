@@ -16,7 +16,7 @@ void dataset_init_tests(void) {
 
 	IMU_Results results;
 
-	for (int i = 0; i < PADDED_SEQ_LEN; ++i) {
+	for (int i = 0; i < NN_SEQ_LEN; ++i) {
 		Dataset_Push(&dataset, &results);
 	}
 
@@ -28,12 +28,12 @@ void dataset_push_tests(void) {
 	classifiers_dataset_t dataset = Dataset_Initialize();
 
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			dataset.series[i][j] = j * i;
 		}
 	}
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			check_exact_value(dataset.series[i][j], j * i, __FUNCTION__);
 		}
 	}
@@ -61,22 +61,22 @@ void dataset_push_tests(void) {
 	//	verify
 	duration = HAL_GetTick() - start;
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN - 1; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN - 1; ++j) {
 			check_exact_value(dataset.series[i][j], (j + 1) * i, __FUNCTION__);
 		}
 	}
-	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 1], results.ax, __FUNCTION__);
-	check_exact_value(dataset.series[1][PADDED_SEQ_LEN - 1], results.ay, __FUNCTION__);
-	check_exact_value(dataset.series[2][PADDED_SEQ_LEN - 1], results.az, __FUNCTION__);
-	check_exact_value(dataset.series[3][PADDED_SEQ_LEN - 1], results.gx, __FUNCTION__);
-	check_exact_value(dataset.series[4][PADDED_SEQ_LEN - 1], results.gy, __FUNCTION__);
-	check_exact_value(dataset.series[5][PADDED_SEQ_LEN - 1], results.gz, __FUNCTION__);
-	check_exact_value(dataset.series[6][PADDED_SEQ_LEN - 1], results.raw_angles.pitch, __FUNCTION__);
-	check_exact_value(dataset.series[7][PADDED_SEQ_LEN - 1], results.raw_angles.roll, __FUNCTION__);
-	check_exact_value(dataset.series[8][PADDED_SEQ_LEN - 1], results.raw_angles.yaw, __FUNCTION__);
-	check_exact_value(dataset.series[9][PADDED_SEQ_LEN - 1], results.imu_angles.pitch, __FUNCTION__);
-	check_exact_value(dataset.series[10][PADDED_SEQ_LEN - 1], results.imu_angles.roll, __FUNCTION__);
-	check_exact_value(dataset.series[11][PADDED_SEQ_LEN - 1], results.imu_angles.yaw, __FUNCTION__);
+	check_exact_value(dataset.series[0][NN_SEQ_LEN - 1], results.ax, __FUNCTION__);
+	check_exact_value(dataset.series[1][NN_SEQ_LEN - 1], results.ay, __FUNCTION__);
+	check_exact_value(dataset.series[2][NN_SEQ_LEN - 1], results.az, __FUNCTION__);
+	check_exact_value(dataset.series[3][NN_SEQ_LEN - 1], results.gx, __FUNCTION__);
+	check_exact_value(dataset.series[4][NN_SEQ_LEN - 1], results.gy, __FUNCTION__);
+	check_exact_value(dataset.series[5][NN_SEQ_LEN - 1], results.gz, __FUNCTION__);
+	check_exact_value(dataset.series[6][NN_SEQ_LEN - 1], results.raw_angles.pitch, __FUNCTION__);
+	check_exact_value(dataset.series[7][NN_SEQ_LEN - 1], results.raw_angles.roll, __FUNCTION__);
+	check_exact_value(dataset.series[8][NN_SEQ_LEN - 1], results.raw_angles.yaw, __FUNCTION__);
+	check_exact_value(dataset.series[9][NN_SEQ_LEN - 1], results.imu_angles.pitch, __FUNCTION__);
+	check_exact_value(dataset.series[10][NN_SEQ_LEN - 1], results.imu_angles.roll, __FUNCTION__);
+	check_exact_value(dataset.series[11][NN_SEQ_LEN - 1], results.imu_angles.yaw, __FUNCTION__);
 	check_value(duration <= 1, duration, 1, __FUNCTION__);
 	check_exact_value(dataset.is_ready, DATASET_NOT_READY, __FUNCTION__);
 }
@@ -87,12 +87,12 @@ void dataset_push_order_tests(void) {
 	classifiers_dataset_t dataset = Dataset_Initialize();
 
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			dataset.series[i][j] = j * i;
 		}
 	}
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			check_exact_value(dataset.series[i][j], j * i, __FUNCTION__);
 		}
 	}
@@ -118,7 +118,7 @@ void dataset_push_order_tests(void) {
 	Dataset_Push(&dataset, &reads.results);
 
 	//	verify
-	uint8_t last_index = PADDED_SEQ_LEN - 1;
+	uint8_t last_index = NN_SEQ_LEN - 1;
 	duration = HAL_GetTick() - start;
 	for (int i = 0; i < FEATURES; ++i) {
 		for (int j = 0; j < last_index; ++j) {
@@ -137,7 +137,7 @@ void dataset_queue_push_tests(void) {
 	IMU_Reads_union results;
 	// initialize with 0s
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			dataset.series[i][j] = 0;
 		}
 	}
@@ -157,7 +157,7 @@ void dataset_queue_push_tests(void) {
 	// main dataset should be untouched
 	check_exact_value(dataset.count, 0, __FUNCTION__);
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			check_exact_value(dataset.series[i][j], 0, __FUNCTION__);
 		}
 	}
@@ -169,7 +169,7 @@ void dataset_queue_push_2_queue_tests(void) {
 	IMU_Reads_union reads;
 	// initialize with 0s
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			dataset.series[i][j] = 0;
 		}
 	}
@@ -198,7 +198,7 @@ void dataset_queue_push_2_queue_tests(void) {
 	// main dataset should be untouched
 	check_exact_value(dataset.count, 0, __FUNCTION__);
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			check_exact_value(dataset.series[i][j], 0, __FUNCTION__);
 		}
 	}
@@ -210,7 +210,7 @@ void dataset_queue_push_3_queue_tests(void) {
 	IMU_Reads_union reads, reads2, reads3;
 	// initialize with 0s
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			dataset.series[i][j] = 0;
 		}
 	}
@@ -246,7 +246,7 @@ void dataset_queue_push_3_queue_tests(void) {
 	// main dataset should be untouched
 	check_exact_value(dataset.count, 0, __FUNCTION__);
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			check_exact_value(dataset.series[i][j], 0, __FUNCTION__);
 		}
 	}
@@ -258,7 +258,7 @@ void dataset_queue_push_full_queue_tests(void) {
 	IMU_Reads_union results;
 	// initialize with 0s
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			dataset.series[i][j] = 0;
 		}
 	}
@@ -284,7 +284,7 @@ void dataset_queue_push_full_queue_tests(void) {
 	// main dataset should be untouched
 	check_exact_value(dataset.count, 0, __FUNCTION__);
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			check_exact_value(dataset.series[i][j], 0, __FUNCTION__);
 		}
 	}
@@ -296,7 +296,7 @@ void dataset_queue_push_overflown_queue_tests(void) {
 	IMU_Reads_union results;
 	// initialize with 0s
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			dataset.series[i][j] = 0;
 		}
 	}
@@ -323,7 +323,7 @@ void dataset_queue_push_overflown_queue_tests(void) {
 	// main dataset should be untouched
 	check_exact_value(dataset.count, 0, __FUNCTION__);
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			check_exact_value(dataset.series[i][j], 0, __FUNCTION__);
 		}
 	}
@@ -335,7 +335,7 @@ void dataset_queue_process_tests(void) {
 	IMU_Reads_union results;
 	// initialize with 0s
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			dataset.series[i][j] = 0;
 		}
 	}
@@ -351,7 +351,7 @@ void dataset_queue_process_tests(void) {
 	check_exact_value(dataset.queue_size, 0, __FUNCTION__);
 	check_exact_value(dataset.count, 1, __FUNCTION__);
 	for (int i = 0; i < FEATURES; ++i) {
-		check_exact_value(dataset.series[i][PADDED_SEQ_LEN - 1], results.buffer[i], __FUNCTION__);
+		check_exact_value(dataset.series[i][NN_SEQ_LEN - 1], results.buffer[i], __FUNCTION__);
 	}
 }
 
@@ -361,7 +361,7 @@ void dataset_queue_process_multiple_tests(void) {
 	IMU_Reads_union reads;
 	// initialize with 0s
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			dataset.series[i][j] = 0;
 		}
 	}
@@ -380,15 +380,15 @@ void dataset_queue_process_multiple_tests(void) {
 
 	check_exact_value(dataset.queue_size, 0, __FUNCTION__);
 	check_exact_value(dataset.count, 3, __FUNCTION__);
-	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 3], 1.0, __FUNCTION__);
-	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 2], 2.0, __FUNCTION__);
-	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 1], 3.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][NN_SEQ_LEN - 3], 1.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][NN_SEQ_LEN - 2], 2.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][NN_SEQ_LEN - 1], 3.0, __FUNCTION__);
 	for (int j = 0; j < 3; ++j) {
-		check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 3 + j], j + 1, __FUNCTION__);
+		check_exact_value(dataset.series[0][NN_SEQ_LEN - 3 + j], j + 1, __FUNCTION__);
 	}
 	for (int i = 1; i < FEATURES; ++i) {
 		for (int j = 0; j < 3; ++j) {
-			check_exact_value(dataset.series[i][PADDED_SEQ_LEN - 3 + j], reads.buffer[i], __FUNCTION__);
+			check_exact_value(dataset.series[i][NN_SEQ_LEN - 3 + j], reads.buffer[i], __FUNCTION__);
 		}
 	}
 }
@@ -399,7 +399,7 @@ void dataset_queue_process_full_queue_tests(void) {
 	IMU_Reads_union reads;
 	// initialize with 0s
 	for (int i = 0; i < FEATURES; ++i) {
-		for (int j = 0; j < PADDED_SEQ_LEN; ++j) {
+		for (int j = 0; j < NN_SEQ_LEN; ++j) {
 			dataset.series[i][j] = 0;
 		}
 	}
@@ -417,18 +417,18 @@ void dataset_queue_process_full_queue_tests(void) {
 	check_exact_value(dataset.queue_size, 0, __FUNCTION__);
 	check_exact_value(dataset.count, DATASET_QUEUE_CAPACITY, __FUNCTION__);
 
-	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 5], 1.0, __FUNCTION__);
-	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 4], 2.0, __FUNCTION__);
-	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 3], 3.0, __FUNCTION__);
-	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 2], 4.0, __FUNCTION__);
-	check_exact_value(dataset.series[0][PADDED_SEQ_LEN - 1], 5.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][NN_SEQ_LEN - 5], 1.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][NN_SEQ_LEN - 4], 2.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][NN_SEQ_LEN - 3], 3.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][NN_SEQ_LEN - 2], 4.0, __FUNCTION__);
+	check_exact_value(dataset.series[0][NN_SEQ_LEN - 1], 5.0, __FUNCTION__);
 
 	for (int j = 0; j < DATASET_QUEUE_CAPACITY; ++j) {
-		check_exact_value(dataset.series[0][PADDED_SEQ_LEN - DATASET_QUEUE_CAPACITY + j], j + 1, __FUNCTION__);
+		check_exact_value(dataset.series[0][NN_SEQ_LEN - DATASET_QUEUE_CAPACITY + j], j + 1, __FUNCTION__);
 	}
 	for (int i = 1; i < FEATURES; ++i) {
 		for (int j = 0; j < DATASET_QUEUE_CAPACITY; ++j) {
-			check_exact_value(dataset.series[i][PADDED_SEQ_LEN - DATASET_QUEUE_CAPACITY + j], reads.buffer[i], __FUNCTION__);
+			check_exact_value(dataset.series[i][NN_SEQ_LEN - DATASET_QUEUE_CAPACITY + j], reads.buffer[i], __FUNCTION__);
 		}
 	}
 }

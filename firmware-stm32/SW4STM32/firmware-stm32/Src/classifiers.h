@@ -15,9 +15,9 @@
 
 
 #define PADDING 2
-#define PADDED_SEQ_LEN PADDING+SEQ_LEN+PADDING
+#define NN_SEQ_LEN SEQ_LEN
 // for fastdtw
-#define DTW_SEQUENCE_LEN PADDED_SEQ_LEN
+#define DTW_SEQUENCE_LEN NN_SEQ_LEN
 
 
 void knn_normalize(float *values, float *results);
@@ -26,7 +26,7 @@ int16_t knn_classifier(const float X[FEATURES][DTW_SEQUENCE_LEN]);
 
 void nn_normalize(float *values, float *results);
 const char* nn_get_name(int16_t code);
-int16_t nn_classifier(const float series[FEATURES][PADDED_SEQ_LEN]);
+int16_t nn_classifier(const float series[FEATURES][NN_SEQ_LEN]);
 
 
 

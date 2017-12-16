@@ -21,7 +21,7 @@ typedef enum dataset_state {
 } dataset_state_t;
 
 typedef struct classifiers_dataset_t {
-	float series[FEATURES][PADDED_SEQ_LEN];
+	float series[FEATURES][NN_SEQ_LEN];
 	uint8_t count;
 	dataset_state_t is_ready;
 	IMU_Reads_union queue[DATASET_QUEUE_CAPACITY];

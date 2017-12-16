@@ -162,7 +162,7 @@ void fastdtw_tests_3(void) {
 void benchmark_nn_classifier_runtime() {
 	char msg[50];
 
-	const float series[FEATURES][PADDED_SEQ_LEN] = {
+	const float series[FEATURES][NN_SEQ_LEN] = {
 					{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 					{0.0}, {0.0}, {0.0}, {0.0}, {0.0},
 					{0.0}, {0.0}};
