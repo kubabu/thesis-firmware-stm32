@@ -116,7 +116,7 @@ int main(void)
   TM_USART_Init(USART6, TM_USART_PinsPack_1, COM_PORT_BAUD_RATE);
   TM_USART_Puts(USART6, "\r\n");
 
-//  run_all_tests(USARTx);
+  run_all_tests(USARTx);
   imu_sensor = &imu_instance;
   IMU_Sensor_Initialize(imu_sensor, USARTx);
   /* Init structure with 100hZ sample rate, 0.1 beta and 3.5 inclination
