@@ -292,8 +292,7 @@ void Dataset_Update() {
 			&& imu_sensor->irq_flag_state == SENSOR_DATA_READY_TO_READ)
 	{
 		IMU_Reads_union last_reads, reads_normalized;
-//		IMU_Sensor_Read(imu_sensor);
-		IMU_Sensor_Read_Interrupts(imu_sensor); // TODO uncomment
+		IMU_Sensor_Read_Interrupts(imu_sensor);
 		last_reads.results = IMU_AHRS_Update(imu_sensor, &ahrs);
 
 		if(dataset_update_interval == SERIAL_READS_UPDATE_INTERVAL_MS)
